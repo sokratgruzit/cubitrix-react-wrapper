@@ -1,11 +1,11 @@
 const INIT_STATE = {
   activeExtensions: {
-    trade: true,
-    loan: true,
-    notify: true,
-    staking: true,
-    referal: true,
-    connect: true
+    trade: process.env.REACT_APP_TRADE,
+    loan: process.env.REACT_APP_LOAN,
+    notify: process.env.REACT_APP_NOTIFY,
+    staking: process.env.REACT_APP_STAKING,
+    referal: process.env.REACT_APP_REFERAL,
+    connect: process.env.REACT_APP_CONNECT
   }
 };
 

@@ -7,6 +7,7 @@ import Staking from './components/Staking';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Layouts/Header/Header';
 import Footer from './components/Layouts/Footer/Footer';
+import Extensions from './components/Extensions';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path='/trade' element={<Loan />} />
         <Route path='/staking' element={<Referal />} />
         <Route path='/referal' element={<Staking />} />
+        <Route path='/extensions' element={<Extensions />} />
       </Routes>
       <Footer />
     </>
