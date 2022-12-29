@@ -8,10 +8,16 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Layouts/Header/Header';
 import Footer from './components/Layouts/Footer/Footer';
 import Extensions from './components/Extensions';
+import Web3 from "web3";
+import { Web3ReactProvider } from "@web3-react/core";
+
+function getLibrary(provider, connector) {
+  return new Web3(provider);
+}
 
 function App() {
   return (
-    <>
+    <Web3ReactProvider getLibrary={getLibrary}>
       <Header />
       <Routes>
         <Route path='/' element={<Dashboard />} />
@@ -22,7 +28,7 @@ function App() {
         <Route path='/extensions' element={<Extensions />} />
       </Routes>
       <Footer />
-    </>
+    </Web3ReactProvider>
   );
 }
 

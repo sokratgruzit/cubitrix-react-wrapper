@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ConnectWallet from "../../ConnectWallet/ConnectWallet";
 
 import styles from "./Header.module.css";
 
 const Header = () => {
-    const exts = useSelector(state => state.connect.activeExtensions);
+    const exts = useSelector(state => state.extensions.activeExtensions);
+    const balance = useSelector(state => state.connect.balance);
   
     return (
         <div className={styles.container}>
@@ -22,7 +24,10 @@ const Header = () => {
             </div>
             <div className={styles.right}>
                 <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>
-                <p style={{ display: exts.connect === "true" ? "block" : "none" }}>Connect Wallet</p>
+                <p>{balance}</p>
+                <div style={{ display: exts.connect === "true" ? "block" : "none" }}>
+                    <ConnectWallet />
+                </div>
             </div>
         </div>
     )
