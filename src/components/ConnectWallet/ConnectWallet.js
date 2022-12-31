@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import useConnect from '../../hooks/use-connect';
 
 import styles from './ConnectWallet.module.css';
 
 const ConnectWallet = () => {
+    const dispatch = useDispatch();
+
     const { 
         connect, 
         disconnect, 
         account, 
         walletModal, 
         handleWalletModal,
-        isConnected
+        library
     } = useConnect();
 
     const handleModal = () => {
@@ -26,6 +29,22 @@ const ConnectWallet = () => {
     if (account !== undefined) {
         cBtn = <div className={styles.button} onClick={() => disconnect()}>Disconnect</div>;
     }
+
+    useEffect(() => {
+        if (account !== undefined || account !== "") {
+            dispatch({
+                type: "GET_ACCOUNT",
+                account: account
+            });
+
+            library?.eth.getBalance(account).then(res => {
+                dispatch({
+                    type: "GET_BALANCE",
+                    balance: res
+                });
+            });
+        }
+    }, [account]);
 
     return (
         <>

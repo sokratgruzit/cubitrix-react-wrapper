@@ -11,26 +11,25 @@ const useConnect = () => {
   const [walletModal, setWalletModal] = useState(false);
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
   const [isLoading, setIsLoading] = useState(true);
+
   const dispatch = useDispatch();
-
-  const isConnected = useSelector((state) => state.connect.isConnected);
-
-  const providerType = useSelector((state) => state.connect.providerType);
+  const isConnected = useSelector(state => state.connect.isConnected);
+  const providerType = useSelector(state => state.connect.providerType);
 
   // Init Loading
   useEffect(() => {
     async function fetchData() {
       if (isConnected) {
-        connect(providerType).then((val) => {
+        connect(providerType).then(() => {
           setIsLoading(false);
         });
 
-        library.eth.getBalance(account).then(res => {
+        library?.eth.getBalance(account).then(res => {
           dispatch({
-              type: "GET_BALANCE",
-              balance: res
+            type: "GET_BALANCE",
+            balance: res
           });
-      });
+        });
       }
     }
     fetchData();
@@ -54,6 +53,8 @@ const useConnect = () => {
     handleIsActive();
   }, [handleIsActive]);
 
+  console.log(useSelector(state => state.connect))
+
   //when disconnected from Metamask update state
   useEffect(() => {
     if (!isActive) {
@@ -72,7 +73,7 @@ const useConnect = () => {
     setShouldDisable(true);
     try {
       if (providerType === "metaMask") {
-        await activate(injected).then((ts) => {
+        await activate(injected).then(() => {
           setShouldDisable(false);
           dispatch({
             type: "CONNECT",
@@ -95,9 +96,7 @@ const useConnect = () => {
         });
       }
 
-      console.log(account)
-
-      await library.eth.getBalance(account).then(res => {
+      await library?.eth.getBalance(account).then(res => {
         dispatch({
           type: "GET_BALANCE",
           balance: res
@@ -113,13 +112,19 @@ const useConnect = () => {
   // Disconnect from Metamask wallet
   const disconnect = async () => {
     try {
-      await deactivate();
+      deactivate();
+
       dispatch({
         type: "CONNECT",
         payload: {
           isConnected: false,
           providerType: "",
         },
+      });
+
+      dispatch({
+        type: "GET_ACCOUNT",
+        account: ""
       });
 
       dispatch({

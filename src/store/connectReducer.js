@@ -2,6 +2,7 @@ const INIT_STATE = {
   isConnected: false,
   providerType: "",
   walletModal: false,
+  account: "",
   balance: 0
 };
 
@@ -10,6 +11,13 @@ const connectReducer = (state = INIT_STATE, action) => {
     return {
       ...state,
       walletModal: action.walletModal,
+    };
+  }
+
+  if (action.type === "GET_ACCOUNT") {
+    return {
+      ...state,
+      account: action.account,
     };
   }
 
