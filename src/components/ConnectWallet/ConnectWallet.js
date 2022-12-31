@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useConnect from '../../hooks/use-connect';
 
 import styles from './ConnectWallet.module.css';
+import axios from "../../api/axios";
 
 const ConnectWallet = () => {
     const dispatch = useDispatch();
+    const balance = useSelector(state => state.connect.balance);
 
     const { 
         connect, 
@@ -43,8 +45,19 @@ const ConnectWallet = () => {
                     balance: res
                 });
             });
+
+            const fetchData = async () => {
+                await axios.post("/accounts/login",
+                { account, balance }).then(res => {
+                    console.log(res);
+                }).catch(err => {
+                    console.log(err);
+                });
+            }
+
+            fetchData();
         }
-    }, [account]);
+    }, [account, balance, library]);
 
     return (
         <>
