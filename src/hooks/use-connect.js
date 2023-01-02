@@ -4,11 +4,9 @@ import { injected, walletConnect } from "./connector";
 import { useWeb3React } from "@web3-react/core";
 
 const useConnect = () => {
-  const { activate, account, library, active, deactivate, chainId } =
-    useWeb3React();
+  const { activate, account, library, active, deactivate, chainId } = useWeb3React();
 
   const [isActive, setIsActive] = useState(false);
-  const [walletModal, setWalletModal] = useState(false);
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
@@ -18,32 +16,47 @@ const useConnect = () => {
   const providerType = useSelector((state) => state.connect.providerType);
 
   // Init Loading
+
+  useEffect(() => {
+    if (library) {
+      library.eth.getBalance(account).then((res) => {
+        dispatch({
+          type: "GET_BALANCE",
+          balance: res,
+        });
+      });
+    }
+  }, [library, account, dispatch]);
+
+  useEffect(() => {
+    console.log(chainId, injected.supportedChainIds);
+    if (account && injected.supportedChainIds.includes(chainId)) {
+      dispatch({
+        type: "CONNECT",
+        payload: {
+          isConnected: true,
+        },
+      });
+    } else {
+      dispatch({
+        type: "CONNECT",
+        payload: {
+          isConnected: false,
+        },
+      });
+    }
+  }, [account, dispatch]);
+
   useEffect(() => {
     async function fetchData() {
       if (isConnected) {
-        connect(providerType).then((val) => {
+        await connect(providerType).then((val) => {
           setIsLoading(false);
         });
-
-        library.eth.getBalance(account).then(res => {
-          dispatch({
-              type: "GET_BALANCE",
-              balance: res
-          });
-      });
       }
     }
     fetchData();
   }, []);
-
-  const handleWalletModal = async (state) => {
-    console.log("state ===>" + state);
-    setWalletModal(state);
-    dispatch({
-      type: "TOGGLE_WALLET_CONNECT_MODAL",
-      walletModal: state,
-    });
-  };
 
   // Check when App is Connected or Disconnected to MetaMask
   const handleIsActive = useCallback(() => {
@@ -60,7 +73,6 @@ const useConnect = () => {
       dispatch({
         type: "CONNECT",
         payload: {
-          isConnected: false,
           providerType: "",
         },
       });
@@ -72,39 +84,27 @@ const useConnect = () => {
     setShouldDisable(true);
     try {
       if (providerType === "metaMask") {
-        await activate(injected).then((ts) => {
-          setShouldDisable(false);
-          dispatch({
-            type: "CONNECT",
-            payload: {
-              isConnected: true,
-              providerType: "metaMask",
-            },
-          });
+        await activate(injected, () => {
+          console.log("chainID not supported");
+        });
+        setShouldDisable(false);
+        dispatch({
+          type: "CONNECT",
+          payload: {
+            providerType: "metaMask",
+          },
         });
       } else if (providerType === "walletConnect") {
-        await activate(walletConnect).then(() => {
+        activate(walletConnect).then(() => {
           setShouldDisable(false);
           dispatch({
             type: "CONNECT",
             payload: {
-              isConnected: true,
               providerType: "walletConnect",
             },
           });
         });
       }
-
-      console.log(account)
-
-      await library.eth.getBalance(account).then(res => {
-        dispatch({
-          type: "GET_BALANCE",
-          balance: res
-        });
-      });
-
-      setWalletModal(false);
     } catch (error) {
       console.log("Error on connecting: ", error);
     }
@@ -113,18 +113,17 @@ const useConnect = () => {
   // Disconnect from Metamask wallet
   const disconnect = async () => {
     try {
-      await deactivate();
+      deactivate();
       dispatch({
         type: "CONNECT",
         payload: {
-          isConnected: false,
           providerType: "",
         },
       });
 
       dispatch({
         type: "GET_BALANCE",
-        balance: 0
+        balance: 0,
       });
     } catch (error) {
       console.log("Error on disconnnect: ", error);
@@ -136,8 +135,6 @@ const useConnect = () => {
       isActive,
       account,
       isLoading,
-      walletModal,
-      handleWalletModal,
       connect,
       disconnect,
       library,
@@ -145,7 +142,7 @@ const useConnect = () => {
       providerType,
       chainId,
     }),
-    [isActive, isLoading, shouldDisable, account, walletModal, providerType, chainId],
+    [isActive, isLoading, shouldDisable, account, providerType, chainId],
   );
 
   return values;

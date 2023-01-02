@@ -23,9 +23,14 @@ const Header = () => {
                 <Link className={styles.link} to="/extensions">Extensions</Link>
             </div>
             <div className={styles.right}>
-                <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>
+                {/* <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>
                 <p>{balance}</p>
                 <div style={{ display: exts.connect === "true" ? "block" : "none" }}>
+                    <ConnectWallet />
+                </div> */}
+                   <p >notify</p>
+                <p>{balance}</p>
+                <div >
                     <ConnectWallet />
                 </div>
             </div>

@@ -1,15 +1,15 @@
 const INIT_STATE = {
   isConnected: false,
   providerType: "",
-  walletModal: false,
-  balance: 0
+  walletModalActive: false,
+  balance: 0,
 };
 
 const connectReducer = (state = INIT_STATE, action) => {
   if (action.type === "TOGGLE_WALLET_CONNECT_MODAL") {
     return {
       ...state,
-      walletModal: action.walletModal,
+      walletModalActive: action.payload,
     };
   }
 
@@ -23,8 +23,9 @@ const connectReducer = (state = INIT_STATE, action) => {
   if (action.type === "CONNECT") {
     return {
       ...state,
-      isConnected: action.payload.isConnected,
-      providerType: action.payload.providerType,
+      ...action.payload,
+      // isConnected: action.payload.isConnected,
+      // providerType: action.payload.providerType,
     };
   }
 
