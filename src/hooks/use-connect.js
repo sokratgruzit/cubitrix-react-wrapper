@@ -2,38 +2,44 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { injected, walletConnect } from "./connector";
 import { useWeb3React } from "@web3-react/core";
+import axios from "../api/axios";
 
 const useConnect = () => {
-  const { activate, account, library, active, deactivate, chainId } =
-    useWeb3React();
+  const { activate, account, library, active, deactivate, chainId } = useWeb3React();
 
-  const [isActive, setIsActive] = useState(false);
   const [walletModal, setWalletModal] = useState(false);
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
-  const isConnected = useSelector(state => state.connect.isConnected);
-  const providerType = useSelector(state => state.connect.providerType);
+  const isConnected = useSelector((state) => state.connect.isConnected);
+  const providerType = useSelector((state) => state.connect.providerType);
 
-  // Init Loading
+  //check if you are connected to an account on supported chain. If so get a balance and set info in global state. else set default info.
+  useEffect(() => {
+    if (library && account && chainId) {
+      const fetchData = async () => {
+        library.eth.getBalance(account).then(async (res) => {
+          dispatch({
+            type: "UPDATE_STATE",
+            balance: +res,
+            account,
+            chainId,
+          });
+        });
+      };
+      fetchData();
+    } else {
+      dispatch({ type: "UPDATE_STATE", account: "", chainId, balance: 0 });
+    }
+  }, [library, dispatch, account, chainId]);
+
+  // check if user has connected before and try to reconnect. persists user login state across refreshes.
   useEffect(() => {
     async function fetchData() {
       if (isConnected) {
         connect(providerType).then(() => {
           setIsLoading(false);
-        });
-
-        library?.eth.getBalance(account).then(res => {
-          dispatch({
-            type: "GET_BALANCE",
-            balance: res
-          });
-
-          dispatch({
-            type: "GET_ACCOUNT",
-            account: account
-          });
         });
       }
     }
@@ -41,7 +47,6 @@ const useConnect = () => {
   }, []);
 
   const handleWalletModal = async (state) => {
-    console.log("state ===>" + state);
     setWalletModal(state);
     dispatch({
       type: "TOGGLE_WALLET_CONNECT_MODAL",
@@ -50,19 +55,10 @@ const useConnect = () => {
   };
 
   // Check when App is Connected or Disconnected to MetaMask
-  const handleIsActive = useCallback(() => {
-    setIsActive(active);
-  }, [active]);
-
-  useEffect(() => {
-    handleIsActive();
-  }, [handleIsActive]);
-
-  console.log(useSelector(state => state.connect))
 
   //when disconnected from Metamask update state
-  useEffect(() => {
-    if (!isActive) {
+  const handleIsActive = useCallback(() => {
+    if (!active) {
       dispatch({
         type: "CONNECT",
         payload: {
@@ -71,7 +67,13 @@ const useConnect = () => {
         },
       });
     }
-  }, [isActive]);
+  }, [active]);
+
+  useEffect(() => {
+    handleIsActive();
+  }, [handleIsActive]);
+
+  // console.log(useSelector((state) => state.connect));
 
   // Connect to wallet
   const connect = async (providerType) => {
@@ -101,13 +103,6 @@ const useConnect = () => {
         });
       }
 
-      await library?.eth.getBalance(account).then(res => {
-        dispatch({
-          type: "GET_BALANCE",
-          balance: res
-        });
-      });
-
       setWalletModal(false);
     } catch (error) {
       console.log("Error on connecting: ", error);
@@ -118,23 +113,11 @@ const useConnect = () => {
   const disconnect = async () => {
     try {
       deactivate();
-
       dispatch({
-        type: "CONNECT",
-        payload: {
-          isConnected: false,
-          providerType: "",
-        },
-      });
-
-      dispatch({
-        type: "GET_ACCOUNT",
-        account: ""
-      });
-
-      dispatch({
-        type: "GET_BALANCE",
-        balance: 0
+        type: "UPDATE_STATE",
+        account: "",
+        isConnected: false,
+        providerType: "",
       });
     } catch (error) {
       console.log("Error on disconnnect: ", error);
@@ -143,7 +126,6 @@ const useConnect = () => {
 
   const values = useMemo(
     () => ({
-      isActive,
       account,
       isLoading,
       walletModal,
@@ -155,7 +137,7 @@ const useConnect = () => {
       providerType,
       chainId,
     }),
-    [isActive, isLoading, shouldDisable, account, walletModal, providerType, chainId],
+    [isLoading, shouldDisable, account, walletModal, providerType, chainId],
   );
 
   return values;

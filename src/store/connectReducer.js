@@ -3,7 +3,8 @@ const INIT_STATE = {
   providerType: "",
   walletModal: false,
   account: "",
-  balance: 0
+  balance: 0,
+  chainId: undefined,
 };
 
 const connectReducer = (state = INIT_STATE, action) => {
@@ -35,7 +36,13 @@ const connectReducer = (state = INIT_STATE, action) => {
       providerType: action.payload.providerType,
     };
   }
-
+  if (action.type === "UPDATE_STATE") {
+    console.log(action);
+    return {
+      ...state,
+      ...action,
+    };
+  }
   return state;
 };
 
