@@ -1,28 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useConnect from "../../hooks/use-connect";
 
 import styles from "./ConnectWallet.module.css";
-import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 
 const ConnectWallet = () => {
   const dispatch = useDispatch();
-  const balance = useSelector((state) => state.connect.balance);
+  const walletModalOpen = useSelector((state) => state.connect.walletModalOpen);
 
-  const { connect, disconnect, account, walletModal, handleWalletModal, library } =
-    useConnect();
+  const { connect, disconnect, account } = useConnect();
 
-  const handleModal = () => {
-    handleWalletModal(true);
-  };
-
-  const handleClose = () => {
-    handleWalletModal(false);
+  const handleModalOpen = (state) => {
+    dispatch({ type: "TOGGLE_WALLET_CONNECT_MODAL", payload: state });
   };
 
   let cBtn = (
-    <div className={styles.button} onClick={handleModal}>
+    <div className={styles.button} onClick={() => handleModalOpen(true)}>
       Connect Wallet
     </div>
   );
@@ -35,54 +29,22 @@ const ConnectWallet = () => {
     );
   }
 
-  //   useEffect(() => {
-  //     if (account) {
-  //       library?.eth.getBalance(account).then((res) => {
-  //         dispatch({
-  //           type: "GET_BALANCE",
-  //           balance: res,
-  //         });
-
-  //         dispatch({
-  //           type: "GET_ACCOUNT",
-  //           account: account,
-  //         });
-  //       });
-
-  //       const fetchData = async () => {
-  //         await axios
-  //           .post("/accounts/login", {
-  //             account: account,
-  //             balance: balance,
-  //           })
-  //           .then((res) => {
-  //             console.log(res);
-  //           })
-  //           .catch((err) => {
-  //             console.log(err);
-  //           });
-  //       };
-
-  //       fetchData();
-  //     }
-  //   }, [account, balance, library]);
-
   return (
     <>
       <p>{account}</p>
       {cBtn}
       <Link to="/recovery">recovery login</Link>
       <div
-        style={{ display: walletModal ? "flex" : "none" }}
+        style={{ display: walletModalOpen ? "flex" : "none" }}
         className={styles.modalContainer}
       >
-        <div onClick={handleClose} className={styles.closeModal}>
+        <div onClick={() => handleModalOpen(false)} className={styles.closeModal}>
           X
         </div>
         <div
           className={styles.leftBtn}
           onClick={() => {
-            handleWalletModal(false);
+            handleModalOpen(false);
             connect("metaMask");
           }}
         >
@@ -91,7 +53,7 @@ const ConnectWallet = () => {
         <div
           className={styles.rightBtn}
           onClick={() => {
-            handleWalletModal(false);
+            handleModalOpen(false);
             connect("walletConnect");
           }}
         >

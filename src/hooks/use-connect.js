@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { injected, walletConnect } from "./connector";
 import { useWeb3React } from "@web3-react/core";
@@ -7,7 +7,6 @@ import axios from "../api/axios";
 const useConnect = () => {
   const { activate, account, library, active, deactivate, chainId } = useWeb3React();
 
-  const [walletModal, setWalletModal] = useState(false);
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,6 +25,21 @@ const useConnect = () => {
             account,
             chainId,
           });
+          // automatically send request for login
+          const fetchData = async () => {
+            await axios
+              .post("/accounts/login", {
+                address: account,
+                balance: +res,
+              })
+              .then((res) => {
+                console.log(res);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          };
+          fetchData();
         });
       };
       fetchData();
@@ -46,32 +60,13 @@ const useConnect = () => {
     fetchData();
   }, []);
 
-  const handleWalletModal = async (state) => {
-    setWalletModal(state);
-    dispatch({
-      type: "TOGGLE_WALLET_CONNECT_MODAL",
-      walletModal: state,
-    });
-  };
-
-  // Check when App is Connected or Disconnected to MetaMask
-
-  //when disconnected from Metamask update state
-  const handleIsActive = useCallback(() => {
-    if (!active) {
-      dispatch({
-        type: "CONNECT",
-        payload: {
-          isConnected: false,
-          providerType: "",
-        },
-      });
-    }
-  }, [active]);
-
+  // watch user active status and save it in global store for persist.
   useEffect(() => {
-    handleIsActive();
-  }, [handleIsActive]);
+    dispatch({
+      type: "UPDATE_STATE",
+      isConnected: active,
+    });
+  }, [active, dispatch]);
 
   // console.log(useSelector((state) => state.connect));
 
@@ -80,12 +75,11 @@ const useConnect = () => {
     setShouldDisable(true);
     try {
       if (providerType === "metaMask") {
-        await activate(injected).then(() => {
+        activate(injected).then(() => {
           setShouldDisable(false);
           dispatch({
             type: "CONNECT",
             payload: {
-              isConnected: true,
               providerType: "metaMask",
             },
           });
@@ -96,14 +90,11 @@ const useConnect = () => {
           dispatch({
             type: "CONNECT",
             payload: {
-              isConnected: true,
               providerType: "walletConnect",
             },
           });
         });
       }
-
-      setWalletModal(false);
     } catch (error) {
       console.log("Error on connecting: ", error);
     }
@@ -116,7 +107,6 @@ const useConnect = () => {
       dispatch({
         type: "UPDATE_STATE",
         account: "",
-        isConnected: false,
         providerType: "",
       });
     } catch (error) {
@@ -128,8 +118,6 @@ const useConnect = () => {
     () => ({
       account,
       isLoading,
-      walletModal,
-      handleWalletModal,
       connect,
       disconnect,
       library,
@@ -137,7 +125,7 @@ const useConnect = () => {
       providerType,
       chainId,
     }),
-    [isLoading, shouldDisable, account, walletModal, providerType, chainId],
+    [account, isLoading, shouldDisable, providerType, chainId],
   );
 
   return values;

@@ -1,7 +1,7 @@
 const INIT_STATE = {
   isConnected: false,
   providerType: "",
-  walletModal: false,
+  walletModalOpen: false,
   account: "",
   balance: 0,
   chainId: undefined,
@@ -11,7 +11,7 @@ const connectReducer = (state = INIT_STATE, action) => {
   if (action.type === "TOGGLE_WALLET_CONNECT_MODAL") {
     return {
       ...state,
-      walletModal: action.walletModal,
+      walletModalOpen: action.payload,
     };
   }
 
@@ -32,12 +32,10 @@ const connectReducer = (state = INIT_STATE, action) => {
   if (action.type === "CONNECT") {
     return {
       ...state,
-      isConnected: action.payload.isConnected,
-      providerType: action.payload.providerType,
+      ...action.payload,
     };
   }
   if (action.type === "UPDATE_STATE") {
-    console.log(action);
     return {
       ...state,
       ...action,
