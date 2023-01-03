@@ -10,6 +10,7 @@ import Footer from './components/Layouts/Footer/Footer';
 import Extensions from './components/Extensions';
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
+import RecoveryLogin from './components/RecoveryLogin/RecoveryLogin';
 
 function getLibrary(provider, connector) {
   return new Web3(provider);
@@ -26,6 +27,7 @@ function App() {
         <Route path='/staking' element={<Referal />} />
         <Route path='/referal' element={<Staking />} />
         <Route path='/extensions' element={<Extensions />} />
+        <Route path='/recovery' element={<RecoveryLogin />} />
       </Routes>
       <Footer />
     </Web3ReactProvider>

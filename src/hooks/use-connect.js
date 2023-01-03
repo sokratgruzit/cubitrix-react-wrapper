@@ -29,6 +29,11 @@ const useConnect = () => {
             type: "GET_BALANCE",
             balance: res
           });
+
+          dispatch({
+            type: "GET_ACCOUNT",
+            account: account
+          });
         });
       }
     }

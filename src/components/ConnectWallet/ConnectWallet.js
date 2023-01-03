@@ -4,6 +4,7 @@ import useConnect from '../../hooks/use-connect';
 
 import styles from './ConnectWallet.module.css';
 import axios from "../../api/axios";
+import { Link } from 'react-router-dom';
 
 const ConnectWallet = () => {
     const dispatch = useDispatch();
@@ -33,22 +34,25 @@ const ConnectWallet = () => {
     }
 
     useEffect(() => {
-        if (account !== undefined || account !== "") {
-            dispatch({
-                type: "GET_ACCOUNT",
-                account: account
-            });
-
+        if (account !== undefined || account !== "" || account !== undefined) {
             library?.eth.getBalance(account).then(res => {
                 dispatch({
                     type: "GET_BALANCE",
                     balance: res
                 });
+
+                dispatch({
+                    type: "GET_ACCOUNT",
+                    account: account
+                });
             });
 
             const fetchData = async () => {
                 await axios.post("/accounts/login",
-                { account, balance }).then(res => {
+                { 
+                    account: account, 
+                    balance: balance
+                }).then(res => {
                     console.log(res);
                 }).catch(err => {
                     console.log(err);
@@ -63,6 +67,7 @@ const ConnectWallet = () => {
         <>
             <p>{account}</p>
             {cBtn}
+            <Link to="/recovery">recovery login</Link>
             <div style={{ display: walletModal ? "flex" : "none" }} className={styles.modalContainer}>
                 <div onClick={handleClose} className={styles.closeModal}>X</div>
                 <div 
