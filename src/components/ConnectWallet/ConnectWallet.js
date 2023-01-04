@@ -6,8 +6,8 @@ import styles from "./ConnectWallet.module.css";
 import { Link } from "react-router-dom";
 
 const ConnectWallet = () => {
-  const dispatch = useDispatch();
   const walletModalOpen = useSelector((state) => state.connect.walletModalOpen);
+  const dispatch = useDispatch();
 
   const { connect, disconnect, account } = useConnect();
 
@@ -15,24 +15,18 @@ const ConnectWallet = () => {
     dispatch({ type: "TOGGLE_WALLET_CONNECT_MODAL", payload: state });
   };
 
-  let cBtn = (
-    <div className={styles.button} onClick={() => handleModalOpen(true)}>
-      Connect Wallet
-    </div>
-  );
-
-  if (account !== undefined) {
-    cBtn = (
-      <div className={styles.button} onClick={() => disconnect()}>
-        Disconnect
-      </div>
-    );
-  }
-
   return (
     <>
       <p>{account}</p>
-      {cBtn}
+      {account ? (
+        <div className={styles.button} onClick={() => disconnect()}>
+          Disconnect
+        </div>
+      ) : (
+        <div className={styles.button} onClick={() => handleModalOpen(true)}>
+          Connect Wallet
+        </div>
+      )}
       <Link to="/recovery">recovery login</Link>
       <div
         style={{ display: walletModalOpen ? "flex" : "none" }}

@@ -8,11 +8,12 @@ const useConnect = () => {
   const { activate, account, library, active, deactivate, chainId } = useWeb3React();
 
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
-  const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
   const isConnected = useSelector((state) => state.connect.isConnected);
   const providerType = useSelector((state) => state.connect.providerType);
+
+  console.log(window.ethereum, "ahahahah");
 
   //check if you are connected to an account on supported chain. If so get a balance and set info in global state. else set default info.
   useEffect(() => {
@@ -36,7 +37,7 @@ const useConnect = () => {
                 console.log(res);
               })
               .catch((err) => {
-                console.log(err);
+                console.log(err.message);
               });
           };
           fetchData();
@@ -52,9 +53,7 @@ const useConnect = () => {
   useEffect(() => {
     async function fetchData() {
       if (isConnected) {
-        connect(providerType).then(() => {
-          setIsLoading(false);
-        });
+        connect(providerType);
       }
     }
     fetchData();
@@ -75,24 +74,28 @@ const useConnect = () => {
     setShouldDisable(true);
     try {
       if (providerType === "metaMask") {
-        activate(injected).then(() => {
-          setShouldDisable(false);
-          dispatch({
-            type: "CONNECT",
-            payload: {
-              providerType: "metaMask",
-            },
-          });
+        activate(injected, undefined, true).catch(() => {
+          console.log("Please switch your network in wallet");
+        });
+        setShouldDisable(false);
+        dispatch({
+          type: "CONNECT",
+          payload: {
+            providerType: "metaMask",
+            isConnected: true,
+          },
         });
       } else if (providerType === "walletConnect") {
-        await activate(walletConnect).then(() => {
-          setShouldDisable(false);
-          dispatch({
-            type: "CONNECT",
-            payload: {
-              providerType: "walletConnect",
-            },
-          });
+        activate(walletConnect, undefined, true).catch(() => {
+          console.log("Please switch your network in wallet");
+        });
+        setShouldDisable(false);
+        dispatch({
+          type: "CONNECT",
+          payload: {
+            providerType: "walletConnect",
+            isConnected: true,
+          },
         });
       }
     } catch (error) {
@@ -117,7 +120,6 @@ const useConnect = () => {
   const values = useMemo(
     () => ({
       account,
-      isLoading,
       connect,
       disconnect,
       library,
@@ -125,7 +127,7 @@ const useConnect = () => {
       providerType,
       chainId,
     }),
-    [account, isLoading, shouldDisable, providerType, chainId],
+    [account, shouldDisable, providerType, chainId],
   );
 
   return values;
