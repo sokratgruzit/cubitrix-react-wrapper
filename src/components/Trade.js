@@ -1,9 +1,9 @@
 import React from "react";
 
-import Body from "./Layouts/Body/Body";
+import {TradeModule} from "@cubitrix/cubitrix-react-trade-module";
 
 const Trade = () => {
-    return <Body side="Side trade" main="Main trade" />;
+    return <TradeModule />;
 };
 
 export default Trade;
