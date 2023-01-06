@@ -11,6 +11,7 @@ import Extensions from './components/Extensions';
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
 import RecoveryLogin from './components/RecoveryLogin/RecoveryLogin';
+import TwoFactorAuth from './components/TwoFactorAuth/TwoFactorAuth';
 
 function getLibrary(provider, connector) {
   return new Web3(provider);
@@ -28,6 +29,7 @@ function App() {
         <Route path='/referal' element={<Staking />} />
         <Route path='/extensions' element={<Extensions />} />
         <Route path='/recovery' element={<RecoveryLogin />} />
+        <Route path='/auth' element={<TwoFactorAuth />} />
       </Routes>
       <Footer />
     </Web3ReactProvider>

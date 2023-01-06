@@ -49,6 +49,9 @@ const Header = () => {
         <Link className={styles.link} to="/extensions">
           Extensions
         </Link>
+        <Link className={styles.link} to="/auth">
+          2fa
+        </Link>
       </div>
       <div className={styles.right}>
         <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>

@@ -98,6 +98,35 @@ const useConnect = () => {
           },
         });
       }
+
+      if (library && account && chainId) {
+        const fetchData = async () => {
+          library.eth.getBalance(account).then(async (res) => {
+            dispatch({
+              type: "UPDATE_STATE",
+              balance: +res,
+              account,
+              chainId,
+            });
+            // automatically send request for login
+            const fetchData = async () => {
+              await axios
+                .post("/accounts/login", {
+                  address: account,
+                  balance: +res,
+                })
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  console.log(err.message);
+                });
+            };
+            fetchData();
+          });
+        };
+        fetchData();
+      }
     } catch (error) {
       console.log("Error on connecting: ", error);
     }
