@@ -1,0 +1,25 @@
+.input {
+    border: 2px solid black;
+    color: black;
+    height: 40px;
+    margin: 20px 0;
+    padding-left: 10px;
+}
+.buttonBlue {
+    background-color: blue;
+    color: white;
+    border: none;
+    outline: none;
+    padding: 10px;
+    cursor: pointer;
+}
+.body {
+    background-color: white;
+    position: absolute;
+    width: 500px;
+    height: auto;
+    top: 600px;
+    left: calc(50% - 250px);
+    padding: 20px;
+    border: 2px solid black;
+}

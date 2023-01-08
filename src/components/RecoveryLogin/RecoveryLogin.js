@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ValidateAuth from "../TwoFactorAuth/ValidateAuth";
 
 import styles from "./RecoveryLogin.module.css";
 
@@ -13,22 +14,25 @@ const RecoveryLogin = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <h1>Recovery Login</h1>
-            <input 
-                type="email" 
-                placeholder="Enter your email" 
-                onChange={e => setEmail(e.target.value)}
-                value={email}
-            />
-            <input 
-                type="password" 
-                placeholder="Enter your password" 
-                onChange={e => setPassword(e.target.value)}
-                value={password}
-            />
-            <div onClick={handleLogin} className={styles.submitBtn}>Login</div>
-        </div>
+        <>
+            <div className={styles.container}>
+                <h1>Recovery Login</h1>
+                <input 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    onChange={e => setEmail(e.target.value)}
+                    value={email}
+                />
+                <input 
+                    type="password" 
+                    placeholder="Enter your password" 
+                    onChange={e => setPassword(e.target.value)}
+                    value={password}
+                />
+                <div onClick={handleLogin} className={styles.submitBtn}>Login</div>
+            </div>
+            <ValidateAuth />
+        </>
     );
 };
 

@@ -6,6 +6,7 @@
     align-items: center;
     background-color: gray;
     position: absolute;
+    overflow: hidden;
 }
 .left {
     width: 10%;

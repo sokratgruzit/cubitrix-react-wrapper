@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode";
 import axios from "../../api/axios";
 
 import styles from "./TwoFactorAuth.module.css";
 
 const TwoFactorAuth = () => {
+    const dispatch = useDispatch();
     const address = useSelector(state => state.connect.account);
     const [ qrcodeUrl, setqrCodeUrl ] = useState("");
-    const { register, handleSubmit, watch, formState: { errors }, setFocus } = useForm();
+    const { register, handleSubmit, formState: { errors }, setFocus } = useForm();
     const [ base32, setBase32 ] = useState("");
-    const [ otpauthUrl, setOtpAuthUrl ] = useState("");
+    const [ openModal, setOpenModal ] = useState(false);
     
     const verifyOtp = async (token) => {
         try {
@@ -42,14 +43,19 @@ const TwoFactorAuth = () => {
     
     useEffect(() => {
         async function generateOtp() {
-            if (address !== undefined) {
-                await axios.post("/accounts/otp/generate", { address }).then(res => {
-                    const { base32, otpauth_url } = res.data;
-                    setBase32(base32);
-                    setOtpAuthUrl(otpauth_url);
-                }).then(() => {
-                    QRCode.toDataURL(otpauthUrl).then(setqrCodeUrl);
-                });
+            try {
+                if (address !== undefined && address !== "") {
+                    await axios.post("/accounts/otp/generate", { address }).then(res => {
+                        const { base32, otpauth_url } = res.data;
+                        setBase32(base32);
+                        
+                        return otpauth_url;
+                    }).then((otpauth_url) => {
+                        QRCode.toDataURL(otpauth_url).then(setqrCodeUrl);
+                    });
+                }
+            } catch (err) {
+                console.log('generate otp error', err);
             }
         }
 
@@ -62,7 +68,7 @@ const TwoFactorAuth = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.modalWrap}>
+            {openModal && <div style={{ display: openModal ? 'block' : 'none' }} className={styles.modalWrap}>
                 <h3 className={styles.heading3}>Two-Factor Authentication (2FA)</h3>
                 {/* Modal body */}
                 <div className={styles.body}>
@@ -112,7 +118,8 @@ const TwoFactorAuth = () => {
                         <div className={styles.buttonGroup}>
                             <button
                                 type="button"
-                                className={styles.buttonGrey}
+                                className={styles.buttonGray}
+                                onClick={() => setOpenModal(false)}
                             >
                                 Close
                             </button>
@@ -122,7 +129,30 @@ const TwoFactorAuth = () => {
                         </div>
                     </form>
                 </div>
-            </div>
+            </div>}
+            {!openModal && <div 
+                onClick={() => {
+                    if (address === "" || address === undefined) {
+                        dispatch({ type: "TOGGLE_WALLET_CONNECT_MODAL", payload: true });
+                    } else {
+                        setOpenModal(true);
+                    }
+                }}
+                style={{
+                    position: "absolute",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "auto",
+                    padding: "0 10px",
+                    height: "40px",
+                    background: "blue",
+                    color: "white",
+                    top: "300px",
+                    left: "calc(50% - 50px)",
+                    cursor: "pointer"
+                }}
+            >{address === "" || address === undefined ? "Connect Wallet" : "Set Up 2FA"}</div>}
         </div>
     );
 };

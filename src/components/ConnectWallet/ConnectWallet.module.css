@@ -29,6 +29,7 @@
     font-size: 20px;
     border: 2px solid black;
     transition: .5s;
+    z-index: 10000;
 }
 .closeModal {
     position: absolute;

@@ -10,9 +10,38 @@
     background-color: white;
     position: absolute;
     width: 500px;
-    height: 500px;
+    height: auto;
     top: 200px;
     left: calc(50% - 250px);
     padding: 20px;
     border: 2px solid black;
+}
+.heading3,
+.heading4 {
+    margin-bottom: 20px;
+    border-bottom: 1px solid black;
+}
+.buttonBlue {
+    background-color: blue;
+    color: white;
+    border: none;
+    outline: none;
+    padding: 10px;
+    cursor: pointer;
+}
+.buttonGray {
+    background-color: gray;
+    color: white;
+    border: none;
+    outline: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.input {
+    border: 2px solid black;
+    color: black;
+    height: 40px;
+    margin: 20px 0;
+    padding-left: 10px;
 }
