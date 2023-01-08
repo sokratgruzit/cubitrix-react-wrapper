@@ -1,15 +1,29 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import ValidateAuth from "../TwoFactorAuth/ValidateAuth";
-
+import axios from "axios";
 import styles from "./RecoveryLogin.module.css";
 
 const RecoveryLogin = () => {
     const [ email, setEmail ] = useState("");
     const [ password, setPassword ] = useState("");
+    const address = useSelector(state => state.connect.account);
+    const dispatch = useDispatch();
 
     const handleLogin = () => {
         if (email !== "" && password !== "") {
-            console.log(email, password);
+            axios.post("/accounts/recovery/login", {
+                address
+            }).then(res => {
+                return res.data.otp_enabled;
+            }).then(res => {
+                if (res) {
+                    dispatch({
+                        type: "GET_OTP_ENABLED",
+                        otp_enabled: res
+                    });
+                }
+            });
         }
     };
 

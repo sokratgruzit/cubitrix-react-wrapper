@@ -5,6 +5,7 @@ const INIT_STATE = {
   account: "",
   balance: 0,
   chainId: undefined,
+  otpEnabled: false
 };
 
 const connectReducer = (state = INIT_STATE, action) => {
@@ -12,6 +13,13 @@ const connectReducer = (state = INIT_STATE, action) => {
     return {
       ...state,
       walletModalOpen: action.payload,
+    };
+  }
+
+  if (action.type === "GET_OPT_ENABLED") {
+    return {
+      ...state,
+      otpEnabled: action.otp_enabled,
     };
   }
 
@@ -35,6 +43,7 @@ const connectReducer = (state = INIT_STATE, action) => {
       ...action.payload,
     };
   }
+
   if (action.type === "UPDATE_STATE") {
     return {
       ...state,

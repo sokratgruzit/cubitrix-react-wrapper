@@ -7,6 +7,7 @@ import axios from "axios";
 
 const ValidateAuth = () => {
     const address = useSelector(state => state.connect.account);
+    const otp_enabled = useSelector(state => state.connect.otpEnabled);
     const navigate = useNavigate();
 
     const {
@@ -18,19 +19,20 @@ const ValidateAuth = () => {
 
     const validate2fa = async (token) => {
         try {
-            await axios.post("/accounts/otp/validate", {
-                token,
-                address: address,
-            }).then(res => {
-                let otp_valid = res.data.otp_valid;
+            if (otp_enabled) {
+                await axios.post("/accounts/otp/validate", {
+                    token,
+                    address: address,
+                }).then(res => {
+                    let otp_valid = res.data.otp_valid;
 
-                if (otp_valid) {
-                    navigate("/dashboard");
-                } else {
-                    navigate("/recovery");
-                }
-            });
-        
+                    if (otp_valid) {
+                        navigate("/dashboard");
+                    } else {
+                        navigate("/recovery");
+                    }
+                });
+            }
         } catch (error) {
             const resMessage =
             (error.response &&
