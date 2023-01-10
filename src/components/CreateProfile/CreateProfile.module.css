@@ -13,7 +13,7 @@
   border: 1px solid #0050ff;
 }
 
-.container {
+.wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -38,4 +38,9 @@
 
 .button:hover {
   opacity: 0.65;
+}
+
+.container {
+  display: flex;
+  gap: 100px;
 }
