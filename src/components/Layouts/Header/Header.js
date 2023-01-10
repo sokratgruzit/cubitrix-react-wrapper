@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import ConnectWallet from "cubitrix-react-connect-module";
+import { ConnectWallet } from "@cubitrix/cubitrix-react-connect-module";
 
 import styles from "./Header.module.css";
 
@@ -58,6 +58,7 @@ const Header = () => {
         <p>{balance}</p>
         <div>
           <ConnectWallet />
+          <Link className={styles.link} to="/recovery">Recovery Login</Link>
         </div>
       </div>
     </div>

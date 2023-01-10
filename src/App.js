@@ -10,10 +10,10 @@ import Footer from './components/Layouts/Footer/Footer';
 import Extensions from './components/Extensions';
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
-import RecoveryLogin from './components/RecoveryLogin/RecoveryLogin';
-import TwoFactorAuth from './components/TwoFactorAuth/TwoFactorAuth';
+import { RecoveryLogin } from "@cubitrix/cubitrix-react-connect-module";
+import { TwoFactorAuth } from "@cubitrix/cubitrix-react-connect-module";
 
-function getLibrary(provider, connector) {
+function getLibrary(provider) {
   return new Web3(provider);
 }
 
