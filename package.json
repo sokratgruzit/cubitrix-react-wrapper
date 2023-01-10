@@ -11,7 +11,7 @@
     "@web3-react/injected-connector": "^6.0.7",
     "@web3-react/walletconnect-connector": "^6.2.8",
     "axios": "^1.2.2",
-    "cubitrix-react-connect-module": "^1.0.11",
+    "@cubitrix/cubitrix-react-connect-module": "0.0.9",
     "qrcode": "^1.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
