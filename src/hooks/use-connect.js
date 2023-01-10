@@ -148,6 +148,7 @@ const useConnect = () => {
 
   const values = useMemo(
     () => ({
+      active,
       account,
       connect,
       disconnect,
