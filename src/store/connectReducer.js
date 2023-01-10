@@ -5,7 +5,7 @@ const INIT_STATE = {
   account: "",
   balance: 0,
   chainId: undefined,
-  otpEnabled: false
+  otpEnabled: false,
 };
 
 const connectReducer = (state = INIT_STATE, action) => {
