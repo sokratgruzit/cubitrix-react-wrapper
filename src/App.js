@@ -25,8 +25,8 @@ function App() {
         <Route path='/' element={<Dashboard />} />
         <Route path='/loan' element={<Trade />} />
         <Route path='/trade' element={<Loan />} />
-        <Route path='/staking' element={<Referal />} />
-        <Route path='/referal' element={<Stake />} />
+        <Route path='/staking' element={<Stake />} />
+        <Route path='/referal' element={<Referal />} />
         <Route path='/extensions' element={<Extensions />} />
         <Route path='/recovery' element={<RecoveryLogin />} />
         <Route path='/auth' element={<TwoFactorAuth />} />
