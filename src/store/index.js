@@ -4,7 +4,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 import extensionsReducer from './extensionsReducer';
-import connectReducer from './connectReducer';
+import { connectReducer } from '@cubitrix/cubitrix-react-connect-module';
 
 const rootReducer = combineReducers({
   extensions: extensionsReducer,
