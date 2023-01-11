@@ -15,10 +15,10 @@ const CreateProfile = () => {
   });
 
   const [userData, setUserData] = useState({
-    fullName: "",
+    name: "",
     email: "",
-    phone: "",
-    date: "november",
+    mobile: 55532,
+    date_of_birth: Date.now(),
     nationality: "UK",
     avatar: "string",
   });
@@ -41,7 +41,7 @@ const CreateProfile = () => {
 
   const handleUserSave = () => {
     axios
-      .post("/accounts/update_profile_auth", { ...userData, address: account })
+      .post("/accounts/update_profile", { ...userData, address: account })
       .then((res) => {
         console.log(res);
       })
@@ -53,8 +53,8 @@ const CreateProfile = () => {
       <div className={styles.wrapper}>
         <input
           className={styles.input}
-          value={userData.fullName}
-          onChange={(e) => handleUserUpdate(e.target.value, "fullName")}
+          value={userData.name}
+          onChange={(e) => handleUserUpdate(e.target.value, "name")}
           placeholder="full name"
         />
         <input
