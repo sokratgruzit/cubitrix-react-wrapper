@@ -39,3 +39,10 @@
   text-decoration: none;
   margin: 0 10px;
 }
+
+.address {
+  white-space: no-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}

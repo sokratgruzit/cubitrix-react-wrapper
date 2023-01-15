@@ -1,14 +1,33 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import ConnectWallet from "cubitrix-react-connect-module";
+import { useSelector, useDispatch } from "react-redux";
+
+import { Button } from "@cubitrix/cubitrix-react-ui-module";
 
 import styles from "./Header.module.css";
 
 const Header = () => {
   const exts = useSelector((state) => state.extensions.activeExtensions);
   const balance = useSelector((state) => state.connect.balance);
-  
+  const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
+  const account = useSelector((state) => state.connect.account);
+
+  const dispatch = useDispatch();
+
+  const handleConnect = () => {
+    if (sideBarOpen) {
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: !sideBarOpen },
+      });
+    } else {
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: !sideBarOpen, sideBar: "connect" },
+      });
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -57,7 +76,32 @@ const Header = () => {
         <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>
         <p>{balance}</p>
         <div>
-          <ConnectWallet />
+          {account ? (
+            <Button
+              label={<p className={styles.address}>{account}</p>}
+              onClick={handleConnect}
+              type="btn-secondary"
+              size="btn-sm"
+              customStyles={{
+                maxWidth: "150px",
+                // overflow: "hidden",
+                // whiteSpace: "nowrap",
+                // display: "block",
+                // textOverflow: "ellipsis",
+                // paddingTop: "10px",
+              }}
+            />
+          ) : (
+            <Button
+              label="Connect"
+              onClick={handleConnect}
+              type="btn-primary"
+              size="btn-sm"
+            />
+          )}
+          <Link className={styles.link} to="/recovery">
+            Recovery Login
+          </Link>
         </div>
       </div>
     </div>
