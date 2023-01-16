@@ -75,12 +75,13 @@ const Header = () => {
       <div className={styles.right}>
         <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>
         <p>{balance}</p>
-        <div>
+        <div className={styles.connect}>
           {account ? (
             <Button
               label={<p className={styles.address}>{account}</p>}
               onClick={handleConnect}
               type="btn-secondary"
+              element="button"
               size="btn-sm"
               customStyles={{
                 maxWidth: "150px",
@@ -92,12 +93,15 @@ const Header = () => {
               }}
             />
           ) : (
-            <Button
-              label="Connect"
-              onClick={handleConnect}
-              type="btn-primary"
-              size="btn-sm"
-            />
+            <>
+              <Button
+                element="button"
+                label="Connect"
+                onClick={handleConnect}
+                type="btn-primary"
+                size="btn-sm"
+              />
+            </>
           )}
           <Link className={styles.link} to="/recovery">
             Recovery Login

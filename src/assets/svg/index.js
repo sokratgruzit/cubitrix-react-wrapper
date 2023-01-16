@@ -4,3 +4,4 @@ export { default as Disconnect } from "./Disconnect";
 export { default as Bolt } from "./Bolt";
 export { default as Copy } from "./Copy";
 export { default as CloseCircle } from "./CloseCircle";
+export { default as Warning } from "./Warning";

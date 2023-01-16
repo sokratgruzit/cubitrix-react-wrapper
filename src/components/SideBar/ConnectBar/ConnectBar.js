@@ -4,7 +4,6 @@ import { CloseCircle, MetaMask, WalletConnect } from "../../../assets/svg";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 import { Button } from "@cubitrix/cubitrix-react-ui-module";
 import { useDispatch } from "react-redux";
-// import { useConnect } from "../../../hooks/use-connect";
 
 const ConnectBar = () => {
   const { connect, loading } = useConnect();
@@ -15,7 +14,7 @@ const ConnectBar = () => {
   };
 
   const handleSignIn = () => {
-    dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "signIn" } });
+    dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "SingIn" } });
   };
 
   return (
@@ -47,6 +46,7 @@ const ConnectBar = () => {
         <div className={styles.verified}>
           <p>If you are verified user</p>
           <Button
+            element="button"
             label="Sign in"
             type="btn-secondary"
             size="btn-sm"

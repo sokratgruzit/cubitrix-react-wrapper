@@ -46,3 +46,7 @@
   text-overflow: ellipsis;
   max-width: 130px;
 }
+
+.connect {
+  margin-right: 10px;
+}

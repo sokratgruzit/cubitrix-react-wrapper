@@ -69,6 +69,12 @@ const CreateProfile = () => {
           onChange={(e) => handleUserUpdate(e.target.value, "phone")}
           placeholder="mobile number"
         />
+        <input
+          className={styles.input}
+          value={userData.date_of_birth}
+          onChange={(e) => handleUserUpdate(e.target.value, "date_of_birth")}
+          placeholder="date of birth"
+        />
         <div></div>
         <div></div>
 
