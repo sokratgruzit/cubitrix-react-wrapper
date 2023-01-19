@@ -27,7 +27,7 @@ function App() {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <main>
-        <div className={`main-container shit ${sideBarOpen ? "sideOpen" : ""}`}>
+        <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
           <Header />
           <Routes>
             <Route path="/" element={<Dashboard />} />

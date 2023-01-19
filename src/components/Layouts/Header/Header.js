@@ -1,17 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Button } from "@cubitrix/cubitrix-react-ui-module";
+import { Button } from "@brilliant_emporium/ui";
 
 import styles from "./Header.module.css";
+import { Dashboard, Extensions, Loan, Trade } from "../../../assets/svg";
+import Notifications from "../../../assets/svg/Notifications";
 
 const Header = () => {
   const exts = useSelector((state) => state.extensions.activeExtensions);
-  const balance = useSelector((state) => state.connect.balance);
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
+  const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
-
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const handleConnect = () => {
@@ -28,53 +30,95 @@ const Header = () => {
     }
   };
 
+  const handleNotifications = () => {
+    if (sideBarOpen && sideBar !== "notifications") {
+      return dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBar: "notifications" },
+      });
+    }
+
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: !sideBarOpen, sideBar: "notifications" },
+    });
+  };
+
   return (
-    <div className={styles.container}>
-      <div className={styles.left}>
-        <p>Logo</p>
-      </div>
-      <div className={styles.center}>
-        <Link className={styles.link} to="/">
-          Dashboard
-        </Link>
-        <Link
-          style={{ display: exts.trade === "true" ? "block" : "none" }}
-          className={styles.link}
-          to="/trade"
+    <div className={`${styles.container} header`}>
+      <div className={styles.modulesWrapper}>
+        <NavLink
+          className={`${location.pathname === "/" && styles.active} ${styles.link}`}
+          to="/"
         >
-          Trade
-        </Link>
-        <Link
-          style={{ display: exts.loan === "true" ? "block" : "none" }}
-          className={styles.link}
-          to="/loan"
+          <Dashboard className={styles.svg} /> Dashboard
+        </NavLink>
+        {exts.trade === "true" && (
+          <NavLink
+            className={`${location.pathname === "/trade" && styles.active} ${
+              styles.link
+            }`}
+            to="/trade"
+          >
+            <Trade className={styles.svg} /> Trade
+          </NavLink>
+        )}
+        {exts.loan === "true" && (
+          <NavLink
+            className={`${location.pathname === "/loan" && styles.active} ${styles.link}`}
+            to="/loan"
+          >
+            <Loan className={styles.svg} />
+            Loan
+          </NavLink>
+        )}
+        {exts.referal === "true" && (
+          <NavLink
+            className={`${location.pathname === "/referal" && styles.active} ${
+              styles.link
+            }`}
+            to="/referal"
+          >
+            referal
+          </NavLink>
+        )}
+        {exts.staking === "true" && (
+          <NavLink
+            className={`${location.pathname === "/staking" && styles.active} ${
+              styles.link
+            }`}
+            to="/staking"
+          >
+            staking
+          </NavLink>
+        )}
+        <NavLink
+          className={`${location.pathname === "/extensions" && styles.active} ${
+            styles.link
+          }`}
+          to="/extensions"
         >
-          Loan
-        </Link>
-        <Link
-          style={{ display: exts.referal === "true" ? "block" : "none" }}
-          className={styles.link}
-          to="/referal"
-        >
-          Referal
-        </Link>
-        <Link
-          style={{ display: exts.staking === "true" ? "block" : "none" }}
-          className={styles.link}
-          to="/staking"
-        >
-          Staking
-        </Link>
-        <Link className={styles.link} to="/extensions">
+          <Extensions className={styles.svg} />
           Extensions
-        </Link>
-        <Link className={styles.link} to="/auth">
+        </NavLink>
+        <NavLink
+          className={`${location.pathname === "/auth" && styles.active} ${styles.link}`}
+          to="/auth"
+        >
           2fa
-        </Link>
+        </NavLink>
       </div>
       <div className={styles.right}>
-        <p style={{ display: exts.notify === "true" ? "block" : "none" }}>notify</p>
-        <p>{balance}</p>
+        {exts.notify === "true" && (
+          <span
+            onClick={handleNotifications}
+            className={`${
+              sideBar === "notifications" && sideBarOpen && styles.activeNotify
+            } ${styles.notify}`}
+          >
+            <Notifications className={styles.notificationSvg} />
+          </span>
+        )}
         <div className={styles.connect}>
           {account ? (
             <Button
@@ -85,11 +129,6 @@ const Header = () => {
               size="btn-sm"
               customStyles={{
                 maxWidth: "150px",
-                // overflow: "hidden",
-                // whiteSpace: "nowrap",
-                // display: "block",
-                // textOverflow: "ellipsis",
-                // paddingTop: "10px",
               }}
             />
           ) : (
@@ -103,9 +142,6 @@ const Header = () => {
               />
             </>
           )}
-          <Link className={styles.link} to="/recovery">
-            Recovery Login
-          </Link>
         </div>
       </div>
     </div>

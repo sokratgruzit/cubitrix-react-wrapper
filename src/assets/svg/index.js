@@ -5,3 +5,7 @@ export { default as Bolt } from "./Bolt";
 export { default as Copy } from "./Copy";
 export { default as CloseCircle } from "./CloseCircle";
 export { default as Warning } from "./Warning";
+export { default as Dashboard } from "./Dashboard";
+export { default as Trade } from "./Trade";
+export { default as Loan } from "./Loan";
+export { default as Extensions } from "./Extensions";

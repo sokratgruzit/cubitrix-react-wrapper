@@ -1,13 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import styles from "./SideBar.module.css";
-
-// import ConnectBar from "../../SideBar/ConnectBar/ConnectBar";
-import WelcomeBar from "../../SideBar/WelcomeBar/WelcomeBar";
-import UserAccBar from "../../SideBar/UserAccBar/UserAccBar";
-
-import { SideBarConnect, SideBar } from "@cubitrix/cubitrix-react-ui-module";
+import {
+  SideBar,
+  SideBarConnect,
+  SideBarWelcome,
+  SideBarAccount,
+} from "@brilliant_emporium/ui";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
@@ -16,7 +15,7 @@ const SideBarRight = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
-  const { connect, loading } = useConnect();
+  const { connect, disconnect } = useConnect();
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -25,6 +24,10 @@ const SideBarRight = () => {
 
   const handleSignIn = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "SingIn" } });
+  };
+
+  const handleUserAccount = () => {
+    dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
   };
 
   return (
@@ -42,13 +45,35 @@ const SideBarRight = () => {
                 label: "ConnectWallet",
                 svg: <WalletConnect />,
                 connect: () => connect("walletConnect"),
+                image: null,
               },
             ]}
             signIn={handleSignIn}
             sideBarClose={handleClose}
           />
         )}
-        {sideBar === "connect" && account && <WelcomeBar />}
+        {sideBar === "connect" && account && (
+          <SideBarWelcome
+            type={"Metamask"}
+            warning={true}
+            completeAccount={handleUserAccount}
+            sideBarClose={handleClose}
+            disconnect={disconnect}
+            userAccount={handleUserAccount}
+          />
+        )}
+        {sideBar === "UserAccount" && (
+          <SideBarAccount
+            sideBarClose={handleClose}
+            goBack={() =>
+              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
+            }
+            handlePersonalData={(formData) => console.log(formData)}
+            handleSecurityData={(formData) => console.log(formData)}
+            response={"response"}
+          />
+        )}
+        {sideBar === "notifications" && <div>notifications</div>}
       </SideBar>
     </>
     // <div className={`${styles.container} ${sideBarOpen && "sideOpen"}`}>

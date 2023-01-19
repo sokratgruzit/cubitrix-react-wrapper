@@ -19,3 +19,7 @@ a {
 .sideOpen {
   transform: translateX(-362px);
 }
+
+.sideOpen .header {
+  border-right: 2px solid #070b1a;
+}
