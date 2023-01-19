@@ -2,4 +2,20 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  color: #fff;
+}
+
+span,
+a {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.main-container {
+  width: 100vw;
+  transition: 0.5s;
+}
+
+.sideOpen {
+  transform: translateX(-362px);
 }
