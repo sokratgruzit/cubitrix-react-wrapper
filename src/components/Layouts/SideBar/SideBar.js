@@ -6,7 +6,7 @@ import {
   SideBarConnect,
   SideBarWelcome,
   SideBarAccount,
-} from "@brilliant_emporium/ui";
+} from "@cubitrix/cubitrix-react-ui-module";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
