@@ -45,7 +45,9 @@ const VerifyEmail = (props) => {
   return (
     <>
       {data === undefined ? (
-        <div style={{ background: 'black'}}>Loading...</div>
+        <div className={styles.spinnerContainer}>
+          <div className={styles.spinner} />
+        </div>
       ) : (
         <div className={styles.verifyEmailContainer}>
           <div className={styles.logoContainer}>
@@ -82,3 +84,4 @@ const VerifyEmail = (props) => {
 };
 
 export default VerifyEmail;
+
