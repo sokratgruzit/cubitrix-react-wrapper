@@ -15,6 +15,7 @@ import RecoveryLogin from "./components/RecoveryLogin/RecoveryLogin";
 import { TwoFactorAuth } from "@cubitrix/cubitrix-react-connect-module";
 import { useSelector } from "react-redux";
 import SideBar from "./components/Layouts/SideBar/SideBar";
+import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
 
 function getLibrary(provider) {
   return new Web3(provider);
@@ -38,6 +39,7 @@ function App() {
             <Route path="/recovery" element={<RecoveryLogin />} />
             <Route path="/auth" element={<TwoFactorAuth />} />
             <Route path="/create-profile" element={<CreateProfile />} />
+            <Route path="/verify/:id" element={<VerifyEmail />} />
           </Routes>
           <Footer />
         </div>

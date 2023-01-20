@@ -81,36 +81,51 @@ const UserAccBar = () => {
       </div>
       {selectedTab === "data" && (
         <div className={styles.wrapper}>
-          <input
-            className={styles.input}
-            value={userData.name}
-            onChange={(e) => handleUserUpdate(e.target.value, "name")}
-            placeholder="full name"
-          />
-          <input
-            className={styles.input}
-            value={userData.email}
-            onChange={(e) => handleUserUpdate(e.target.value, "email")}
-            placeholder="email address"
-          />
-          <input
-            className={styles.input}
-            value={userData.mobile}
-            onChange={(e) => handleUserUpdate(e.target.value, "mobile")}
-            placeholder="mobile number"
-          />
-          <input
-            className={styles.input}
-            // value={userData.date_of_birth}
-            // onChange={(e) => handleUserUpdate(e.target.value, "date_of_birth")}
-            placeholder="date of birth"
-          />
-          <input
-            className={styles.input}
-            // value={userData.date_of_birth}
-            // onChange={(e) => handleUserUpdate(e.target.value, "date_of_birth")}
-            placeholder="nationality"
-          />
+          <div className={styles.inputWrapper}>
+            <p>Full Name</p>
+            <input
+              className={styles.input}
+              value={userData.name}
+              onChange={(e) => handleUserUpdate(e.target.value, "name")}
+              placeholder="Enter Full Name"
+            />
+          </div>
+          <div className={styles.inputWrapper}>
+            <p>Email Addresse</p>
+            <input
+              className={styles.input}
+              value={userData.email}
+              onChange={(e) => handleUserUpdate(e.target.value, "email")}
+              placeholder="Enter email"
+            />
+          </div>
+          <div className={styles.inputWrapper}>
+            <p>Mobile Number</p>
+            <input
+              className={styles.input}
+              value={userData.mobile}
+              onChange={(e) => handleUserUpdate(Number(e.target.value), "mobile")}
+              placeholder="mobile number"
+            />
+          </div>
+          <div className={styles.inputWrapper}>
+            <p>Date of Birth</p>
+            <input
+              className={styles.input}
+              // value={userData.date_of_birth}
+              // onChange={(e) => handleUserUpdate(e.target.value, "date_of_birth")}
+              placeholder="MM/DD/YYYY"
+            />
+          </div>
+          <div className={styles.inputWrapper}>
+            <p>Nationality</p>
+            <input
+              className={styles.input}
+              // value={userData.date_of_birth}
+              // onChange={(e) => handleUserUpdate(e.target.value, "date_of_birth")}
+              placeholder="nationality"
+            />
+          </div>
           <div>upload image</div>
           <Button
             element="button"
@@ -124,24 +139,33 @@ const UserAccBar = () => {
       )}
       {selectedTab === "security" && (
         <div className={styles.wrapper}>
-          <input
-            className={styles.input}
-            value={formData.currentPassword}
-            onChange={(e) => handleFormUpdate(e.target.value, "currentPassword")}
-            placeholder="current password"
-          />
-          <input
-            className={styles.input}
-            value={formData.newPassword}
-            onChange={(e) => handleFormUpdate(e.target.value, "newPassword")}
-            placeholder="new password"
-          />
-          <input
-            className={styles.input}
-            value={formData.confirmPassword}
-            onChange={(e) => handleFormUpdate(e.target.value, "confirmPassword")}
-            placeholder="confirm new password"
-          />
+          <div className={styles.inputWrapper}>
+            <p>Current Password</p>
+            <input
+              className={styles.input}
+              value={formData.currentPassword}
+              onChange={(e) => handleFormUpdate(e.target.value, "currentPassword")}
+              placeholder="current password"
+            />
+          </div>
+          <div className={styles.inputWrapper}>
+            <p>New Password</p>
+            <input
+              className={styles.input}
+              value={formData.newPassword}
+              onChange={(e) => handleFormUpdate(e.target.value, "newPassword")}
+              placeholder="new password"
+            />
+          </div>
+          <div className={styles.inputWrapper}>
+            <p>Confirm New Password</p>
+            <input
+              className={styles.input}
+              value={formData.confirmPassword}
+              onChange={(e) => handleFormUpdate(e.target.value, "confirmPassword")}
+              placeholder="confirm new password"
+            />
+          </div>
           <Button
             element="button"
             label="Update"
