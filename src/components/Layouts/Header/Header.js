@@ -2,10 +2,10 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Button } from "@cubitrix/cubitrix-react-ui-module";
+import { Button } from "@brilliant_emporium/ui";
 
 import styles from "./Header.module.css";
-import { Dashboard, Extensions, Loan, Trade } from "../../../assets/svg";
+import { Dashboard, Extensions, Loan, Trade, MetaMask } from "../../../assets/svg";
 import Notifications from "../../../assets/svg/Notifications";
 
 const Header = () => {
@@ -122,14 +122,21 @@ const Header = () => {
         <div className={styles.connect}>
           {account ? (
             <Button
-              label={<p className={styles.address}>{account}</p>}
+              label={
+                <span className={styles.addressWrapper}>
+                  <MetaMask className={styles.MetaMask} />
+
+                  <p className={styles.address}>{account}</p>
+                </span>
+              }
               onClick={handleConnect}
               type="btn-secondary"
               element="button"
               size="btn-sm"
-              customStyles={{
-                maxWidth: "150px",
-              }}
+              arrow="arrow-right"
+              // customStyles={{
+              //   maxWidth: "150px",
+              // }}
             />
           ) : (
             <>

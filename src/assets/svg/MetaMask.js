@@ -1,12 +1,14 @@
 import React from "react";
 
-const MetaMask = () => {
+const MetaMask = ({ className, ...props }) => {
   return (
     <svg
       width="26"
       height="24"
       viewBox="0 0 26 24"
       fill="none"
+      className={className}
+      {...props}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

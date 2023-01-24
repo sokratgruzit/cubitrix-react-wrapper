@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./UserAccBar.module.css";
 import { CloseCircle } from "../../../assets/svg";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@cubitrix/cubitrix-react-ui-module";
+import { Button } from "@brilliant_emporium/ui";
 
 import axios from "../../../api/axios";
 
