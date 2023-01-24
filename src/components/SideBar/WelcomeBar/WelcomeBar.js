@@ -10,7 +10,7 @@ import {
   Warning,
 } from "../../../assets/svg";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { Button } from "@brilliant_emporium/ui";
+import { Button } from "@cubitrix/cubitrix-react-ui-module";
 import { useDispatch, useSelector } from "react-redux";
 
 const WelcomeBar = () => {

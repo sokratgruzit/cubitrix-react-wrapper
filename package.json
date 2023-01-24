@@ -3,12 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@brilliant_emporium/ui": "0.0.17",
     "@cubitrix/cubitrix-react-connect-module": "0.0.20",
-<<<<<<< HEAD
-=======
-    "@cubitrix/cubitrix-react-ui-module": "^0.1.3",
->>>>>>> 6101e8468c59c219b97ae19523bdf8fb46ec4780
+    "@cubitrix/cubitrix-react-ui-module": "^0.1.10",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

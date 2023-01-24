@@ -2,7 +2,12 @@ import React from "react";
 import axios from "../../../api/axios";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Connect, SideBar, UserAccount, UserOptions } from "@brilliant_emporium/ui";
+import {
+  Connect,
+  SideBar,
+  UserAccount,
+  UserOptions,
+} from "@cubitrix/cubitrix-react-ui-module";
 // import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";

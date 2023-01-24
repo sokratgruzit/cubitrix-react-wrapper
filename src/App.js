@@ -16,9 +16,9 @@ import { TwoFactorAuth } from "@cubitrix/cubitrix-react-connect-module";
 import { useSelector, useDispatch } from "react-redux";
 import SideBar from "./components/Layouts/SideBar/SideBar";
 import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
-import { Header } from "@brilliant_emporium/ui";
+import { Header } from "@cubitrix/cubitrix-react-ui-module";
 
-import "@brilliant_emporium/ui/src/assets/css/main-theme.css";
+import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";

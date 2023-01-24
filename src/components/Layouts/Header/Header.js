@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Button } from "@brilliant_emporium/ui";
+import { Button } from "@cubitrix/cubitrix-react-ui-module";
 
 import styles from "./Header.module.css";
 import { Dashboard, Extensions, Loan, Trade, MetaMask } from "../../../assets/svg";
