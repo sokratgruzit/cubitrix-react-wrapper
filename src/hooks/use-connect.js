@@ -17,7 +17,6 @@ export const useConnect = () => {
   if (window.ethereum === undefined) console.log("error");
 
   //check if you are connected to an account on supported chain. If so get a balance and set info in global state. else set default info.
-
   useEffect(() => {
     if (library && account && chainId) {
       const fetchData = async () => {

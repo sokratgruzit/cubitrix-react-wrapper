@@ -9,3 +9,6 @@ export { default as Dashboard } from "./Dashboard";
 export { default as Trade } from "./Trade";
 export { default as Loan } from "./Loan";
 export { default as Extensions } from "./Extensions";
+export { default as Logo } from "./Logo";
+export { default as Verify } from "./Verify";
+export { default as NotVerify } from "./NotVerify";
