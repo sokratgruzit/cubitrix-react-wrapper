@@ -7,6 +7,7 @@ import {
   SideBar,
   UserAccount,
   UserOptions,
+  SignIn,
 } from "@cubitrix/cubitrix-react-ui-module";
 // import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
@@ -18,6 +19,7 @@ import { useState } from "react";
 const SideBarRight = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const emailVerified = useSelector((state) => state.appState.emailVerified);
+  const hasPasswordSet = useSelector((state) => state.appState.hasPasswordSet);
   const userMetaData = useSelector((state) => state.appState.userData?.meta[0]);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
@@ -29,16 +31,24 @@ const SideBarRight = () => {
     emailSent: false,
     loading: false,
     saved: false,
+    error: "",
   });
 
-  console.log(personalDataState);
+  const [securityDataState, setSecurityDataState] = useState({
+    emailSent: false,
+    loading: false,
+    saved: false,
+    error: "",
+  });
+
+  const [signInState, setSignInState] = useState({ loading: false, error: false });
 
   const handleClose = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
   };
 
-  const handleSignIn = () => {
-    dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "SingIn" } });
+  const handleSignInBar = () => {
+    dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "SignIn" } });
   };
 
   const handleUserAccount = () => {
@@ -46,20 +56,33 @@ const SideBarRight = () => {
   };
 
   const handleSecurityData = (formData) => {
+    setSecurityDataState((prev) => ({ ...prev, loading: true, error: "" }));
+
     axios
       .post("/accounts/update_profile_auth", { ...formData, address: account })
       .then((res) => {
-        console.log(res);
+        setSecurityDataState((prev) => ({ ...prev, loading: false, saved: true }));
+        setTimeout(() => {
+          setSecurityDataState((prev) => ({ ...prev, saved: false }));
+        }, 3000);
       })
-      .catch((e) => console.log(e?.response));
+      .catch((e) => {
+        setSecurityDataState((prev) => ({
+          ...prev,
+          loading: false,
+          error: e?.response?.data,
+        }));
+      });
   };
 
   const handlePersonalData = (userData) => {
-    setPersonalDataState((prev) => ({ ...prev, loading: true }));
+    const personalData = userData;
+    personalData.avatar = account;
+    setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
     axios
-      .post("/accounts/update_profile", { ...userData, address: account })
+      .post("/accounts/update_profile", { ...personalData, address: account })
       .then((res) => {
-        if (res.data?.message === "email sent") {
+        if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
         setPersonalDataState((prev) => ({ ...prev, loading: false, saved: true }));
@@ -68,9 +91,33 @@ const SideBarRight = () => {
         }, 3000);
       })
       .catch((e) => {
-        setPersonalDataState((prev) => ({ ...prev, loading: false }));
-        console.log(e?.response);
+        setPersonalDataState((prev) => ({
+          ...prev,
+          loading: false,
+          error: e?.response?.data,
+        }));
       });
+  };
+
+  const handleLogin = ({ email, password }) => {
+    if (email !== "" && password !== "") {
+      setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
+
+      axios
+        .post("/accounts/recovery/login", {
+          account,
+          email,
+          password,
+        })
+        .then((res) => {
+          dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+
+          setSignInState((prev) => ({ ...prev, loading: false }));
+        })
+        .catch((e) => {
+          setSignInState((prev) => ({ ...prev, loading: false, error: e.response.data }));
+        });
+    }
   };
 
   useEffect(() => {
@@ -79,13 +126,12 @@ const SideBarRight = () => {
         name: userMetaData?.name,
         email: userMetaData?.email,
         mobile: userMetaData?.mobile,
-        date_of_birth: userMetaData.date_of_birth,
+        date_of_birth: new Date(userMetaData.date_of_birth),
         nationality: userMetaData?.nationality,
         avatar: userMetaData?.avatar,
       });
     }
   }, [userMetaData]);
-
   return (
     <>
       <SideBar open={sideBarOpen}>
@@ -103,7 +149,7 @@ const SideBarRight = () => {
                 connect: () => connect("walletConnect"),
               },
             ]}
-            signIn={handleSignIn}
+            signIn={handleSignInBar}
             sideBarClose={handleClose}
           />
         )}
@@ -115,6 +161,7 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             disconnect={disconnect}
             userAccount={handleUserAccount}
+            account={account}
           />
         )}
         {sideBar === "UserAccount" && (
@@ -128,7 +175,19 @@ const SideBarRight = () => {
             handleSecurityData={handleSecurityData}
             emailVerified={emailVerified}
             personalDataState={personalDataState}
+            securityDataState={securityDataState}
             resendEmail={() => console.log("resent email")}
+            hasPasswordSet={hasPasswordSet}
+          />
+        )}
+        {sideBar === "SignIn" && (
+          <SignIn
+            onClick={handleLogin}
+            sideBarClose={handleClose}
+            goBack={() =>
+              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
+            }
+            signInState={signInState}
           />
         )}
         {sideBar === "notifications" && <div>notifications</div>}

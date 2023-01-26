@@ -10,7 +10,6 @@ import Footer from "./components/Layouts/Footer/Footer";
 import Extensions from "./components/Extensions";
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
-import CreateProfile from "./components/CreateProfile/CreateProfile";
 import RecoveryLogin from "./components/RecoveryLogin/RecoveryLogin";
 import { TwoFactorAuth } from "@cubitrix/cubitrix-react-connect-module";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,6 +22,7 @@ import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 import { NavLink, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "./api/axios";
+import { Logo } from "./assets/svg";
 
 function getLibrary(provider) {
   return new Web3(provider);
@@ -36,19 +36,23 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
 
+  const updateState = () => {
+    axios
+      .post("/accounts/get_account", {
+        address: account,
+      })
+      .then((res) => {
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.success.data.accounts[0],
+        });
+      })
+      .catch((e) => console.log(e?.response));
+  };
+
   useEffect(() => {
     if (account) {
-      axios
-        .post("/accounts/get_account", {
-          address: account,
-        })
-        .then((res) => {
-          dispatch({
-            type: "SET_USER_DATA",
-            payload: res.data.success.data.accounts[0],
-          });
-        })
-        .catch((e) => console.log(e?.response));
+      updateState();
     }
   }, [account, dispatch]);
 
@@ -85,6 +89,8 @@ function App() {
       <main>
         <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
           <Header
+            title={"COMPLEND"}
+            logoSvg={<Logo />}
             modules={exts}
             account={account}
             NavLink={NavLink}
@@ -103,7 +109,6 @@ function App() {
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/recovery" element={<RecoveryLogin />} />
             <Route path="/auth" element={<TwoFactorAuth />} />
-            <Route path="/create-profile" element={<CreateProfile />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
           </Routes>
           <Footer />

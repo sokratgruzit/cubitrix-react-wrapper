@@ -1,33 +1,12 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+// import { useSelector, useDispatch } from "react-redux";
+// import axios from "axios";
 
 const RecoveryLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const address = useSelector((state) => state.connect.account);
-  const dispatch = useDispatch();
-
-  const handleLogin = () => {
-    if (email !== "" && password !== "") {
-      axios
-        .post("/accounts/recovery/login", {
-          address,
-          email,
-          password,
-        })
-        .then((res) => {
-          console.log(res, "shit");
-          if (res) {
-            dispatch({
-              type: "GET_OTP_ENABLED",
-              otp_enabled: res,
-            });
-          }
-        })
-        .catch((e) => console.log(e?.response));
-    }
-  };
+  // const address = useSelector((state) => state.connect.account);
+  // const dispatch = useDispatch();
 
   return (
     <>
@@ -58,7 +37,7 @@ const RecoveryLogin = () => {
           }}
         />
         <div
-          onClick={handleLogin}
+          // onClick={handleLogin}
           style={{ background: "blue", width: "100px", height: "42px" }}
         >
           Login

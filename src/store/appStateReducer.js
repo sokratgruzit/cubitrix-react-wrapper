@@ -13,6 +13,7 @@ const appStateReducer = (state = INIT_STATE, action) => {
       ...state,
       userData: action.payload,
       emailVerified: action.payload?.meta[0]?.email ? true : false,
+      hasPasswordSet: action.payload.hasPasswordSet,
     };
   }
 
