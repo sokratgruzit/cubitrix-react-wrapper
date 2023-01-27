@@ -13,6 +13,7 @@ const Header = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
+  const isConnected = useSelector(state => state.connect.isConnected);
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -120,7 +121,7 @@ const Header = () => {
           </span>
         )}
         <div className={styles.connect}>
-          {account ? (
+          {account || isConnected ? (
             <Button
               label={
                 <span className={styles.addressWrapper}>
