@@ -12,7 +12,6 @@ import {
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
-// import { useConnect } from "../../../hooks/use-connect";
 
 import {
   useConnect,

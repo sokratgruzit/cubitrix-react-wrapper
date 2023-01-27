@@ -5,7 +5,6 @@ import Loan from "./components/Loan";
 import Referal from "./components/Referal";
 import Stake from "./components/Staking";
 import { Routes, Route } from "react-router-dom";
-// import Header from "./components/Layouts/Header/Header";
 import Footer from "./components/Layouts/Footer/Footer";
 import Extensions from "./components/Extensions";
 import Web3 from "web3";
@@ -18,7 +17,7 @@ import { Header } from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
