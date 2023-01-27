@@ -8,131 +8,91 @@ export const useConnect = () => {
   const { activate, account, library, active, deactivate, chainId } = useWeb3React();
 
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
-  const [tried, setTried] = useState(false);
 
   const dispatch = useDispatch();
-  const isConnected = useSelector((state) => state.connect.isConnected);
-  const providerType = useSelector((state) => state.connect.providerType);
+  const isConnected = useSelector(state => state.connect.isConnected);
+  const providerType = useSelector(state => state.connect.providerType);
+  const savedAccount = useSelector(state => state.connect.account);
 
   if (window.ethereum === undefined) console.log("error");
 
-  //check if you are connected to an account on supported chain. If so get a balance and set info in global state. else set default info.
+  //check if you are connected to an account on supported chain.
   useEffect(() => {
-    if (library && account && chainId) {
+    if (account && chainId) {
       const fetchData = async () => {
-        library.eth.getBalance(account).then(async (res) => {
-          dispatch({
-            type: "UPDATE_STATE",
-            balance: +res,
-            chainId,
-          });
-          // automatically send request for login
-          const postData = async () => {
-            await axios
-              .post("/accounts/login", {
-                address: account,
-                balance: +res,
-              })
-              .then((res) => {})
-              .catch((err) => {});
-          };
-          postData();
-        });
+        await axios
+        .post("/accounts/login", {
+          address: account
+        })
+        .then((res) => {})
+        .catch((err) => {});
       };
       fetchData();
     } else {
       dispatch({
         type: "UPDATE_STATE",
-        account: "",
-        balance: 0,
+        account: ""
       });
     }
-  }, [library, dispatch, account, chainId]);
-
-  // check if user has connected before and try to reconnect. persists user login state across refreshes.
-
-  // useEffect(() => {
-  //   if (isConnected && !tried) {
-  //     async function fetchData() {
-  //       connect(providerType);
-  //       console.log("try connect once only this");
-  //       setShouldDisable(true);
-  //       setTried(true);
-  //     }
-  //     fetchData();
-  //   } else {
-  //     dispatch({
-  //       type: "UPDATE_STATE",
-  //       account: account ? account : "",
-  //       isConnected: account ? true : false,
-  //     });
-  //   }
-  // }, [account, dispatch, tried, isConnected]);
+  }, [dispatch, account, chainId]);
 
   useEffect(() => {
-    if (isConnected && !tried) {
+    if (isConnected) {
       async function fetchData() {
         if (providerType === "metaMask" || providerType === "walletConnect") {
           connect(providerType);
           setShouldDisable(true);
-          setTried(true);
         }
       }
       fetchData();
-      return () => deactivate();
+      //return () => deactivate();
     } else {
       dispatch({
         type: "UPDATE_STATE",
-        account: account ? account : "",
-        isConnected: account ? true : false,
+        account: "",
+        isConnected: false,
       });
     }
-  }, [account, dispatch, tried, isConnected, providerType]);
-
-  // watch user active status and save it in global store for persist.
-  // useEffect(() => {
-  //   dispatch({
-  //     type: "UPDATE_STATE",
-  //     isConnected: active,
-  //   });
-  // }, [active, dispatch, account]);
+  }, [account, dispatch, isConnected, providerType]);
 
   // Connect to wallet
   const connect = async (providerType) => {
     setShouldDisable(true);
     try {
       if (providerType === "metaMask") {
-        activate(injected, undefined, true).catch(() => {
-          dispatch({ type: "UPDATE_STATE", account: "", balance: 0 });
+        activate(injected, undefined, true)
+        .catch(() => {
+          dispatch({ type: "UPDATE_STATE", account: "" });
           console.log("Please switch your network in wallet");
           setShouldDisable(false);
-          setTried(true);
         });
+
         setShouldDisable(false);
-        setTried(true);
 
         dispatch({
           type: "CONNECT",
           payload: {
             providerType: "metaMask",
             isConnected: true,
+            account: savedAccount ? savedAccount : account
           },
         });
       } else if (providerType === "walletConnect") {
-        activate(walletConnect, undefined, true).catch(() => {
-          dispatch({ type: "UPDATE_STATE", account: "", balance: 0 });
+        activate(walletConnect, undefined, true)
+        .catch(() => {
+          dispatch({ type: "UPDATE_STATE", account: "" });
           console.log("Please switch your network in wallet");
           setShouldDisable(false);
-          setTried(true);
         });
+
         setShouldDisable(false);
-        setTried(true);
 
         dispatch({
           type: "CONNECT",
           payload: {
             providerType: "walletConnect",
             isConnected: true,
+            account: savedAccount ? savedAccount : account
           },
         });
       }

@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./ConnectBar.module.css";
 import { CloseCircle, MetaMask, WalletConnect } from "../../../assets/svg";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "../../../hooks/use-connect";
 import { Button } from "@cubitrix/cubitrix-react-ui-module";
 import { useDispatch } from "react-redux";
 
