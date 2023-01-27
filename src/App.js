@@ -30,6 +30,7 @@ function getLibrary(provider) {
 function App() {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const sideBar = useSelector((state) => state.appState.sideBar);
+  const emailVerified = useSelector((state) => state.appState.emailVerified);
   const exts = useSelector((state) => state.extensions.activeExtensions);
   const account = useSelector((state) => state.connect.account);
   const location = useLocation();
@@ -97,6 +98,7 @@ function App() {
             sideBar={sideBar}
             handleConnect={handleConnect}
             handleNotifications={handleNotifications}
+            verified={emailVerified}
           />
           <Routes>
             <Route path="/" element={<Dashboard />} />

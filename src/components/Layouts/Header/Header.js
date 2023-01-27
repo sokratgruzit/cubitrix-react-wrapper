@@ -13,7 +13,7 @@ const Header = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
-  const isConnected = useSelector(state => state.connect.isConnected);
+  const isConnected = useSelector((state) => state.connect.isConnected);
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -126,7 +126,6 @@ const Header = () => {
               label={
                 <span className={styles.addressWrapper}>
                   <MetaMask className={styles.MetaMask} />
-
                   <p className={styles.address}>{account}</p>
                 </span>
               }
