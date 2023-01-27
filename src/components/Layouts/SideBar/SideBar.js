@@ -8,6 +8,7 @@ import {
   UserAccount,
   UserOptions,
   SignIn,
+  TwoFactorVerification,
 } from "@cubitrix/cubitrix-react-ui-module";
 // import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
@@ -76,7 +77,7 @@ const SideBarRight = () => {
   };
 
   const handlePersonalData = (userData) => {
-    const personalData = userData;
+    let personalData = { ...userData };
     personalData.avatar = account;
     setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
     axios
@@ -96,6 +97,26 @@ const SideBarRight = () => {
           loading: false,
           error: e?.response?.data,
         }));
+      });
+
+    let formData = new FormData();
+
+    formData.append("img", userData.avatar);
+    formData.append("address", account);
+
+    console.log(formData);
+
+    axios
+      .post("/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((e) => {
+        console.log(e);
+      })
+      .catch((e) => {
+        console.log(e);
       });
   };
 
@@ -134,6 +155,7 @@ const SideBarRight = () => {
   }, [userMetaData]);
   return (
     <>
+      <TwoFactorVerification onClick={() => console.log("close")} qrcode={"blblbl"} />
       <SideBar open={sideBarOpen}>
         {sideBar === "connect" && !account && (
           <Connect
@@ -178,6 +200,7 @@ const SideBarRight = () => {
             securityDataState={securityDataState}
             resendEmail={() => console.log("resent email")}
             hasPasswordSet={hasPasswordSet}
+            imgURL={`http://localhost:4000/images/${account}.png`}
           />
         )}
         {sideBar === "SignIn" && (

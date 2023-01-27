@@ -93,7 +93,6 @@ function App() {
             logoSvg={<Logo />}
             modules={exts}
             account={account}
-            NavLink={NavLink}
             location={location}
             sideBarOpen={sideBarOpen}
             sideBar={sideBar}
