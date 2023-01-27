@@ -5,7 +5,7 @@ import { useWeb3React } from "@web3-react/core";
 import axios from "../api/axios";
 
 export const useConnect = () => {
-  const { activate, account, library, active, deactivate, chainId } = useWeb3React();
+  const { activate, account, library, active, deactivate, chainId, error } = useWeb3React();
 
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
 
@@ -55,6 +55,30 @@ export const useConnect = () => {
     }
   }, [account, dispatch, isConnected, providerType]);
 
+  useEffect(() => {
+    const { ethereum } = window;
+
+    if (ethereum && ethereum.on && !active && !error) {
+      const handleAccountsChanged = accounts => {
+        console.log("Handling 'accountsChanged' event with payload", accounts)
+        
+        if (accounts.length > 0) {
+          activate(injected);
+        } else {
+          disconnect();
+        }
+      }
+
+      ethereum.on('accountsChanged', handleAccountsChanged);
+
+      return () => {
+        if (ethereum.removeListener) {
+          ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        }
+      }
+    }
+  }, [active, activate, error]);
+
   // Connect to wallet
   const connect = async (providerType) => {
     setShouldDisable(true);
@@ -79,6 +103,7 @@ export const useConnect = () => {
       } else if (providerType === "walletConnect") {
         await activate(walletConnect, undefined, true)
         .then(() => {
+          console.log(walletConnect)
           dispatch({ 
             type: "UPDATE_STATE", 
             account: account ? account : savedAccount,
