@@ -60,25 +60,15 @@ export const useConnect = () => {
     setShouldDisable(true);
     try {
       if (providerType === "metaMask") {
-        activate(injected, undefined, true)
-        .catch(() => {
-          dispatch({ type: "UPDATE_STATE", account: "" });
-          console.log("Please switch your network in wallet");
-          setShouldDisable(false);
-        });
-
-        setShouldDisable(false);
-
-        dispatch({
-          type: "CONNECT",
-          payload: {
+        await activate(injected, undefined, true)
+        .then(() => {
+          dispatch({ 
+            type: "UPDATE_STATE", 
+            account: account ? account : savedAccount,
+            isConnected: true,
             providerType: "metaMask",
-            isConnected: true,
-            account: savedAccount ? savedAccount : account
-          },
-        });
-      } else if (providerType === "walletConnect") {
-        activate(walletConnect, undefined, true)
+          });
+        })
         .catch(() => {
           dispatch({ type: "UPDATE_STATE", account: "" });
           console.log("Please switch your network in wallet");
@@ -86,15 +76,23 @@ export const useConnect = () => {
         });
 
         setShouldDisable(false);
-
-        dispatch({
-          type: "CONNECT",
-          payload: {
-            providerType: "walletConnect",
+      } else if (providerType === "walletConnect") {
+        await activate(walletConnect, undefined, true)
+        .then(() => {
+          dispatch({ 
+            type: "UPDATE_STATE", 
+            account: account ? account : savedAccount,
             isConnected: true,
-            account: savedAccount ? savedAccount : account
-          },
+            providerType: "walletConnect",
+          });
+        })
+        .catch(() => {
+          dispatch({ type: "UPDATE_STATE", account: "" });
+          console.log("Please switch your network in wallet");
+          setShouldDisable(false);
         });
+
+        setShouldDisable(false);
       }
     } catch (error) {
       console.log("Error on connecting: ", error);
