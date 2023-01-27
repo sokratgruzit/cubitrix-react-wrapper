@@ -11,7 +11,6 @@ import Extensions from "./components/Extensions";
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
 import RecoveryLogin from "./components/RecoveryLogin/RecoveryLogin";
-import { TwoFactorAuth } from "@cubitrix/cubitrix-react-connect-module";
 import { useSelector, useDispatch } from "react-redux";
 import SideBar from "./components/Layouts/SideBar/SideBar";
 import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
@@ -107,7 +106,6 @@ function App() {
             <Route path="/referal" element={<Stake />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/recovery" element={<RecoveryLogin />} />
-            <Route path="/auth" element={<TwoFactorAuth />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
           </Routes>
           <Footer />

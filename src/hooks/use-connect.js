@@ -10,9 +10,9 @@ export const useConnect = () => {
   const [shouldDisable, setShouldDisable] = useState(false); // Should disable connect button while connecting to MetaMask
 
   const dispatch = useDispatch();
-  const isConnected = useSelector(state => state.connect.isConnected);
-  const providerType = useSelector(state => state.connect.providerType);
-  const savedAccount = useSelector(state => state.connect.account);
+  const isConnected = useSelector((state) => state.connect.isConnected);
+  const providerType = useSelector((state) => state.connect.providerType);
+  const savedAccount = useSelector((state) => state.connect.account);
 
   if (window.ethereum === undefined) console.log("error");
 
@@ -21,17 +21,17 @@ export const useConnect = () => {
     if (account && chainId) {
       const fetchData = async () => {
         await axios
-        .post("/accounts/login", {
-          address: account
-        })
-        .then((res) => {})
-        .catch((err) => {});
+          .post("/accounts/login", {
+            address: account,
+          })
+          .then((res) => {})
+          .catch((err) => {});
       };
       fetchData();
     } else {
       dispatch({
         type: "UPDATE_STATE",
-        account: ""
+        account: "",
       });
     }
   }, [dispatch, account, chainId]);
@@ -61,36 +61,36 @@ export const useConnect = () => {
     try {
       if (providerType === "metaMask") {
         await activate(injected, undefined, true)
-        .then(() => {
-          dispatch({ 
-            type: "UPDATE_STATE", 
-            account: account ? account : savedAccount,
-            isConnected: true,
-            providerType: "metaMask",
+          .then(() => {
+            dispatch({
+              type: "UPDATE_STATE",
+              account: account ? account : savedAccount,
+              isConnected: true,
+              providerType: "metaMask",
+            });
+          })
+          .catch(() => {
+            dispatch({ type: "UPDATE_STATE", account: "" });
+            console.log("Please switch your network in wallet");
+            setShouldDisable(false);
           });
-        })
-        .catch(() => {
-          dispatch({ type: "UPDATE_STATE", account: "" });
-          console.log("Please switch your network in wallet");
-          setShouldDisable(false);
-        });
 
         setShouldDisable(false);
       } else if (providerType === "walletConnect") {
         await activate(walletConnect, undefined, true)
-        .then(() => {
-          dispatch({ 
-            type: "UPDATE_STATE", 
-            account: account ? account : savedAccount,
-            isConnected: true,
-            providerType: "walletConnect",
+          .then(() => {
+            dispatch({
+              type: "UPDATE_STATE",
+              account: account ? account : savedAccount,
+              isConnected: true,
+              providerType: "walletConnect",
+            });
+          })
+          .catch(() => {
+            dispatch({ type: "UPDATE_STATE", account: "" });
+            console.log("Please switch your network in wallet");
+            setShouldDisable(false);
           });
-        })
-        .catch(() => {
-          dispatch({ type: "UPDATE_STATE", account: "" });
-          console.log("Please switch your network in wallet");
-          setShouldDisable(false);
-        });
 
         setShouldDisable(false);
       }

@@ -12,9 +12,15 @@ import {
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
-import { useConnect } from "../../../hooks/use-connect";
+// import {
 
-import { TwoFactorAuth, ValidateAuth } from "@cubitrix/cubitrix-react-connect-module";
+// } from "../../../hooks/use-connect";
+
+import {
+  useConnect,
+  injected,
+  WalletConnect as WalletConnectSetting,
+} from "@cubitrix/cubitrix-react-connect-module";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
@@ -210,11 +216,6 @@ const SideBarRight = () => {
 
   return (
     <>
-      {/* <div style={{ color: "red" }}>
-        <TwoFactorAuth />
-        <ValidateAuth />
-      </div> */}
-      <button onClick={() => validate2fa("814 702")}>validate</button>
       {twoFactorAuth && (
         <TwoFactorVerification
           onClick={() => console.log("close")}
@@ -231,7 +232,7 @@ const SideBarRight = () => {
               {
                 label: "Metamask",
                 svg: <MetaMask />,
-                connect: () => connect("metaMask"),
+                connect: () => connect("metaMask", injected),
               },
               {
                 label: "ConnectWallet",
