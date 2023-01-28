@@ -8,13 +8,18 @@ import {
   UserAccount,
   UserOptions,
   SignIn,
+  TwoFactorVerification,
 } from "@cubitrix/cubitrix-react-ui-module";
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
-import { useConnect } from "../../../hooks/use-connect";
-import { useEffect } from "react";
-import { useState } from "react";
+
+import {
+  useConnect,
+  injected,
+  WalletConnect as WalletConnectSetting,
+} from "@cubitrix/cubitrix-react-connect-module";
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
 
 const SideBarRight = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
@@ -40,6 +45,10 @@ const SideBarRight = () => {
     saved: false,
     error: "",
   });
+
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  const [base32, setBase32] = useState("");
+  const [qrcodeUrl, setqrCodeUrl] = useState("sdd");
 
   const [signInState, setSignInState] = useState({ loading: false, error: false });
 
@@ -76,7 +85,7 @@ const SideBarRight = () => {
   };
 
   const handlePersonalData = (userData) => {
-    const personalData = userData;
+    let personalData = { ...userData };
     personalData.avatar = account;
     setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
     axios
@@ -97,10 +106,27 @@ const SideBarRight = () => {
           error: e?.response?.data,
         }));
       });
+
+    let formData = new FormData();
+    formData.append("img", userData.avatar);
+    formData.append("address", account);
+
+    axios
+      .post("/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((e) => {
+        console.log(e);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   const handleLogin = ({ email, password }) => {
-    if (email !== "" && password !== "") {
+    if (email && password) {
       setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
 
       axios
@@ -132,8 +158,70 @@ const SideBarRight = () => {
       });
     }
   }, [userMetaData]);
+
+  const disableOTP = () => {
+    axios
+      .post("/accounts/otp/disable", { address: account })
+      .then((res) => {})
+      .catch((e) => {});
+  };
+
+  const verifyOTP = (code) => {
+    console.log(code);
+    axios
+      .post("/accounts/otp/verify", { address: account, token: Number(code) })
+      .then((res) => {})
+      .catch((e) => {});
+  };
+
+  useEffect(() => {
+    async function generateOtp() {
+      try {
+        if (account) {
+          await axios.post("/accounts/otp/generate", { address: account }).then((res) => {
+            const { base32, otpauth_url } = res.data;
+            setBase32(base32);
+            QRCode.toDataURL(otpauth_url).then((data) => setqrCodeUrl(data));
+            return otpauth_url;
+          });
+        }
+      } catch (err) {
+        console.log("generate otp error", err);
+      }
+    }
+    generateOtp();
+  }, [account]);
+
+  const validate2fa = async (token) => {
+    try {
+      await axios
+        .post("/accounts/otp/validate", {
+          token,
+          address: account,
+        })
+        .then((res) => {
+          // let otp_valid = res.data.otp_valid;
+          console.log(res);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
+      {twoFactorAuth && (
+        <TwoFactorVerification
+          onClick={() => console.log("close")}
+          confirmAuth={(code) => verifyOTP(code)}
+          qrcode={qrcodeUrl}
+          accountName={"Complend"}
+          accountKey={base32}
+        />
+      )}
       <SideBar open={sideBarOpen}>
         {sideBar === "connect" && !account && (
           <Connect
@@ -141,7 +229,7 @@ const SideBarRight = () => {
               {
                 label: "Metamask",
                 svg: <MetaMask />,
-                connect: () => connect("metaMask"),
+                connect: () => connect("metaMask", injected),
               },
               {
                 label: "ConnectWallet",
@@ -178,6 +266,12 @@ const SideBarRight = () => {
             securityDataState={securityDataState}
             resendEmail={() => console.log("resent email")}
             hasPasswordSet={hasPasswordSet}
+            imgValue={`http://localhost:4000/images/${account}.png`}
+            twoFactorAuth={twoFactorAuth}
+            handleTwoFactorAuth={(val) => {
+              setTwoFactorAuth(val);
+              if (!val) disableOTP();
+            }}
           />
         )}
         {sideBar === "SignIn" && (
