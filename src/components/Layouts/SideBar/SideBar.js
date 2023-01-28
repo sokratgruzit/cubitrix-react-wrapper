@@ -52,6 +52,20 @@ const SideBarRight = () => {
 
   const [signInState, setSignInState] = useState({ loading: false, error: false });
 
+  const updateState = () => {
+    axios
+      .post("/accounts/get_account", {
+        address: account,
+      })
+      .then((res) => {
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.success.data.accounts[0],
+        });
+      })
+      .catch((e) => {});
+  };
+
   const handleClose = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
   };
@@ -71,6 +85,7 @@ const SideBarRight = () => {
       .post("/accounts/update_profile_auth", { ...formData, address: account })
       .then((res) => {
         setSecurityDataState((prev) => ({ ...prev, loading: false, saved: true }));
+        updateState();
         setTimeout(() => {
           setSecurityDataState((prev) => ({ ...prev, saved: false }));
         }, 3000);
@@ -94,6 +109,7 @@ const SideBarRight = () => {
         if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
+        updateState();
         setPersonalDataState((prev) => ({ ...prev, loading: false, saved: true }));
         setTimeout(() => {
           setPersonalDataState((prev) => ({ ...prev, saved: false }));
@@ -117,8 +133,8 @@ const SideBarRight = () => {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then((e) => {
-        console.log(e);
+      .then(() => {
+        updateState();
       })
       .catch((e) => {
         console.log(e);
@@ -169,7 +185,7 @@ const SideBarRight = () => {
   const verifyOTP = (code) => {
     console.log(code);
     axios
-      .post("/accounts/otp/verify", { address: account, token: Number(code) })
+      .post("/accounts/otp/verify", { address: account, token: code })
       .then((res) => {})
       .catch((e) => {});
   };
@@ -186,7 +202,7 @@ const SideBarRight = () => {
           });
         }
       } catch (err) {
-        console.log("generate otp error", err);
+        console.log("generate otp error", err?.message);
       }
     }
     generateOtp();

@@ -35,22 +35,21 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const updateState = () => {
-    axios
-      .post("/accounts/get_account", {
-        address: account,
-      })
-      .then((res) => {
-        dispatch({
-          type: "SET_USER_DATA",
-          payload: res.data.success.data.accounts[0],
-        });
-      })
-      .catch((e) => console.log(e?.response));
-  };
-
   useEffect(() => {
     if (account) {
+      const updateState = () => {
+        axios
+          .post("/accounts/get_account", {
+            address: account,
+          })
+          .then((res) => {
+            dispatch({
+              type: "SET_USER_DATA",
+              payload: res.data.success.data.accounts[0],
+            });
+          })
+          .catch((e) => {});
+      };
       updateState();
     }
   }, [account, dispatch]);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "../../api/axios";
 
 import { Logo, Verify, NotVerify } from "../../assets/svg";
@@ -9,15 +9,33 @@ import { Button } from "@cubitrix/cubitrix-react-ui-module";
 import styles from "./VerifyEmail.module.css";
 
 const VerifyEmail = (props) => {
+  const account = useSelector((state) => state.connect.account);
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [data, setData] = useState();
 
+  const updateState = () => {
+    axios
+      .post("/accounts/get_account", {
+        address: account,
+      })
+      .then((res) => {
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.success.data.accounts[0],
+        });
+      })
+      .catch((e) => {});
+  };
+
   const verify = () => {
     axios
       .post("/accounts/verify", { code: params.id })
-      .then((res) => setData(JSON.parse(res.data.success)))
+      .then((res) => {
+        updateState();
+        setData(JSON.parse(res.data.success));
+      })
       .catch((e) => setData(JSON.parse(e.response.data.success)));
   };
 
