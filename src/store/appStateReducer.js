@@ -9,6 +9,7 @@ const appStateReducer = (state = INIT_STATE, action) => {
     return { ...state, ...action.payload };
   }
   if (action.type === "SET_USER_DATA") {
+    console.log(action.payload)
     return {
       ...state,
       userData: action.payload,

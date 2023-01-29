@@ -8,7 +8,7 @@ import {
   UserAccount,
   UserOptions,
   SignIn,
-  TwoFactorVerification,
+  TwoFactorAuthentication,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
@@ -17,6 +17,7 @@ import {
   useConnect,
   injected,
   WalletConnect as WalletConnectSetting,
+  walletConnect
 } from "@cubitrix/cubitrix-react-connect-module";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -190,23 +191,21 @@ const SideBarRight = () => {
       .catch((e) => {});
   };
 
-  useEffect(() => {
-    async function generateOtp() {
-      try {
-        if (account) {
-          await axios.post("/accounts/otp/generate", { address: account }).then((res) => {
-            const { base32, otpauth_url } = res.data;
-            setBase32(base32);
-            QRCode.toDataURL(otpauth_url).then((data) => setqrCodeUrl(data));
-            return otpauth_url;
-          });
-        }
-      } catch (err) {
-        console.log("generate otp error", err?.message);
+  async function generateOtp() {
+    try {
+      if (account) {
+        await axios.post("/accounts/otp/generate", { address: account }).then((res) => {
+          const { base32, otpauth_url } = res.data;
+          setBase32(base32);
+          QRCode.toDataURL(otpauth_url).then((data) => setqrCodeUrl(data));
+          //return otpauth_url;
+          console.log(base32, otpauth_url)
+        });
       }
+    } catch (err) {
+      console.log("generate otp error", err?.message);
     }
-    generateOtp();
-  }, [account]);
+  }
 
   const validate2fa = async (token) => {
     try {
@@ -230,7 +229,7 @@ const SideBarRight = () => {
   return (
     <>
       {twoFactorAuth && (
-        <TwoFactorVerification
+        <TwoFactorAuthentication
           onClick={() => console.log("close")}
           confirmAuth={(code) => verifyOTP(code)}
           qrcode={qrcodeUrl}
@@ -250,7 +249,7 @@ const SideBarRight = () => {
               {
                 label: "ConnectWallet",
                 svg: <WalletConnect />,
-                connect: () => connect("walletConnect"),
+                connect: () => connect("walletConnect", walletConnect),
               },
             ]}
             signIn={handleSignInBar}
@@ -287,6 +286,7 @@ const SideBarRight = () => {
             handleTwoFactorAuth={(val) => {
               setTwoFactorAuth(val);
               if (!val) disableOTP();
+              if (val) generateOtp();
             }}
           />
         )}
