@@ -17,7 +17,7 @@ import {
   useConnect,
   injected,
   WalletConnect as WalletConnectSetting,
-  walletConnect
+  walletConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -140,7 +140,7 @@ const SideBarRight = () => {
         updateState();
       })
       .catch((e) => {
-        console.log(e);
+        console.log(e.response);
       });
   };
 
@@ -213,7 +213,7 @@ const SideBarRight = () => {
           setBase32(base32);
           QRCode.toDataURL(otpauth_url).then((data) => setqrCodeUrl(data));
           //return otpauth_url;
-          console.log(base32, otpauth_url)
+          console.log(base32, otpauth_url);
         });
       }
     } catch (err) {
