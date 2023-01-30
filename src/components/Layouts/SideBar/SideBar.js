@@ -28,6 +28,7 @@ const SideBarRight = () => {
   const userMetaData = useSelector((state) => state.appState.userData?.meta[0]);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
+
   const [personalData, setPersonalData] = useState(null);
   const { connect, disconnect } = useConnect();
   const dispatch = useDispatch();
@@ -48,7 +49,7 @@ const SideBarRight = () => {
 
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
   const [base32, setBase32] = useState("");
-  const [qrcodeUrl, setqrCodeUrl] = useState("sdd");
+  const [qrcodeUrl, setqrCodeUrl] = useState("");
 
   const [signInState, setSignInState] = useState({ loading: false, error: false });
 
@@ -116,6 +117,7 @@ const SideBarRight = () => {
         }, 3000);
       })
       .catch((e) => {
+        console.log(e);
         setPersonalDataState((prev) => ({
           ...prev,
           loading: false,
@@ -165,12 +167,25 @@ const SideBarRight = () => {
   useEffect(() => {
     if (userMetaData) {
       setPersonalData({
-        name: userMetaData?.name,
-        email: userMetaData?.email,
-        mobile: userMetaData?.mobile,
-        date_of_birth: new Date(userMetaData.date_of_birth),
-        nationality: userMetaData?.nationality,
-        avatar: userMetaData?.avatar,
+        name: userMetaData.name ? userMetaData.name : "",
+        email: userMetaData.email ? userMetaData.email : "",
+        mobile: userMetaData?.mobile ? userMetaData?.mobile : "",
+        date_of_birth: userMetaData.date_of_birth
+          ? new Date(userMetaData.date_of_birth)
+          : new Date(),
+        nationality: userMetaData.nationality
+          ? userMetaData.nationality
+          : "Select Country",
+        avatar: userMetaData.avatar ? userMetaData.avatar : "",
+      });
+    } else {
+      setPersonalData({
+        name: "",
+        email: "",
+        mobile: "",
+        date_of_birth: new Date(),
+        nationality: "Select Country",
+        avatar: "",
       });
     }
   }, [userMetaData]);
@@ -183,7 +198,6 @@ const SideBarRight = () => {
   };
 
   const verifyOTP = (code) => {
-    console.log(code);
     axios
       .post("/accounts/otp/verify", { address: account, token: code })
       .then((res) => {})
