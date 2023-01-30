@@ -200,9 +200,9 @@ const SideBarRight = () => {
 
   const verifyOTP = (code) => {
     axios
-      .post("/accounts/otp/verify", { address: account, token: code })
-      .then((res) => {})
-      .catch((e) => {});
+    .post("/accounts/otp/verify", { address: account, token: code })
+    .then((res) => {})
+    .catch((e) => {});
   };
 
   async function generateOtp() {
