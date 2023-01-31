@@ -9,12 +9,13 @@ const appStateReducer = (state = INIT_STATE, action) => {
     return { ...state, ...action.payload };
   }
   if (action.type === "SET_USER_DATA") {
-    console.log(action.payload)
     return {
       ...state,
       userData: action.payload,
       emailVerified: action.payload?.meta[0]?.email ? true : false,
       hasPasswordSet: action.payload.hasPasswordSet,
+      otp_enabled: action.payload.otp_enabled,
+      otp_verified: action.payload.otp_verified,
     };
   }
 

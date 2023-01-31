@@ -23,14 +23,13 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
 const SideBarRight = () => {
-  const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  const emailVerified = useSelector((state) => state.appState.emailVerified);
-  const hasPasswordSet = useSelector((state) => state.appState.hasPasswordSet);
+  const appState = useSelector((state) => state.appState);
   const userMetaData = useSelector((state) => state.appState.userData?.meta[0]);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
+  console.log(personalData);
   const { connect, disconnect } = useConnect();
   const dispatch = useDispatch();
 
@@ -49,10 +48,19 @@ const SideBarRight = () => {
   });
 
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  const [activated, setActivated] = useState(false);
+  const [procceed2fa, setProcceed2fa] = useState(false);
+  useEffect(() => {
+    if (appState.otp_verified) setTwoFactorAuth(appState.otp_verified);
+  }, [appState.otp_verified]);
+
   const [base32, setBase32] = useState("");
   const [qrcodeUrl, setqrCodeUrl] = useState("");
 
   const [signInState, setSignInState] = useState({ loading: false, error: false });
+  const [otpState, setOtpState] = useState({ loading: false, error: false });
+  const [signInAddress, setSignInAddress] = useState("");
+  const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
 
   const updateState = () => {
     axios
@@ -118,7 +126,6 @@ const SideBarRight = () => {
         }, 3000);
       })
       .catch((e) => {
-        console.log(e);
         setPersonalDataState((prev) => ({
           ...prev,
           loading: false,
@@ -144,6 +151,19 @@ const SideBarRight = () => {
       });
   };
 
+  const resendEmail = (e) => {
+    axios
+      .post("/accounts/resend-email", {
+        address: account ? account : signInAddress,
+      })
+      .then((res) => {
+        console.log(res.response);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   const handleLogin = ({ email, password }) => {
     if (email && password) {
       setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
@@ -155,16 +175,18 @@ const SideBarRight = () => {
           password,
         })
         .then((res) => {
-          dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
-
           setSignInState((prev) => ({ ...prev, loading: false }));
+          setSignInAddress(res.data.address);
+          if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
+          updateState();
+          setProcceed2fa(false);
+          dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
         })
         .catch((e) => {
           setSignInState((prev) => ({ ...prev, loading: false, error: e.response.data }));
         });
     }
   };
-
   useEffect(() => {
     if (userMetaData) {
       setPersonalData({
@@ -174,9 +196,7 @@ const SideBarRight = () => {
         date_of_birth: userMetaData.date_of_birth
           ? new Date(userMetaData.date_of_birth)
           : new Date(),
-        nationality: userMetaData.nationality
-          ? userMetaData.nationality
-          : "Select Country",
+        nationality: userMetaData.nationality ? userMetaData.nationality : "",
         avatar: userMetaData.avatar ? userMetaData.avatar : "",
       });
     } else {
@@ -185,7 +205,7 @@ const SideBarRight = () => {
         email: "",
         mobile: "",
         date_of_birth: new Date(),
-        nationality: "Select Country",
+        nationality: "",
         avatar: "",
       });
     }
@@ -193,65 +213,73 @@ const SideBarRight = () => {
 
   const disableOTP = () => {
     axios
-      .post("/accounts/otp/disable", { address: account })
+      .post("/accounts/otp/disable", { address: account ? account : signInAddress })
       .then((res) => {})
       .catch((e) => {});
   };
 
   const verifyOTP = (code) => {
+    setTwoFactorSetUpState({ loading: false, error: "" });
     axios
-    .post("/accounts/otp/verify", { address: account, token: code })
-    .then((res) => {})
-    .catch((e) => {});
+      .post("/accounts/otp/verify", {
+        address: account ? account : signInAddress,
+        token: code,
+      })
+      .then((res) => {
+        setTwoFactorSetUpState({ loading: false, error: "" });
+        setActivated(false);
+        updateState();
+      })
+      .catch((e) => {
+        setTwoFactorSetUpState({ loading: false, error: e.response.data });
+      });
   };
 
   async function generateOtp() {
     try {
-      if (account) {
-        await axios.post("/accounts/otp/generate", { address: account }).then((res) => {
+      await axios
+        .post("/accounts/otp/generate", { address: account ? account : signInAddress })
+        .then((res) => {
           const { base32, otpauth_url } = res.data;
           setBase32(base32);
           QRCode.toDataURL(otpauth_url).then((data) => setqrCodeUrl(data));
-          //return otpauth_url;
-          console.log(base32, otpauth_url);
         });
-      }
     } catch (err) {
       console.log("generate otp error", err?.message);
     }
   }
 
   const validate2fa = async (token) => {
-    try {
-      await axios
-        .post("/accounts/otp/validate", {
-          token,
-          address: account,
-        })
-        .then((res) => {
-          // let otp_valid = res.data.otp_valid;
-          console.log(res);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    setOtpState({ loading: true, error: "" });
 
+    await axios
+      .post("/accounts/otp/validate", {
+        token,
+        address: signInAddress,
+      })
+      .then((res) => {
+        updateState();
+        setOtpState({ loading: false, error: "" });
+        dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+        setProcceed2fa(false);
+      })
+      .catch((e) => {
+        setOtpState({ loading: false, error: e.response.data });
+      });
+  };
   return (
     <>
-      {twoFactorAuth && (
+      {twoFactorAuth && activated && (
         <TwoFactorAuthentication
-          onClick={() => console.log("close")}
+          onClick={() => setTwoFactorAuth(false)}
           confirmAuth={(code) => verifyOTP(code)}
           qrcode={qrcodeUrl}
           accountName={"Complend"}
           accountKey={base32}
+          twoFactorSetUpState={twoFactorSetUpState}
         />
       )}
-      <SideBar open={sideBarOpen}>
+      <SideBar open={appState.sideBarOpen}>
         {sideBar === "connect" && !account && (
           <Connect
             ConnectOptions={[
@@ -273,7 +301,7 @@ const SideBarRight = () => {
         {sideBar === "connect" && account && (
           <UserOptions
             type={"Metamask"}
-            warning={!emailVerified}
+            warning={!appState.emailVerified}
             completeAccount={handleUserAccount}
             sideBarClose={handleClose}
             disconnect={disconnect}
@@ -290,17 +318,20 @@ const SideBarRight = () => {
             personalData={personalData}
             handlePersonalData={handlePersonalData}
             handleSecurityData={handleSecurityData}
-            emailVerified={emailVerified}
+            emailVerified={appState.emailVerified}
             personalDataState={personalDataState}
             securityDataState={securityDataState}
-            resendEmail={() => console.log("resent email")}
-            hasPasswordSet={hasPasswordSet}
+            resendEmail={(e) => resendEmail(e)}
+            hasPasswordSet={appState.hasPasswordSet}
             imgValue={`http://localhost:4000/images/${account}.png`}
             twoFactorAuth={twoFactorAuth}
             handleTwoFactorAuth={(val) => {
               setTwoFactorAuth(val);
+              setActivated(val);
               if (!val) disableOTP();
-              if (val) generateOtp();
+              if (val) {
+                generateOtp();
+              }
             }}
           />
         )}
@@ -312,6 +343,9 @@ const SideBarRight = () => {
               dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
             }
             signInState={signInState}
+            otpEnabled={procceed2fa}
+            otpState={otpState}
+            handleTFA={(code) => validate2fa(code)}
           />
         )}
         {sideBar === "notifications" && <div>notifications</div>}
