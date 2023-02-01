@@ -29,7 +29,6 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  console.log(personalData);
   const { connect, disconnect } = useConnect();
   const dispatch = useDispatch();
 
@@ -59,6 +58,7 @@ const SideBarRight = () => {
 
   const [signInState, setSignInState] = useState({ loading: false, error: false });
   const [otpState, setOtpState] = useState({ loading: false, error: false });
+  const [resetPasswordState, setResetPasswordState] = useState({ loading: false });
   const [signInAddress, setSignInAddress] = useState("");
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
 
@@ -160,7 +160,25 @@ const SideBarRight = () => {
         console.log(res.response);
       })
       .catch((e) => {
-        console.log(e);
+        console.log(e.response);
+      });
+  };
+
+  const resetPassword = (email) => {
+    setResetPasswordState({ loading: true, success: "", error: "" });
+    axios
+      .post("/accounts/get-reset-password-email", {
+        email,
+      })
+      .then((res) => {
+        setResetPasswordState((prev) => ({ ...prev, loading: false, success: res.data }));
+      })
+      .catch((e) => {
+        setResetPasswordState((prev) => ({
+          ...prev,
+          loading: false,
+          error: e?.response?.data,
+        }));
       });
   };
 
@@ -346,6 +364,8 @@ const SideBarRight = () => {
             otpEnabled={procceed2fa}
             otpState={otpState}
             handleTFA={(code) => validate2fa(code)}
+            resetPasswordState={resetPasswordState}
+            handleResetPassword={resetPassword}
           />
         )}
         {sideBar === "notifications" && <div>notifications</div>}

@@ -20,6 +20,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
+import ResetPassword from "./components/ResetPassword/ResetPassword";
 
 function getLibrary(provider) {
   return new Web3(provider);
@@ -105,6 +106,7 @@ function App() {
             <Route path="/referal" element={<Stake />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
+            <Route path="/reset-password/:code" element={<ResetPassword />} />
           </Routes>
           <Footer />
         </div>
