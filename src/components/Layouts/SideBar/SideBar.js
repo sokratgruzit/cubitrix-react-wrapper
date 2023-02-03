@@ -336,13 +336,18 @@ const SideBarRight = () => {
         />
       )}
       {twoFactorAuth && activated && (
-        <TwoFactorAuthentication
-          onClick={() => setTwoFactorAuth(false)}
-          confirmAuth={(code) => verifyOTP(code)}
-          qrcode={qrcodeUrl}
-          accountName={"Complend"}
-          accountKey={base32}
-          twoFactorSetUpState={twoFactorSetUpState}
+        <Popup
+          popUpElement={
+            <TwoFactorAuthentication
+              confirmAuth={(code) => verifyOTP(code)}
+              qrcode={qrcodeUrl}
+              accountName={"Complend"}
+              accountKey={base32}
+              twoFactorSetUpState={twoFactorSetUpState}
+              onClick={() => setTwoFactorAuth(false)}
+            />
+          }
+          handlePopUpClose={() => setTwoFactorAuth(false)}
         />
       )}
       <SideBar open={appState.sideBarOpen}>
