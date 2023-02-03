@@ -17,11 +17,10 @@ import {
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
 import {
-  // useConnect,
+  useConnect,
   injected,
   walletConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "../../../hooks/use-connect";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
