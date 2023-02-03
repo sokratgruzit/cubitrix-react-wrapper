@@ -10,15 +10,18 @@ import {
   SignIn,
   TwoFactorAuthentication,
   ResetPassword,
+  Popup,
+  ChangeNetwork,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
 import {
-  useConnect,
+  // useConnect,
   injected,
   walletConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "../../../hooks/use-connect";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
@@ -29,7 +32,8 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect } = useConnect();
+  const { connect, disconnect, error, setError } = useConnect();
+  console.log(error);
   const dispatch = useDispatch();
 
   const [personalDataState, setPersonalDataState] = useState({
@@ -316,6 +320,21 @@ const SideBarRight = () => {
   };
   return (
     <>
+      {error && (
+        <Popup
+          popUpElement={
+            <ChangeNetwork
+              disconnect={() => {
+                disconnect();
+                setError("");
+              }}
+              handleNetworkChange={() => console.log("handle network change")}
+            />
+          }
+          handlePopUpClose={() => setError("")}
+          label={"Check Your Network"}
+        />
+      )}
       {twoFactorAuth && activated && (
         <TwoFactorAuthentication
           onClick={() => setTwoFactorAuth(false)}

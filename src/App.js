@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import "./App.css";
 import Dashboard from "./components/Dashboard";
 import Trade from "./components/Trade";
@@ -25,6 +26,8 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 function getLibrary(provider) {
   return new Web3(provider);
 }
+
+window.Buffer = window.Buffer || Buffer;
 
 function App() {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
