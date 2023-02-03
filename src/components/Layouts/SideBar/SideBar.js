@@ -9,6 +9,7 @@ import {
   UserOptions,
   SignIn,
   TwoFactorAuthentication,
+  ResetPassword,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
@@ -16,7 +17,6 @@ import { MetaMask, WalletConnect } from "../../../assets/svg";
 import {
   useConnect,
   injected,
-  WalletConnect as WalletConnectSetting,
   walletConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
 import { useEffect, useState } from "react";
@@ -59,6 +59,11 @@ const SideBarRight = () => {
   const [signInState, setSignInState] = useState({ loading: false, error: false });
   const [otpState, setOtpState] = useState({ loading: false, error: false });
   const [resetPasswordState, setResetPasswordState] = useState({ loading: false });
+  const [resetPasswordStatus, setresetPasswordStatus] = useState({
+    loading: false,
+    error: "",
+    success: "",
+  });
   const [signInAddress, setSignInAddress] = useState("");
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
 
@@ -285,6 +290,30 @@ const SideBarRight = () => {
         setOtpState({ loading: false, error: e.response.data });
       });
   };
+
+  const handleSetUpPassword = (opt) => {
+    setresetPasswordStatus({ loading: true, error: "", success: "" });
+    if (opt === "email") {
+      axios
+        .post("/accounts/get-reset-password-email", {
+          email: userMetaData?.email,
+        })
+        .then((res) => {
+          setresetPasswordStatus((prev) => ({
+            ...prev,
+            loading: false,
+            success: res.data,
+          }));
+        })
+        .catch((e) => {
+          setresetPasswordStatus((prev) => ({
+            ...prev,
+            loading: false,
+            error: e?.response?.data,
+          }));
+        });
+    }
+  };
   return (
     <>
       {twoFactorAuth && activated && (
@@ -351,6 +380,9 @@ const SideBarRight = () => {
                 generateOtp();
               }
             }}
+            handleForgetPassword={() =>
+              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "resetPassword" } })
+            }
           />
         )}
         {sideBar === "SignIn" && (
@@ -366,6 +398,17 @@ const SideBarRight = () => {
             handleTFA={(code) => validate2fa(code)}
             resetPasswordState={resetPasswordState}
             handleResetPassword={resetPassword}
+          />
+        )}
+        {sideBar === "resetPassword" && (
+          <ResetPassword
+            sideBarClose={handleClose}
+            goBack={() =>
+              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } })
+            }
+            resetPasswordState={resetPasswordStatus}
+            handleResetPassword={handleSetUpPassword}
+            resetEmail={userMetaData?.email}
           />
         )}
         {sideBar === "notifications" && <div>notifications</div>}

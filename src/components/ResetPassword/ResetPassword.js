@@ -19,7 +19,9 @@ const ResetPassword = () => {
       })
       .then((res) => {
         if (res.data === "password updated") {
-          navigate("/");
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
         }
         setStatuses({ loading: false, error: "", success: res.data });
       })
