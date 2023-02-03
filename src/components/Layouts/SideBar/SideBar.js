@@ -10,6 +10,8 @@ import {
   SignIn,
   TwoFactorAuthentication,
   ResetPassword,
+  Popup,
+  ChangeNetwork,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
@@ -29,7 +31,8 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect } = useConnect();
+  const { connect, disconnect, error, setError } = useConnect();
+  console.log(error);
   const dispatch = useDispatch();
 
   const [personalDataState, setPersonalDataState] = useState({
@@ -316,14 +319,34 @@ const SideBarRight = () => {
   };
   return (
     <>
+      {error && (
+        <Popup
+          popUpElement={
+            <ChangeNetwork
+              disconnect={() => {
+                disconnect();
+                setError("");
+              }}
+              handleNetworkChange={() => console.log("handle network change")}
+            />
+          }
+          handlePopUpClose={() => setError("")}
+          label={"Check Your Network"}
+        />
+      )}
       {twoFactorAuth && activated && (
-        <TwoFactorAuthentication
-          onClick={() => setTwoFactorAuth(false)}
-          confirmAuth={(code) => verifyOTP(code)}
-          qrcode={qrcodeUrl}
-          accountName={"Complend"}
-          accountKey={base32}
-          twoFactorSetUpState={twoFactorSetUpState}
+        <Popup
+          popUpElement={
+            <TwoFactorAuthentication
+              confirmAuth={(code) => verifyOTP(code)}
+              qrcode={qrcodeUrl}
+              accountName={"Complend"}
+              accountKey={base32}
+              twoFactorSetUpState={twoFactorSetUpState}
+              onClick={() => setTwoFactorAuth(false)}
+            />
+          }
+          handlePopUpClose={() => setTwoFactorAuth(false)}
         />
       )}
       <SideBar open={appState.sideBarOpen}>
