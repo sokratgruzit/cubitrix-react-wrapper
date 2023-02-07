@@ -12,15 +12,18 @@ import {
   ResetPassword,
   Popup,
   ChangeNetwork,
+  NoMetaMask,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
 import {
-  useConnect,
+  // useConnect,
   injected,
   walletConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
+
+import { useConnect } from "../../../hooks/use-connect";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
@@ -31,8 +34,7 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect, error, setError } = useConnect();
-  console.log(error);
+  const { connect, disconnect, error, setError } = useConnect("siit");
   const dispatch = useDispatch();
 
   const [personalDataState, setPersonalDataState] = useState({
@@ -317,8 +319,16 @@ const SideBarRight = () => {
         });
     }
   };
+
   return (
     <>
+      {error === "no metamask" && (
+        <Popup
+          popUpElement={<NoMetaMask />}
+          handlePopUpClose={() => setError("")}
+          label={"Metamask is not installed"}
+        />
+      )}
       {error && (
         <Popup
           popUpElement={

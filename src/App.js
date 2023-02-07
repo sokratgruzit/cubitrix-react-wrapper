@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 function getLibrary(provider) {
   return new Web3(provider);
@@ -37,6 +38,8 @@ function App() {
   const account = useSelector((state) => state.connect.account);
   const location = useLocation();
   const dispatch = useDispatch();
+
+  const { error } = useConnect();
 
   useEffect(() => {
     if (account) {
