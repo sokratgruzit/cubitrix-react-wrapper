@@ -41,6 +41,7 @@ const VerifyEmail = (props) => {
 
   useEffect(() => {
     verify();
+    // eslint-disable-next-line
   }, [params]);
 
   const handleClick = () => {
