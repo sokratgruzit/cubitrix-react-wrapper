@@ -22,7 +22,6 @@ import { useEffect } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 function getLibrary(provider) {
   return new Web3(provider);
@@ -36,29 +35,23 @@ function App() {
   const emailVerified = useSelector((state) => state.appState.emailVerified);
   const exts = useSelector((state) => state.extensions.activeExtensions);
   const account = useSelector((state) => state.connect.account);
+  const chainId = useSelector((state) => state.connect.chainId);
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { error } = useConnect();
-
   useEffect(() => {
-    if (account) {
-      const updateState = () => {
-        axios
-          .post("/accounts/get_account", {
+    if (account && chainId) {
+      const fetchData = async () => {
+        await axios
+          .post("/accounts/login", {
             address: account,
           })
-          .then((res) => {
-            dispatch({
-              type: "SET_USER_DATA",
-              payload: res.data.success.data.accounts[0],
-            });
-          })
-          .catch((e) => {});
+          .then((res) => {})
+          .catch((err) => {});
       };
-      updateState();
+      fetchData();
     }
-  }, [account, dispatch]);
+  }, [dispatch, account, chainId]);
 
   const handleConnect = () => {
     if (sideBarOpen) {
