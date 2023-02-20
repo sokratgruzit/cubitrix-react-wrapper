@@ -14,6 +14,8 @@ const appStateReducer = (state = INIT_STATE, action) => {
       userData: action.payload,
       emailVerified: action.payload?.meta[0]?.email ? true : false,
       hasPasswordSet: action.payload.hasPasswordSet,
+      otp_enabled: action.payload.otp_enabled,
+      otp_verified: action.payload.otp_verified,
     };
   }
 

@@ -7,9 +7,9 @@ const Verify = () => {
             <circle opacity="0.4" cx="13.125" cy="78.125" r="3.125" fill="#9CCC65"/>
             <circle opacity="0.8" cx="16.875" cy="23.125" r="1.875" fill="#9CCC65"/>
             <circle opacity="0.6" cx="18.75" cy="71.25" r="1.25" fill="#9CCC65"/>
-            <path d="M54.0625 66.0937H75.9375C82.5 66.0937 86.875 62.8125 86.875 55.1562V39.8437C86.875 32.1875 82.5 28.9062 75.9375 28.9062H54.0625C47.5 28.9062 43.125 32.1875 43.125 39.8437V45.067" stroke="#9CCC65" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M39.8662 57.2005L45.3486 62.4005L56.3329 52.0005" stroke="#9CCC65" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M75.9375 40.9375L69.0906 46.4062C66.8375 48.2 63.1406 48.2 60.8875 46.4062L54.0625 40.9375" stroke="#9CCC65" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M54.0625 66.0937H75.9375C82.5 66.0937 86.875 62.8125 86.875 55.1562V39.8437C86.875 32.1875 82.5 28.9062 75.9375 28.9062H54.0625C47.5 28.9062 43.125 32.1875 43.125 39.8437V45.067" stroke="#9CCC65" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M39.8662 57.2005L45.3486 62.4005L56.3329 52.0005" stroke="#9CCC65" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M75.9375 40.9375L69.0906 46.4062C66.8375 48.2 63.1406 48.2 60.8875 46.4062L54.0625 40.9375" stroke="#9CCC65" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
     );
   };
