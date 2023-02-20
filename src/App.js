@@ -18,7 +18,7 @@ import { Header } from "@cubitrix/cubitrix-react-ui-module";
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
@@ -28,7 +28,6 @@ function getLibrary(provider) {
 }
 
 window.Buffer = window.Buffer || Buffer;
-
 function App() {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const sideBar = useSelector((state) => state.appState.sideBar);
@@ -37,6 +36,24 @@ function App() {
   const account = useSelector((state) => state.connect.account);
   const location = useLocation();
   const dispatch = useDispatch();
+  const [img, setImg] = useState("");
+
+  useEffect(() => {
+    async function fetchGitData() {
+      await axios.post("/api/test", {
+        o: "sokratgruzit",
+        r: "core-assets",
+        p: "blockchains/aeternity/info/logo.png",
+        t: "download_url"
+      })
+      .then((res) => {
+        setImg(res.data);
+      })
+      .catch((e) => {});
+    }
+
+    fetchGitData();
+  }, []);
 
   useEffect(() => {
     if (account) {
@@ -89,6 +106,7 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <main>
         <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
+          <img src={img} alt="img" />
           <Header
             title={"COMPLEND"}
             logoSvg={<Logo />}
