@@ -6,6 +6,14 @@ import axios from '../api/axios';
 import { useSelector } from "react-redux";
 const Stake  = () => {
     const account = useSelector(state => state.connect.account);
+    async function check_allowance() {
+        await axios.post("/api/check-allowance", {
+            account: account,
+        })
+            .then(res => {
+                console.log(res)
+            });
+    }
     async function approve() {
         await axios.post("/api/approve", {
             account: account,
@@ -28,6 +36,7 @@ const Stake  = () => {
         <div style={{ paddingTop: '100px'}}>
             {account}
             <div onClick={approve}>approve</div>
+            <div onClick={check_allowance}>check_allowance</div>
             hiii
             {/* <Staking STACK_ABI={STACK_ABI} WBNB={WBNB}/> */}
         </div>
