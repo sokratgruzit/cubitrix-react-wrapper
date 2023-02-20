@@ -106,7 +106,7 @@ function App() {
             <Route path="/loan" element={<Trade />} />
             <Route path="/trade" element={<Loan />} />
             <Route path="/staking" element={<Staking />} />
-            <Route path="/referal" element={<Staking />} />
+            <Route path="/referal" element={<Referal />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
             <Route path="/reset-password/:code" element={<ResetPassword />} />
