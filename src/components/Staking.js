@@ -16,6 +16,7 @@ const Stake  = () => {
         });
     }
     stake()
+    
     return (
         <div style={{ paddingTop: '100px'}}>
             {account}
