@@ -34,6 +34,7 @@ function App() {
   const emailVerified = useSelector((state) => state.appState.emailVerified);
   const exts = useSelector((state) => state.extensions.activeExtensions);
   const account = useSelector((state) => state.connect.account);
+  const chainId = useSelector((state) => state.connect.chainId);
   const location = useLocation();
   const dispatch = useDispatch();
   const [img, setImg] = useState("");
@@ -56,23 +57,18 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (account) {
-      const updateState = () => {
-        axios
-          .post("/accounts/get_account", {
+    if (account && chainId) {
+      const fetchData = async () => {
+        await axios
+          .post("/accounts/login", {
             address: account,
           })
-          .then((res) => {
-            dispatch({
-              type: "SET_USER_DATA",
-              payload: res.data.success.data.accounts[0],
-            });
-          })
-          .catch((e) => {});
+          .then((res) => {})
+          .catch((err) => {});
       };
-      updateState();
+      fetchData();
     }
-  }, [account, dispatch]);
+  }, [dispatch, account, chainId]);
 
   const handleConnect = () => {
     if (sideBarOpen) {
