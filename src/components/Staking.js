@@ -6,32 +6,7 @@ import axios from '../api/axios';
 import { useSelector } from "react-redux";
 const Stake  = () => {
     const account = useSelector(state => state.connect.account);
-    async function check_allowance() {
-        await axios.post("/api/check-allowance", {
-            account: account,
-        })
-            .then(res => {
-                console.log(res)
-            });
-    }
-    async function approve() {
-        await axios.post("/api/approve", {
-            account: account,
-        })
-            .then(res => {
-                console.log(res)
-            });
-    }
-    async function stake() {
-        await axios.post("/api/stake", {
-            account: account,
-            dipositAmount: '1000'
-        })
-        .then(res => {
-            console.log(res)
-        });
-    }
-
+    
     return (
         <div style={{ paddingTop: '100px'}}>
             {account}
