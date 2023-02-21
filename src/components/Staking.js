@@ -35,22 +35,41 @@ const Stake  = () => {
     const [timeperiodDate, setTimeperiodDate] = useState(
         moment().add(30, "days").format("DD/MM/YYYY h:mm A")
     );
+    // united dipositAmount and timeperiod state
+    const [stakeData, setStakeData] = useState({
+        amount: '',
+        timeperiod: 0,
+    });
 
-    const [balance, setBalance] = useState(0);
 
+    const [biddingInfo, setBiddingInfo] = useState({
+        balance: 0,
+        stakers: 0,
+    });
     const [stackContractInfo, setStackContractInfo] = useState({
         totalStakers: 0,
         totalStakedToken: 0,
     });
+    
+    const [balance, setBalance] = useState(0);
+
     const [stakersInfo, setStakersInfo] = useState({
-        totalStakedTokenUser: 0,
-        totalUnstakedTokenUser: 0,
-        totalClaimedRewardTokenUser: 0,
-        currentStaked: 0,
-        realtimeReward: 0,
-        stakeCount: 0,
-        alreadyExists: false,
+        currentStake: 0,
+        earn: 0,
+        claimedReward: 0,
+        walletBalance: 0,
+        totalStaked: 0,
+        totalUnstaked: 0,
     });
+    // const [stakersInfo, setStakersInfo] = useState({
+    //     totalStakedTokenUser: 0,
+    //     totalUnstakedTokenUser: 0,
+    //     totalClaimedRewardTokenUser: 0,
+    //     currentStaked: 0,
+    //     realtimeReward: 0,
+    //     stakeCount: 0,
+    //     alreadyExists: false,
+    // });
     const [stakersRecord, setStakersRecord] = useState([]);
 
     const [isAllowance, setIsAllowance] = useState(false);
@@ -303,11 +322,6 @@ const Stake  = () => {
     // }
     // stake()
 
-    const [stakeData, setStakeData] = useState({
-        amount: '',
-        duration: '30'
-    });
-    // console.log(stakeData);
     const {
         td,
         th,
@@ -340,42 +354,42 @@ const Stake  = () => {
         },
     ];
 
-    const AccountSummaryData = [
+    const accountSummaryData = [
         [
-            {
+          {
             icon: <CloseCircle />,
             title: 'Current Stake',
-            value: '1,220/2'
-            },
-            {
+            value: stakersInfo?.currentStake
+          },
+          {
             icon: <CloseCircle />,
-            title: 'Current Stake',
-            value: '1,220/2'
-            },
-            {
+            title: 'Earn',
+            value: stakersInfo?.earn
+          },
+          {
             icon: <CloseCircle />,
-            title: 'Current Stake',
-            value: '1,220/2'
-            }
+            title: 'Claimed Reward',
+            value: stakersInfo?.claimedReward
+          } 
         ],
         [
-            {
+          {
             icon: <CloseCircle />,
-            title: 'Current Stake',
-            value: '1,220/2'
-            },
-            {
+            title: 'Your Wallet Balance',
+            value: stakersInfo?.walletBalance
+          },
+          {
             icon: <CloseCircle />,
-            title: 'Current Stake',
-            value: '1,220/2'
-            },
-            {
+            title: 'Total Staked',
+            value: stakersInfo?.totalStaked
+          },
+          {
             icon: <CloseCircle />,
-            title: 'Current Stake',
-            value: '1,220/2'
-            }
+            title: 'Total Unstaked',
+            value: stakersInfo?.totalUnstaked
+          } 
         ]
-    ];
+      ];
 
     let tableData;
     tableData = td.map((item, index) => {
@@ -389,61 +403,61 @@ const Stake  = () => {
         >
             <div className={'table'}>
                 {th?.slice(0, 5).map((i, index) => (
-                <div
-                    key={index}
-                    className={`td col ${i.mobileWidth ? true : false}`}
-                    style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}
-                >
-                    <span>{[item.staked_amount, item.stake_date, item.unstake_date, item.earn_reward, item.harvest][index]}</span>
-                </div>
+                    <div
+                        key={index}
+                        className={`td col ${i.mobileWidth ? true : false}`}
+                        style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}
+                    >
+                        <span>{[item.staked_amount, item.stake_date, item.unstake_date, item.earn_reward, item.harvest][index]}</span>
+                    </div>
                 ))}
                 {width > 550 && th.slice(5, 7).map((i, index) => (
-                <div
-                    key={index}
-                    className={`td col ${i.position} ${i.mobileWidth ? true : false}`}
-                    style={{
-                    width: `${mobile ? i.mobileWidth : i.width}%`,
-                    marginRight: `${width < 1450 ? '10px' : '0'}`,
-                    }}
-                >
-                    <Button
-                    element={'staking-button'}
-                    label={index === 0 ? 'Unstake' : 'Harvest'}
-                    active={index === 0}
-                    customStyles={{ borderRadius: '32px' }}
-                    onClick={i.onClick}
-                    />
-                </div>
+                    <div
+                        key={index}
+                        className={`td col ${i.position} ${i.mobileWidth ? true : false}`}
+                        style={{
+                        width: `${mobile ? i.mobileWidth : i.width}%`,
+                        marginRight: `${width < 1450 ? '10px' : '0'}`,
+                        }}
+                    >
+                        <Button
+                            element={'staking-button'}
+                            label={index === 0 ? 'Unstake' : 'Harvest'}
+                            active={index === 0}
+                            customStyles={{ borderRadius: '32px' }}
+                            onClick={() => i.onClick}
+                        />
+                    </div>
                 ))}
             </div>
             <div className="table-more" />
             <div className="icon-place">
                 <svg width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10.299 1.33325L6.47141 5.16089C6.01937 5.61293 5.27968 5.61293 4.82764 5.16089L1 1.33325" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M10.299 1.33325L6.47141 5.16089C6.01937 5.61293 5.27968 5.61293 4.82764 5.16089L1 1.33325" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
             </div>
             <div className="table-mobile">
                 <div className="table-mobile-content">
                     {[1, 2, 3].map(index => (
-                    <div className="td" key={index}>
-                        <div className="mobile-ttl">{th[index].name}</div>
-                        <span>{item[index === 1 ? 'stake_date' : index === 2 ? 'unstake_date' : 'earn_reward']}</span>
-                    </div>
+                        <div className="td" key={index}>
+                            <div className="mobile-ttl">{th[index].name}</div>
+                            <span>{item[index === 1 ? 'stake_date' : index === 2 ? 'unstake_date' : 'earn_reward']}</span>
+                        </div>
                     ))}
                     {width <= 550 && (
-                    <div className="table-buttons">
-                        {[5, 6].map(index => (
-                        <div className="td" key={index}>
-                            <Button
-                            element="staking-button"
-                            label={index === 5 ? 'Unstake' : 'Harvest'}
-                            active={index === 5}
-                            customStyles={{ borderRadius: '32px' }}
-                            onClick={th[index].onClick}
-                            />
+                        <div className="table-buttons">
+                            {[5, 6].map(index => (
+                            <div className="td" key={index}>
+                                <Button
+                                    element="staking-button"
+                                    label={index === 5 ? 'Unstake' : 'Harvest'}
+                                    active={index === 5}
+                                    customStyles={{ borderRadius: '32px' }}
+                                    onClick={() => th[index].onClick(index)}
+                                />
+                            </div>
+                            ))}
                         </div>
-                        ))}
-                    </div>
                     )}
                     </div>
                 </div>
@@ -451,19 +465,31 @@ const Stake  = () => {
         );
     });
 
+    const handleSubmit = () => {
+        if (!isActive) {
+            handleWalletModal(true);
+        };
+        if (isActive && isAllowance) {
+            approve("0xaae3d23a76920c9064aefdd571360289fcc80053");
+        };
+        if (isActive && !isAllowance) {
+            stake("0xaae3d23a76920c9064aefdd571360289fcc80053");
+        };
+    };
+
     return (
         <>
             <Staking
+                isActive={isActive}
                 durationOptions={durationOptions}
-                biddingInfoData={{
-                    stakers: '1',
-                    balance: '0'
-                }}
-                handleStake={() => console.log(stakeData)}
+                biddingInfoData={biddingInfo}
+                loading={loading}
+                isAllowance={isAllowance}
+                handleCalculatorSubmit={handleSubmit}
                 stakeData={stakeData}
                 setStakeData={setStakeData}
-                handleMaxClick={() => console.log('max!!!')}
-                AccountSummaryData={AccountSummaryData}
+                handleMaxClick={setMaxWithdrawal}
+                accountSummaryData={accountSummaryData}
                 tableData={tableData}
                 handleViewAll={() => console.log('view all')}
                 tableHead={th}
