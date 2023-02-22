@@ -23,15 +23,15 @@ const Stake  = () => {
         isActive,
         walletModal,
         handleWalletModal,
-    } = useConnect;
+    } = useConnect();
     var web3Obj = library;
 
-    var Router = "0x61d27DFd33718E47FBcFBf31B8e96439D3eccbdD"; // Staking contract Address
-    var tokenAddress = "0xb2343143f814639c9b1f42961C698247171dF34a"; // Staking Token Address
+    var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
+    var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
 
     // const account = useSelector(state => state.connect.account);
-    const [dipositAmount, setDipositAmount] = useState("");
-    const [timeperiod, setTimeperiod] = useState(0);
+    const [dipositAmount, setDipositAmount] = useState("10");
+    const [timeperiod, setTimeperiod] = useState(4);
     const [timeperiodDate, setTimeperiodDate] = useState(
         moment().add(30, "days").format("DD/MM/YYYY h:mm A")
     );
@@ -97,12 +97,15 @@ const Stake  = () => {
     const approve = async () => {
         setLoadding(true);
         try {
+            console.log('contract')
+            console.log(library)
             var contract = new web3Obj.eth.Contract(WBNB, tokenAddress);
-
+            console.log('contract')
+            console.log(contract)
             var amountIn = 10 ** 69;
             amountIn = amountIn.toLocaleString("fullwide", { useGrouping: false });
             //   var amountIn = new web3Obj.utils.BigNumber("10").pow(69);
-
+            console.log(account)
             await contract.methods
                 .approve(Router, amountIn.toString())
                 .send({ from: account })
@@ -453,6 +456,10 @@ const Stake  = () => {
 
     return (
         <>
+            <div style={{paddingTop: "100px"}}></div>
+            <div onClick={() => {approve()}}>approve</div>
+            <div onClick={() => {checkAllowance()}}>checkAllowance</div>
+            <div onClick={() => {stake()}}>stake</div>
             <Staking
                 durationOptions={durationOptions}
                 biddingInfoData={{
