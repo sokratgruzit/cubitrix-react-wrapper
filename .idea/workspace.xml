@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="97a1d861-c6f8-47e7-9af4-569f4e760c51" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Staking.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Staking.js" afterDir="false" />
@@ -54,7 +53,7 @@
       <workItem from="1676795879288" duration="2248000" />
       <workItem from="1676881581525" duration="7184000" />
       <workItem from="1676971165839" duration="8178000" />
-      <workItem from="1677062449499" duration="2528000" />
+      <workItem from="1677062449499" duration="2587000" />
     </task>
     <servers />
   </component>
