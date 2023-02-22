@@ -41,6 +41,8 @@ const Stake  = () => {
         timeperiod: 0,
     });
 
+    console.log(stakeData)
+
 
     const [biddingInfo, setBiddingInfo] = useState({
         balance: 0,
@@ -322,9 +324,56 @@ const Stake  = () => {
     // }
     // stake()
 
+    const th = [
+        {
+            name: "Staked Amount",
+            width: 15,
+            mobileWidth: 45,
+            id: 0,
+        },
+        {
+            name: "Stake Date ",
+            width: 15,
+            id: 1,
+        },
+        {
+            name: "Unstake Date",
+            width: 15,
+            id: 2,
+        },
+        {
+            name: "Earn Reward",
+            width: 15,
+            id: 3,
+        },
+        { 
+            name: "Harvest",
+            width: 15,
+            mobileWidth: 45,
+            id: 4,
+        },
+        {
+            name: "",
+            width: 10,
+            id: 5,
+            mobileWidth: 35,
+            position: 'right',
+            className: 'buttons-th',
+            onClick: () => console.log('unstake')
+        },
+        {
+            name: "",
+            width: 10,
+            id: 6,
+            mobileWidth: 35,
+            position: 'right',
+            className: 'buttons-th',
+            onClick: () => console.log('harvest')
+        },
+    ];
+
     const {
         td,
-        th,
         mobile,
         mobileExpand,
         mobileExpandFunc,
@@ -333,26 +382,31 @@ const Stake  = () => {
 
     const durationOptions = [
         {
-            title: "30",
-            value: '15 % APY On 30 Days. Locked Until 02/02/2023 2:33 PM'
+          title: "30 D",
+          time: 0,
+          period: 30,
         },
         {
-            title: "60",
-            value: '20 % APY On 60 Days. Locked Until 02/02/2023 2:33 PM'
+          title: "60 D",
+          time: 1,
+          period: 60,
         },
         {
-            title: "90",
-            value: '25 % APY On 90 Days. Locked Until 02/02/2023 2:33 PM'
+          title: "90 D",
+          time: 2,
+          period: 90,
         },
         {
-            title: "180",
-            value: '30 % APY On 180 Days. Locked Until 02/02/2023 2:33 PM'
+          title: "180 D",
+          time: 3,
+          period: 180,
         },
         {
-            title: "360",
-            value: '40 % APY On 360 Days. Locked Until 02/02/2023 2:33 PM'
+          title: "360 D",
+          time: 4,
+          period: 360,
         },
-    ];
+      ];
 
     const accountSummaryData = [
         [
