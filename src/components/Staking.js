@@ -41,9 +41,6 @@ const Stake  = () => {
         timeperiod: 0,
     });
 
-    console.log(stakeData)
-
-
     const [biddingInfo, setBiddingInfo] = useState({
         balance: 0,
         stakers: 0,
@@ -359,7 +356,7 @@ const Stake  = () => {
             mobileWidth: 35,
             position: 'right',
             className: 'buttons-th',
-            onClick: () => console.log('unstake')
+            onClick: () => unstake()
         },
         {
             name: "",
@@ -368,7 +365,7 @@ const Stake  = () => {
             mobileWidth: 35,
             position: 'right',
             className: 'buttons-th',
-            onClick: () => console.log('harvest')
+            onClick: () => harvest()
         },
     ];
 
