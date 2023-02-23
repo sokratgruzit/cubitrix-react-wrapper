@@ -99,8 +99,8 @@ function App() {
           />
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/loan" element={<Trade />} />
-            <Route path="/trade" element={<Loan />} />
+            <Route path="/loan" element={<Loan />} />
+            <Route path="/trade" element={<Trade />} />
             <Route path="/staking" element={<Referal />} />
             <Route path="/referal" element={<Stake />} />
             <Route path="/extensions" element={<Extensions />} />
