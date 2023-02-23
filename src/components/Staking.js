@@ -3,7 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 // import axios from '../api/axios';
 // import { useSelector } from "react-redux";
 
-import { CloseCircle } from "../assets/svg";
+import {
+  ClaimedReward,
+  CurrentStake,
+  Earn,
+  TotalStaked,
+  TotalUnstaked,
+  WalletBalance,
+} from "../assets/svg";
 
 // hooks
 import { useTableParameters } from "../hooks/useTableParameters";
@@ -15,11 +22,30 @@ import STACK_ABI from "../abi/stack.json";
 import WBNB from "../abi/WBNB.json";
 import moment from "moment";
 
+const defaultStakersInfo = {
+  totalStakedTokenUser: 0,
+  totalUnstakedTokenUser: 0,
+  totalClaimedRewardTokenUser: 0,
+  currentStaked: 0,
+  realtimeReward: 0,
+  stakeCount: 0,
+  alreadyExists: false,
+};
+
+const defaultStackContractInfo = {
+  totalStakers: 0,
+  totalStakedToken: 0,
+};
+
+const defaultTimePeriodDate = moment()
+  .add(30, "days")
+  .format("DD/MM/YYYY h:mm A");
+
 const Stake = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const {
-    connect,
-    disconnect,
+    // connect,
+    // disconnect,
     library,
     account,
     // isActive,
@@ -34,33 +60,22 @@ const Stake = () => {
   const dispatch = useDispatch();
 
   // const account = useSelector(state => state.connect.account);
-  const [dipositAmount, setDipositAmount] = useState("10");
+  const [depositAmount, setDepositAmount] = useState("10");
   const [timeperiod, setTimeperiod] = useState(4);
-  const [timeperiodDate, setTimeperiodDate] = useState(
-    moment().add(30, "days").format("DD/MM/YYYY h:mm A")
-  );
+  const [timeperiodDate, setTimeperiodDate] = useState(defaultTimePeriodDate);
 
-  const [stackContractInfo, setStackContractInfo] = useState({
-    totalStakers: 0,
-    totalStakedToken: 0,
-  });
+  const [stackContractInfo, setStackContractInfo] = useState(
+    defaultStackContractInfo
+  );
 
   const [balance, setBalance] = useState(0);
 
-  const [stakersInfo, setStakersInfo] = useState({
-    totalStakedTokenUser: 0,
-    totalUnstakedTokenUser: 0,
-    totalClaimedRewardTokenUser: 0,
-    currentStaked: 0,
-    realtimeReward: 0,
-    stakeCount: 0,
-    alreadyExists: false,
-  });
+  const [stakersInfo, setStakersInfo] = useState(defaultStakersInfo);
 
   const [stakersRecord, setStakersRecord] = useState([]);
 
   const [isAllowance, setIsAllowance] = useState(false);
-  const [loadding, setLoadding] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const notify = (isError, msg) => {
     if (isError) {
@@ -72,7 +87,7 @@ const Stake = () => {
 
   const checkAllowance = async () => {
     try {
-      setLoadding(true);
+      setLoading(true);
 
       var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       var decimals = await tokenContract.methods.decimals().call();
@@ -88,20 +103,20 @@ const Stake = () => {
       if (allowance <= 2) {
         setIsAllowance(true);
       }
-      if (dipositAmount > 0) {
-        var amount = dipositAmount * pow;
+      if (depositAmount > 0) {
+        var amount = depositAmount * pow;
         if (allowance < amount) {
           setIsAllowance(true);
         }
       }
-      setLoadding(false);
+      setLoading(false);
     } catch (err) {
-      setLoadding(false);
+      setLoading(false);
     }
   };
 
   const approve = async () => {
-    setLoadding(true);
+    setLoading(true);
     try {
       // console.log("contract");
       // console.log(library);
@@ -118,22 +133,22 @@ const Stake = () => {
         .then(() => {
           setIsAllowance(false);
           // checkAllowance("0xaae3d23a76920c9064aefdd571360289fcc80053");
-          setLoadding(false);
+          setLoading(false);
         });
     } catch (err) {
       console.log(err);
-      setLoadding(false);
+      setLoading(false);
       notify(true, err.message);
     }
   };
 
   const stake = async () => {
-    if (isNaN(parseFloat(dipositAmount)) || parseFloat(dipositAmount) <= 0) {
+    if (isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) <= 0) {
       notify(true, "Error! please enter amount");
       return;
     }
     await checkAllowance();
-    setLoadding(true);
+    setLoading(true);
     try {
       var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       const decimals = await tokenContract.methods.decimals().call();
@@ -141,7 +156,7 @@ const Stake = () => {
       var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
 
       var pow = 10 ** decimals;
-      var amountIn = dipositAmount * pow;
+      var amountIn = depositAmount * pow;
       // var amountInNew = `${new ethers.utils.BigNumber(amountIn.toString())}`;
       amountIn = amountIn.toLocaleString("fullwide", { useGrouping: false });
 
@@ -150,17 +165,17 @@ const Stake = () => {
         .send({ from: account })
         .then((err) => {
           getStackerInfo();
-          setLoadding(false);
+          setLoading(false);
           notify(false, "Staking process complete.");
         });
     } catch (err) {
-      setLoadding(false);
+      setLoading(false);
       notify(true, err.message);
     }
   };
 
   const unstake = async (index) => {
-    setLoadding(true);
+    setLoading(true);
     try {
       var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
       await contract.methods
@@ -168,18 +183,18 @@ const Stake = () => {
         .send({ from: account })
         .then((result) => {
           getStackerInfo();
-          setLoadding(false);
+          setLoading(false);
           notify(false, "successfully unstake");
           //   withdrawModal();
         });
     } catch (err) {
-      setLoadding(false);
+      setLoading(false);
       notify(true, "unstake fail");
     }
   };
 
   const harvest = async (index) => {
-    setLoadding(true);
+    setLoading(true);
     try {
       var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
       await contract.methods
@@ -187,19 +202,19 @@ const Stake = () => {
         .send({ from: account })
         .then((err) => {
           getStackerInfo();
-          setLoadding(false);
+          setLoading(false);
           checkAllowance();
           notify(false, "Reward successfully harvested");
         });
     } catch (err) {
       console.log(err);
-      setLoadding(false);
+      setLoading(false);
       notify(true, err.message);
     }
   };
 
   const getStackerInfo = async () => {
-    setLoadding(true);
+    setLoading(true);
     try {
       var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       var decimals = await tokenContract.methods.decimals().call();
@@ -260,10 +275,10 @@ const Stake = () => {
         totalStakers: totalStakers,
         totalStakedToken: totalStakedToken,
       });
-      setLoadding(false);
+      setLoading(false);
     } catch (err) {
       // console.log(err);
-      setLoadding(false);
+      setLoading(false);
       setStakersInfo({
         totalStakedTokenUser: 0,
         totalUnstakedTokenUser: 0,
@@ -290,7 +305,7 @@ const Stake = () => {
       .call();
     var pow = 10 ** decimals;
     var balanceInEth = getBalance / pow;
-    setDipositAmount(balanceInEth.toFixed(5));
+    setDepositAmount(balanceInEth.toFixed(5));
     // setWithdrawAmount(userInfo.staked);
   };
 
@@ -312,19 +327,18 @@ const Stake = () => {
     if (account) {
       checkAllowance();
       getStackerInfo();
+    } else {
+      setTimeperiod(0);
+      setTimeperiodDate(defaultTimePeriodDate);
+      setDepositAmount("");
+      setStackContractInfo(defaultStackContractInfo);
+      setBalance(0);
+      setStakersInfo(defaultStakersInfo);
+      setStakersRecord(false);
+      setIsAllowance(false);
     }
+    // eslint-disable-next-line
   }, [account]);
-  // const account = useSelector(state => state.connect.account);
-  // async function stake() {
-  //     await axios.post("/api/stake", {
-  //         account: account,
-  //         dipositAmount: '10000'
-  //     })
-  //     .then(res => {
-  //         console.log(res)
-  //     });
-  // }
-  // stake()
 
   const th = [
     {
@@ -361,7 +375,7 @@ const Stake = () => {
       mobileWidth: 35,
       position: "right",
       className: "buttons-th",
-      onClick: () => unstake(),
+      onClick: (index) => unstake(index),
     },
     {
       name: "",
@@ -370,72 +384,44 @@ const Stake = () => {
       mobileWidth: 35,
       position: "right",
       className: "buttons-th",
-      onClick: () => harvest(),
+      onClick: (index) => harvest(index),
     },
   ];
 
-  const { mobile, mobileExpand, mobileExpandFunc, width } =
+  const { mobile, mobileExpand, mobileExpandFunc, width, durationOptions } =
     useTableParameters("staking");
-
-  const durationOptions = [
-    {
-      title: "30 D",
-      time: 0,
-      period: 30,
-    },
-    {
-      title: "60 D",
-      time: 1,
-      period: 60,
-    },
-    {
-      title: "90 D",
-      time: 2,
-      period: 90,
-    },
-    {
-      title: "180 D",
-      time: 3,
-      period: 180,
-    },
-    {
-      title: "360 D",
-      time: 4,
-      period: 360,
-    },
-  ];
 
   const accountSummaryData = [
     [
       {
-        icon: <CloseCircle />,
+        icon: <CurrentStake />,
         title: "Current Stake",
         value: parseFloat(stakersInfo.currentStaked).toFixed(5),
       },
       {
-        icon: <CloseCircle />,
+        icon: <Earn />,
         title: "Earn",
         value: parseFloat(stakersInfo.realtimeReward).toFixed(10),
       },
       {
-        icon: <CloseCircle />,
+        icon: <ClaimedReward />,
         title: "Claimed Reward",
         value: parseFloat(stakersInfo.totalClaimedRewardTokenUser).toFixed(5),
       },
     ],
     [
       {
-        icon: <CloseCircle />,
+        icon: <WalletBalance />,
         title: "Your Wallet Balance",
         value: balance.toFixed(5),
       },
       {
-        icon: <CloseCircle />,
+        icon: <TotalStaked />,
         title: "Total Staked",
         value: parseFloat(stakersInfo.totalStakedTokenUser).toFixed(5),
       },
       {
-        icon: <CloseCircle />,
+        icon: <TotalUnstaked />,
         title: "Total Unstaked",
         value: parseFloat(stakersInfo.totalUnstakedTokenUser).toFixed(5),
       },
@@ -488,11 +474,8 @@ const Stake = () => {
                     label={index === 0 ? "Unstake" : "Harvest"}
                     active={index === 0}
                     customStyles={{ borderRadius: "32px" }}
-                    onClick={() => i.onClick}
-                    // disabled={
-                    //   (index === 0 && item.unstaked && true)
-                    //   (index === 1 && item.withdrawn && true)
-                    // }
+                    onClick={() => i.onClick(index)}
+                    disabled={index === 0 ? item.unstaked : item.withdrawan}
                   />
                 </div>
               ))}
@@ -537,10 +520,7 @@ const Stake = () => {
                         active={index === 5}
                         customStyles={{ borderRadius: "32px" }}
                         onClick={() => th[index].onClick(index)}
-                        // disabled={
-                        //   (index === 5 && item.unstaked && true)
-                        //   (index === 6 && item.withdrawn && true)
-                        // }
+                        disabled={index === 5 ? item.unstaked : item.withdrawan}
                       />
                     </div>
                   ))}
@@ -571,17 +551,16 @@ const Stake = () => {
   return (
     <>
       <Staking
-        isActive={account}
+        account={account}
         durationOptions={durationOptions}
         stackContractInfo={stackContractInfo}
-        balance={balance}
-        loading={loadding}
+        loading={loading}
         isAllowance={isAllowance}
         handleCalculatorSubmit={handleSubmit}
         timeperiod={timeperiod}
         setTimeperiod={setTimeperiod}
-        depositAmount={dipositAmount}
-        setDepositAmount={setDipositAmount}
+        depositAmount={depositAmount}
+        setDepositAmount={setDepositAmount}
         handleTimeperiodDate={handleTimeperiodDate}
         timeperiodDate={timeperiodDate}
         handleMaxClick={setMaxWithdrawal}
