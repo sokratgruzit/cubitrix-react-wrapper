@@ -4,7 +4,7 @@ import Dashboard from "./components/Dashboard";
 import Trade from "./components/Trade";
 import Loan from "./components/Loan";
 import Referal from "./components/Referal";
-import Stake from "./components/Staking";
+import Staking from "./components/Staking";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Layouts/Footer/Footer";
 import Extensions from "./components/Extensions";
@@ -101,8 +101,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/loan" element={<Loan />} />
             <Route path="/trade" element={<Trade />} />
-            <Route path="/staking" element={<Referal />} />
-            <Route path="/referal" element={<Stake />} />
+            <Route path="/staking" element={<Staking />} />
+            <Route path="/referal" element={<Referal />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
             <Route path="/reset-password/:code" element={<ResetPassword />} />

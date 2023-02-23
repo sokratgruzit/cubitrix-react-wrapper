@@ -83,7 +83,6 @@ const Loan = () => {
     <div style={{ paddingTop: "100px" }}>
       <button onClick={createLoan}>create loan</button>
       <div>
-        shit
         {loans.map((loan) => {
           return (
             <div
