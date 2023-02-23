@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // import axios from '../api/axios';
 // import { useSelector } from "react-redux";
@@ -428,109 +428,115 @@ const Stake = () => {
     ],
   ];
 
-  let tableData;
-
-  stakersRecord?.length > 0 &&
-    (tableData = stakersRecord.map((item, index) => {
-      return (
-        <div
-          className={`table-parent ${mobileExpand === item.id ? "active" : ""}`}
-          key={index}
-          onClick={() => {
-            mobileExpandFunc(item.id);
-          }}>
-          <div className={"table"}>
-            {th?.slice(0, 5).map((i, index) => (
-              <div
-                key={index}
-                className={`td col ${i.mobileWidth ? true : false}`}
-                style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}>
-                <span>
-                  {
-                    [
-                      item.amount,
-                      item.staketime,
-                      item.unstaketime,
-                      "CML",
-                      parseFloat(item.realtimeRewardPerBlock).toFixed(10),
-                    ][index]
-                  }
-                </span>
-              </div>
-            ))}
-            {width > 940 &&
-              th.slice(5, 7).map((i, index) => (
+  let tableData = useMemo(() => {
+    if (stakersRecord?.length > 0) {
+      return stakersRecord.map((item, index) => {
+        return (
+          <div
+            className={`table-parent ${
+              mobileExpand === item.id ? "active" : ""
+            }`}
+            key={index}
+            onClick={() => {
+              mobileExpandFunc(item.id);
+            }}>
+            <div className={"table"}>
+              {th?.slice(0, 5).map((i, index) => (
                 <div
                   key={index}
-                  className={`td col ${i.position} ${
-                    i.mobileWidth ? true : false
-                  }`}
-                  style={{
-                    width: `${mobile ? i.mobileWidth : i.width}%`,
-                    marginRight: `${width < 1450 ? "10px" : "0"}`,
-                  }}>
-                  <Button
-                    element={"staking-button"}
-                    label={index === 0 ? "Unstake" : "Harvest"}
-                    active={index === 0}
-                    customStyles={{ borderRadius: "32px" }}
-                    onClick={() => i.onClick(index)}
-                    disabled={index === 0 ? item.unstaked : item.withdrawan}
-                  />
-                </div>
-              ))}
-          </div>
-          <div className="table-more" />
-          <div className="icon-place">
-            <svg
-              width="12"
-              height="7"
-              viewBox="0 0 12 7"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M10.299 1.33325L6.47141 5.16089C6.01937 5.61293 5.27968 5.61293 4.82764 5.16089L1 1.33325"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div className="table-mobile">
-            <div className="table-mobile-content">
-              {[1, 2, 3].map((index) => (
-                <div className="td" key={index}>
-                  <div className="mobile-ttl">{th[index].name}</div>
+                  className={`td col ${i.mobileWidth ? true : false}`}
+                  style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}>
                   <span>
-                    {index === 1 && item.staketime}
-                    {index === 2 && item.unstaketime}
-                    {index === 3 && "CML"}
+                    {
+                      [
+                        item.amount,
+                        item.staketime,
+                        item.unstaketime,
+                        "CML",
+                        parseFloat(item.realtimeRewardPerBlock).toFixed(10),
+                      ][index]
+                    }
                   </span>
                 </div>
               ))}
-              {width <= 940 && (
-                <div className="table-buttons">
-                  {[5, 6].map((index) => (
-                    <div className="td" key={index}>
-                      <Button
-                        element="staking-button"
-                        label={index === 5 ? "Unstake" : "Harvest"}
-                        active={index === 5}
-                        customStyles={{ borderRadius: "32px" }}
-                        onClick={() => th[index].onClick(index)}
-                        disabled={index === 5 ? item.unstaked : item.withdrawan}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+              {width > 940 &&
+                th.slice(5, 7).map((i, index) => (
+                  <div
+                    key={index}
+                    className={`td col ${i.position} ${
+                      i.mobileWidth ? true : false
+                    }`}
+                    style={{
+                      width: `${mobile ? i.mobileWidth : i.width}%`,
+                      marginRight: `${width < 1450 ? "10px" : "0"}`,
+                    }}>
+                    <Button
+                      element={"staking-button"}
+                      label={index === 0 ? "Unstake" : "Harvest"}
+                      active={index === 0}
+                      customStyles={{ borderRadius: "32px" }}
+                      onClick={() => i.onClick(index)}
+                      disabled={index === 0 ? item.unstaked : item.withdrawan}
+                    />
+                  </div>
+                ))}
+            </div>
+            <div className="table-more" />
+            <div className="icon-place">
+              <svg
+                width="12"
+                height="7"
+                viewBox="0 0 12 7"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M10.299 1.33325L6.47141 5.16089C6.01937 5.61293 5.27968 5.61293 4.82764 5.16089L1 1.33325"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <div className="table-mobile">
+              <div className="table-mobile-content">
+                {[1, 2, 3].map((index) => (
+                  <div className="td" key={index}>
+                    <div className="mobile-ttl">{th[index].name}</div>
+                    <span>
+                      {index === 1 && item.staketime}
+                      {index === 2 && item.unstaketime}
+                      {index === 3 && "CML"}
+                    </span>
+                  </div>
+                ))}
+                {width <= 940 && (
+                  <div className="table-buttons">
+                    {[5, 6].map((index) => (
+                      <div className="td" key={index}>
+                        <Button
+                          element="staking-button"
+                          label={index === 5 ? "Unstake" : "Harvest"}
+                          active={index === 5}
+                          customStyles={{ borderRadius: "32px" }}
+                          onClick={() => th[index].onClick(index)}
+                          disabled={
+                            index === 5 ? item.unstaked : item.withdrawan
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      );
-    }));
+        );
+      });
+    }
+    // eslint-disable-next-line
+  }, [stakersRecord]);
 
   const handleTimeperiodDate = (period) => {
     setTimeperiodDate(moment().add(period, "days").format("DD/MM/YYYY h:mm A"));
