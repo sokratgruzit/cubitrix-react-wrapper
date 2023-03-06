@@ -79,6 +79,34 @@ const th = {
     ],
 };
 
+const durationOptions = [
+  {
+    title: "30 D",
+    time: 0,
+    period: 30,
+  },
+  {
+    title: "60 D",
+    time: 1,
+    period: 60,
+  },
+  {
+    title: "90 D",
+    time: 2,
+    period: 90,
+  },
+  {
+    title: "180 D",
+    time: 3,
+    period: 180,
+  },
+  {
+    title: "360 D",
+    time: 4,
+    period: 360,
+  },
+];
+
 const getWidth = () =>
   window.innerWidth ||
   document.documentElement.clientWidth ||
@@ -124,10 +152,11 @@ export const useTableParameters = (name) => {
     return {
       td: tdDummyData.staking,
       th: th.staking,
+      durationOptions: durationOptions,
       mobileExpandFunc,
       mobileExpand,
       mobile,
-      width
+      width,
     };
   }
 };
