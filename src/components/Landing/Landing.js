@@ -3,6 +3,7 @@ import Card from "./Cards/Card";
 
 // styles
 import styles from "./Landing.module.css";
+import WeOffer from "./WeOffer/WeOffer";
 
 const CARD_DATA = [
   {
@@ -27,11 +28,21 @@ const CARD_DATA = [
     image: "/img/cardImgs/img3.png",
   },
 ];
+const OFFER_DATA = [
+  {
+    id: 1,
+    title: "Analitical Tools",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
+    image: "/img/MainBg/img1.png",
+  },
+];
 
 const Landing = () => {
   return (
     <div>
       <Card Card={CARD_DATA} />
+      <WeOffer Data={OFFER_DATA} />
     </div>
   );
 };
