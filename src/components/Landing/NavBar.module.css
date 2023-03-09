@@ -1,0 +1,47 @@
+
+.container {
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    background: rgba(12, 17, 33, 0.5);
+    width: 100vw;
+    height: 100px;
+    padding: 20px 40px;
+    align-items: center;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.right button {
+    padding: 14px 37px;
+    background-color: #3D5AFE;
+    font-size: 16px;
+    line-height: 140%;
+    font-weight: 500;
+    border-radius: 32px;
+    color: #FFFFFF;
+    transition: 0.4s cubic-bezier(0.79, 0.01, 0.15, 0.99);
+}
+
+.right button:hover {
+   background: rgba(61, 90, 254, 0.8);
+}
+
+.left span {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 150%;
+}
+
+@media (max-width: 438px) {
+    .left span {
+        display: none;
+    }
+    
+}
