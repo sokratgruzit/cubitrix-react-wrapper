@@ -1,9 +1,10 @@
 import React from "react";
 import Card from "./Cards/Card";
+import BecomeMember from "./BecomeMember/BecomeMember";
+import AboutProjects from "./AboutProjects/AboutProjects";
 
 // styles
-import styles from "./Landing.module.css";
-import AboutProjects from "./AboutProjects/AboutProjects";
+// import styles from "./Landing.module.css";
 
 const CARD_DATA = [
   {
@@ -74,11 +75,24 @@ const OFFER_DATA = [
   },
 ];
 
+const DATA = [
+  {
+    id: 1,
+    description:
+      "Creating an account is easy. To get started, simply click on the 'Create Account' button and follow the instruction. We take your privacy and security seriously, so rest assured that your information will be kept safe and confidential.",
+    description2:
+      " Registering for an account allows you to streamline the checkout process and make future purchases faster and easier.",
+    button: "create account",
+    image: "/img/BecomeMember/img.png",
+  },
+];
+
 const Landing = () => {
   return (
     <div>
       <Card Card={CARD_DATA} />
       <AboutProjects Data={OFFER_DATA} />
+      <BecomeMember Data={DATA} />
     </div>
   );
 };
