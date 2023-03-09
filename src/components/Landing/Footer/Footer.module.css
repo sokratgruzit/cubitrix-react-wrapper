@@ -16,6 +16,10 @@
     gap: 16px;
 }
 
+.left div {
+    cursor: pointer;
+}
+
 .left span {
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -44,11 +48,37 @@
 
 .middle button {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 140%;
+    top: 7%;
+    right: 0.5%;
+    bottom: 7%;
     border: none;
-    background: blue;
-    color: white;
+    background: #3D5AFE;
+    color: #FFFFFF;
     padding: 12px 30px;
+    text-transform: capitalize;
+    border-radius: 32px;
+    transition: 0.4s cubic-bezier(0.79, 0.01, 0.15, 0.99);
 }
+
+.middle button:hover {
+    background: rgba(61, 90, 254, 0.8);
+}
+
+.right {
+    display: flex;
+}
+
+.border  {
+    cursor: pointer;
+    padding:0 24px;
+    border-right:  1px solid rgba(255, 255, 255, 0.05);
+}
+
+.noBorder {
+    cursor: pointer;
+    padding:0 0 0 24px;
+}
+
