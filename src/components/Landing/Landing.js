@@ -3,7 +3,7 @@ import Card from "./Cards/Card";
 
 // styles
 import styles from "./Landing.module.css";
-import WeOffer from "./WeOffer/WeOffer";
+import AboutProjects from "./AboutProjects/AboutProjects";
 
 const CARD_DATA = [
   {
@@ -28,13 +28,49 @@ const CARD_DATA = [
     image: "/img/cardImgs/img3.png",
   },
 ];
+
 const OFFER_DATA = [
   {
     id: 1,
     title: "Analitical Tools",
     description:
       "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
-    image: "/img/MainBg/img1.png",
+    image: "/img/AboutProjects/img1.png",
+  },
+  {
+    id: 2,
+    title: "Trade",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
+    image: "/img/AboutProjects/img2.png",
+  },
+  {
+    id: 3,
+    title: "Staking",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
+    image: "/img/AboutProjects/img3.png",
+  },
+  {
+    id: 4,
+    title: "loans",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
+    image: "/img/AboutProjects/img4.png",
+  },
+  {
+    id: 4,
+    title: "extensions",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
+    image: "/img/AboutProjects/img5.png",
+  },
+  {
+    id: 4,
+    title: "referals",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Orci lobortis ut tempor pretium proin congue. Sit etiam dolor in accumsan mauris nibh. Placerat nulla ullamcorper tempus turpis tempus libero tellus. Orci facilisis quisque mollis enim felis. Eget lorem dolor sed.",
+    image: "/img/AboutProjects/img6.png",
   },
 ];
 
@@ -42,7 +78,7 @@ const Landing = () => {
   return (
     <div>
       <Card Card={CARD_DATA} />
-      <WeOffer Data={OFFER_DATA} />
+      <AboutProjects Data={OFFER_DATA} />
     </div>
   );
 };
