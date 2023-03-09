@@ -1,5 +1,7 @@
 import React from "react";
 import Card from "./Cards/Card";
+import NavBar from "./NavBar";
+import Footer from "./Footer";
 
 // styles
 import styles from "./Landing.module.css";
@@ -41,8 +43,10 @@ const OFFER_DATA = [
 const Landing = () => {
   return (
     <div>
+      <NavBar />
       <Card Card={CARD_DATA} />
       <WeOffer Data={OFFER_DATA} />
+      <Footer/>
     </div>
   );
 };
