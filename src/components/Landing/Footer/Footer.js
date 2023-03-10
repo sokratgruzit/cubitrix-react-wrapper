@@ -1,4 +1,8 @@
-import Logo from "../../assets/svg/Logo";
+import Logo from "../../../assets/svg/Logo";
+import FaceBook from "../../../assets/svg/FaceBook";
+import Linkedin from "../../../assets/svg/Linkedin";
+import Twitter from "../../../assets/svg/Twitter";
+import GitHub from "../../../assets/svg/GitHub";
 
 import styles from "./Footer.module.css";
 
@@ -16,7 +20,10 @@ const Footer =() => {
               <button>Subscribe News</button>
         </div>
         <div className={styles.right}>
-
+            <div className={styles.border}><FaceBook/></div>
+            <div className={styles.border}><Twitter/></div>
+            <div className={styles.border}><Linkedin/></div>
+            <div className={styles.noBorder}><GitHub/></div>
         </div>
       </div>
 
