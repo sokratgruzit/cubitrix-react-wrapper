@@ -4,7 +4,7 @@ import SwiperWrapper from "../SwiperWrapper/SwiperWrapper";
 
 import styles from "./Card.module.css";
 
-const Card = ({ type, data }) => {
+const Card = ({ type, data, handlerClick }) => {
   let element = null;
 
   if (type === "default") {
@@ -79,16 +79,47 @@ const Card = ({ type, data }) => {
                   src="/img/BecomeMember/elipse.png"
                   alt="/"
                 />
-                <p className={styles.text}>{item.description}</p>
-                <p className={styles.text}>{item.description2}</p>
-                <button className={styles.button}>{item.button}</button>
+                <p className={styles.becomeMemberText}>{item.description}</p>
+                <p className={styles.becomeMemberText}>{item.description2}</p>
+                <button onClick={handlerClick} className={styles.blueButton}>
+                  {item.button}
+                </button>
               </div>
               <div className={styles.becomeMemberImgWrapper}>
-                <img className={styles.img} src={item.image} alt={item.title} />
+                <img
+                  className={styles.becomeMemberImg}
+                  src={item.image}
+                  alt={item.title}
+                />
               </div>
             </div>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (type === "trading-platform") {
+    element = (
+      <div className={styles.platformContainer}>
+        {data.map((item) => (
+          <div className={styles.platformContent} key={item.id}>
+            <img className={styles.platformBgImg} src={item.bgImg} alt="" />
+            <div className={styles.platformInfo}>
+              <h1 className={styles.platformTitle}>
+                world class
+                <span className={styles.titleSpan}> trading platform.</span> Buy
+                & sell the crypto with
+                <span className={styles.titleSpan}> complend.</span>
+              </h1>
+              <p className={styles.platformText}>{item.description}</p>
+              <button onClick={handlerClick} className={styles.blueButton}>
+                {item.button}
+              </button>
+            </div>
+            <div></div>
+          </div>
+        ))}
       </div>
     );
   }

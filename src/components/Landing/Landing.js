@@ -88,14 +88,33 @@ const DATA = [
   },
 ];
 
+const handlerClick = function handleClick() {
+  console.log("Button clicked");
+};
+
+const TRADING_PLATFORM = [
+  {
+    id: 1,
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Dignissim fames tortor scelerisque amet et elementum morbi velit felis. Augue mauris enim dui auctor ligula vestibulum. Tortor a at interdum a.",
+    button: "Start Trading",
+    bgImg: "/img/trendingPlatform/background.png",
+  },
+];
+
 const Landing = () => {
   return (
     <div>
       <NavBar />
+      <Card
+        type={"trading-platform"}
+        data={TRADING_PLATFORM}
+        handlerClick={handlerClick}
+      />
       <Card type={"default"} data={CARD_DATA} />
       <Card type={"about"} data={OFFER_DATA} />
-      <Card type={"become-member"} data={DATA} />
-      <Footer />
+      <Card type={"become-member"} data={DATA} handlerClick={handlerClick} />
+      {/* <Footer /> */}
     </div>
   );
 };

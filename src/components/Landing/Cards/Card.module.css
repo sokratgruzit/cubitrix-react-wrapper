@@ -149,7 +149,7 @@
   grid-template-columns: 1fr 1fr;
 }
 
-.text {
+.becomeMemberText {
   color: rgba(255, 255, 255, 0.6);
   line-height: 25.6px;
   max-width: 80%;
@@ -175,7 +175,7 @@
   object-fit: cover;
 }
 
-.button {
+.blueButton {
   padding: 16px 50px;
   color: #fff;
   text-align: center;
@@ -186,7 +186,7 @@
   transition: 0.6s cubic-bezier(0.79, 0.01, 0.15, 0.99);
 }
 
-.button:hover {
+.blueButton:hover {
   background: rgba(61, 90, 254, 0.7);
 }
 
@@ -197,7 +197,7 @@
   justify-content: center;
 }
 
-.img {
+.becomeMemberImg {
   width: 100%;
 }
 
@@ -220,7 +220,7 @@
     justify-content: center;
   }
 
-  .text {
+  .becomeMemberText {
     width: 100%;
     max-width: 100%;
     text-align: center;
@@ -359,5 +359,67 @@
 
   .aboutInfo {
     padding: 0px;
+  }
+}
+
+/* trending platform */
+.platformContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.platformContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.platformBgImg {
+  min-height: 1085px;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  object-fit: cover;
+  z-index: -1;
+  margin-top: 100px;
+}
+
+.platformInfo {
+  padding: 260px 40px;
+}
+
+.platformTitle {
+  font-size: 64px;
+  line-height: 89.6px;
+  text-transform: capitalize;
+  color: #ffffff;
+  text-shadow: 0px 0px 120px rgba(61, 90, 254, 0.7);
+  font-family: "Uber Move";
+  margin-bottom: 24px;
+}
+
+.titleSpan {
+  color: #3d5afe;
+  font-family: "UberMove-Medium";
+}
+
+.platformText {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 25.6px;
+  max-width: 80%;
+  font-size: 16px;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 1023px) {
+  .platformContent {
+    display: flex;
+    flex-direction: column;
+  }
+  .platformText {
+    max-width: 100%;
   }
 }
