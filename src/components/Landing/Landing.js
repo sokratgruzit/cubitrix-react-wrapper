@@ -16,7 +16,7 @@ const CARD_DATA = [
     image: "/img/cardImgs/img1.png",
   },
   {
-    id: 2,  
+    id: 2,
     title: "Great Trading Conditions",
     description:
       "Hedging is allowed, without any restrictions on short selling and scalping. We provide fast and reliable order execution, as well as ultra-low spreads.",
@@ -88,24 +88,43 @@ const DATA = [
   },
 ];
 
+const handlerClick = function handleClick() {
+  console.log("Button clicked");
+};
+
+const TRADING_PLATFORM = [
+  {
+    id: 1,
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Dignissim fames tortor scelerisque amet et elementum morbi velit felis. Augue mauris enim dui auctor ligula vestibulum. Tortor a at interdum a.",
+    button: "Start Trading",
+    bgImg: "/img/trendingPlatform/background.png",
+  },
+];
+
 const Landing = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const handleLaunchApp = () => {
-    console.log('launch app')
-  }
+    console.log("launch app");
+  };
 
   const handleSubmit = () => {
-    console.log('submit');
+    console.log("submit");
   };
 
   return (
     <>
-      <Navbar handleLaunchApp={handleLaunchApp}/>
+      <Navbar handleLaunchApp={handleLaunchApp} />
+      <Card
+        type={"trading-platform"}
+        data={TRADING_PLATFORM}
+        handlerClick={handlerClick}
+      />
       <Card type={"default"} data={CARD_DATA} />
       <Card type={"about"} data={OFFER_DATA} />
-      <Card type={"become-member"} data={DATA} />
-      <Footer email={email} setEmail={setEmail} handleSubmit={handleSubmit}/>
+      <Card type={"become-member"} data={DATA} handlerClick={handleSubmit} />
+      <Footer email={email} setEmail={setEmail} handleSubmit={handleSubmit} />
     </>
   );
 };
