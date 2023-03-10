@@ -1,4 +1,4 @@
-.footer {
+.footerContent {
     margin-bottom: 0;
     margin-top: auto;
     display: flex;
@@ -11,17 +11,17 @@
     gap: 10px;
 }
 
-.logo {
+.footerLogo{
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.logo div {
+.footerLogo div {
     cursor: pointer;
 }
 
-.logo span {
+.footerLogo span {
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #FFFFFF;
@@ -30,11 +30,11 @@
     line-height: 150%;
 }
 
-.form  {
+.footerForm  {
     position: relative;
 }
 
-.form input {
+.footerForm input {
     border: none;
     width: 664px;
     height: 52px;
@@ -47,7 +47,7 @@
     line-height: 140%;
 }
 
-.form button {
+.footerForm button {
     position: absolute;
     font-weight: 500;
     font-size: 14px;
@@ -64,48 +64,60 @@
     transition: 0.4s cubic-bezier(0.79, 0.01, 0.15, 0.99);
 }
 
-.form button:hover {
+.footerForm button:hover {
     background: rgba(61, 90, 254, 0.8);
 }
 
-.icons {
+.footerIcons {
     display: flex;
 }
 
-.border  {
+.ftIcon  {
     cursor: pointer;
     padding:0 24px;
     border-right:  1px solid rgba(255, 255, 255, 0.05);
 }
 
-.noBorder {
+.ftIconBorder {
     cursor: pointer;
     padding:0 0 0 24px;
 }
 
-.border svg:hover {
-    opacity: 0.7;
+
+.ftIcon svg:hover path, .ftIconBorder svg:hover path  {
+    fill: #3D5AFE;
 }
 
+/* .footerWrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+} */
+
 @media (max-width: 1200px) {
-    .form input {
+    .footerForm input {
         width: 500px;
-    }
-    
+    } 
 }
 
 @media (max-width: 1025px) {
-    .form input {
+    .footerForm input {
         width: 400px;
     }  
 }
-/* 
+
 @media (max-width: 900px) {
-    .footer {
-        flex-wrap: wrap-reverse;
+    .footerContent {
+        flex-direction: column;
+        flex-wrap: wrap;
         height: auto;
         align-items: center;
         justify-content: center;
+        gap: 10px;
     }
+
+    /* .footerWrap {
+        flex-direction: column-reverse;
+    } */
     
-} */
+}
