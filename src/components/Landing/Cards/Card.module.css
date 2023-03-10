@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 80px;
-  padding: 40px;
+  padding: 150px 40px 40px 40px;
 }
 
 .cardHeader {
@@ -95,7 +95,7 @@
 
 @media (max-width: 1023px) {
   .cardContent {
-    padding: 32px;
+    padding: 150px 32px 32px 32px;
   }
   .cardsWrapper {
     flex-direction: column;
@@ -118,7 +118,7 @@
     font-size: 34px;
   }
   .cardContent {
-    padding: 16px;
+    padding: 100px 16px 16px 16px;
   }
 
   .card {
@@ -145,9 +145,8 @@
 }
 
 .becomeMemberContent {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .text {
@@ -164,7 +163,7 @@
   align-items: flex-start;
   justify-content: center;
   gap: 50px;
-  width: calc(50% - 15px);
+  padding-top: 100px;
 }
 
 .elipse {
@@ -182,35 +181,36 @@
   text-align: center;
   font-size: 14px;
   line-height: 19.6px;
-  background: #3d5afe;
+  background: rgb(61, 90, 254);
   border-radius: 32px;
+  transition: 0.6s cubic-bezier(0.79, 0.01, 0.15, 0.99);
+}
+
+.button:hover {
+  background: rgba(61, 90, 254, 0.7);
 }
 
 .becomeMemberImgWrapper {
-  position: relative;
-  width: calc(50% - 15px);
-  height: 400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .img {
-  position: absolute;
-  z-index: -1;
-  object-fit: cover;
-  max-width: 589px;
-  height: 100%;
   width: 100%;
-  right: 0;
 }
 
 @media (max-width: 1365px) {
   .becomeMemberContainer {
-    padding: 80px;
+    padding: 150px 80px 80px 80px;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 1023px) {
   .becomeMemberContainer {
-    padding: 40px;
+    padding: 100px 40px 40px 40px;
   }
 
   .becomeMemberContent {
@@ -227,9 +227,9 @@
   }
 
   .becomeMemberInfo {
-    margin-top: 50px;
     align-items: center;
     width: 100%;
+    padding-top: 30px;
   }
 
   .imgWrapper {
@@ -264,12 +264,12 @@
 }
 
 .aboutContent {
-  padding: 80px 150px;
   display: flex;
   width: 100%;
+  margin-top: 80px;
 }
 
-.imgWrapper {
+.aboutImgWrapper {
   position: relative;
   min-width: 549px;
   min-height: 390px;
@@ -282,10 +282,6 @@
   top: 0;
   left: 0;
   object-fit: cover;
-}
-
-.becomeMemberInfo {
-  padding-top: 100px;
 }
 
 .aboutTitle {
@@ -302,43 +298,66 @@
   font-family: "Uber Move";
 }
 
+.aboutInfo {
+  padding-top: 100px;
+}
+
 @media (max-width: 1365px) {
   .becomeMemberContent {
-    padding: 80px;
+    padding: 0px 80px 80px 80px;
   }
 
   .aboutInfo {
     padding-top: 70px;
   }
+
+  .aboutContainer {
+    padding: 80px;
+  }
 }
 
 @media (max-width: 1023px) {
   .becomeMemberContent {
+    padding: 0px;
+  }
+  .aboutContent {
     padding: 40px;
+    margin-top: 0px;
     flex-direction: column;
   }
 
+  .aboutContainer {
+    padding: 0px;
+  }
+  .aboutImgWrapper {
+    min-width: 100px;
+    min-height: 100px;
+  }
+
+  .aboutImg {
+    position: inherit;
+  }
   .aboutInfo {
     padding-top: 0px;
     text-align: center;
   }
-
-  .img {
-    position: inherit;
-  }
 }
 
 @media (max-width: 767px) {
-  .imgWrapper {
-    min-width: auto;
-    min-height: auto;
+  .aboutHeader,
+  .becomeMemberHeader {
+    font-size: 34px;
   }
 
   .becomeMemberContent {
-    padding: 40px 0px 0px 0px;
+    padding: 0px;
+  }
+
+  .aboutContent {
+    padding: 16px;
   }
 
   .aboutInfo {
-    padding: 0px 30px;
+    padding: 0px;
   }
 }

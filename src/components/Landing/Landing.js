@@ -4,7 +4,6 @@ import Card from "./Cards/Card";
 import NavBar from "./NavBar/NavBar";
 import Footer from "./Footer/Footer";
 
-
 // styles
 // import styles from "./Landing.module.css";
 
@@ -93,10 +92,10 @@ const Landing = () => {
   return (
     <div>
       <NavBar />
-      <Card type={'default'} data={CARD_DATA} />
-      <Card type={'about'} data={OFFER_DATA} />
-      <Card type={'become-member'} data={DATA} />
-      <Footer/>
+      <Card type={"default"} data={CARD_DATA} />
+      <Card type={"about"} data={OFFER_DATA} />
+      <Card type={"become-member"} data={DATA} />
+      <Footer />
     </div>
   );
 };
