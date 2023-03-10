@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Card from "./Cards/Card";
-import NavBar from "./NavBar/NavBar";
+import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
 
 // styles
@@ -16,7 +16,7 @@ const CARD_DATA = [
     image: "/img/cardImgs/img1.png",
   },
   {
-    id: 2,
+    id: 2,  
     title: "Great Trading Conditions",
     description:
       "Hedging is allowed, without any restrictions on short selling and scalping. We provide fast and reliable order execution, as well as ultra-low spreads.",
@@ -89,14 +89,24 @@ const DATA = [
 ];
 
 const Landing = () => {
+  const [email, setEmail] = useState('');
+
+  const handleLaunchApp = () => {
+    console.log('launch app')
+  }
+
+  const handleSubmit = () => {
+    console.log('submit');
+  };
+
   return (
-    <div>
-      <NavBar />
+    <>
+      <Navbar handleLaunchApp={handleLaunchApp}/>
       <Card type={"default"} data={CARD_DATA} />
       <Card type={"about"} data={OFFER_DATA} />
       <Card type={"become-member"} data={DATA} />
-      <Footer />
-    </div>
+      <Footer email={email} setEmail={setEmail} handleSubmit={handleSubmit}/>
+    </>
   );
 };
 

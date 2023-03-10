@@ -38,7 +38,7 @@ const Card = ({ type, data }) => {
         <img
           className={styles.bgImg}
           src="/img/MainBg/background.png"
-          alt="background image"
+          alt="background cover"
         />
         <div className={styles.aboutContainer}>
           <h2 className={styles.aboutHeader}>we offer</h2>
