@@ -1,5 +1,5 @@
 
-.container {
+.navBar {
     position: fixed;
     display: flex;
     justify-content: space-between;
@@ -10,13 +10,13 @@
     align-items: center;
 }
 
-.left {
+.logo {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.right button {
+.btn button {
     padding: 14px 37px;
     background-color: #3D5AFE;
     font-size: 16px;
@@ -27,11 +27,11 @@
     transition: 0.4s cubic-bezier(0.79, 0.01, 0.15, 0.99);
 }
 
-.right button:hover {
+.btn button:hover {
    background: rgba(61, 90, 254, 0.8);
 }
 
-.left span {
+.logo span {
     font-weight: 700;
     font-size: 20px;
     letter-spacing: 3px;
@@ -40,7 +40,7 @@
 }
 
 @media (max-width: 438px) {
-    .left span {
+    .logo span {
         display: none;
     }
     

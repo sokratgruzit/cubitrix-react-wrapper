@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Card from "./Cards/Card";
 import NavBar from "./NavBar/NavBar";
@@ -91,13 +91,25 @@ const DATA = [
 ];
 
 const Landing = () => {
+    const [inputValue, setInputValue] = useState("");
+
+    const handleInput = (value) => {
+       setInputValue(value);
+    };
+
+    console.log(inputValue);
+
+    const handleButtonClick = (message) => {
+      console.log(message);
+    };
+
   return (
     <div>
-      <NavBar />
+      <NavBar  handleButtonClick={handleButtonClick}/>
       <Card Card={CARD_DATA} />
       <AboutProjects Data={OFFER_DATA} />
       <BecomeMember Data={DATA} />
-      <Footer/>
+      <Footer handleInput={handleInput} handleButtonClick={handleButtonClick}/>
     </div>
   );
 };
