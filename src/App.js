@@ -5,7 +5,7 @@ import Trade from "./components/Trade";
 import Loan from "./components/Loan";
 import Referal from "./components/Referal";
 import Staking from "./components/Staking";
-import Landing from "./components/Landing/Landing";
+import Landing from "./components/Landing";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Layouts/Footer/Footer";
 import Extensions from "./components/Extensions";
@@ -104,7 +104,7 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <main>
         <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-          {/* <img src={img} alt="img" /> */}
+          <img src={img} alt="img" />
           <Header
             title={"COMPLEND"}
             logoSvg={<Logo />}

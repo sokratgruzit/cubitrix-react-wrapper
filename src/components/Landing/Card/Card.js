@@ -4,12 +4,12 @@ import SwiperWrapper from "../SwiperWrapper/SwiperWrapper";
 
 import styles from "./Card.module.css";
 
-const Card = ({ type, data, handlerClick }) => {
+const Card = ({ type, data, handleSubmit, customStyles }) => {
   let element = null;
 
   if (type === "default") {
     element = (
-      <div className={styles.cardContent}>
+      <div className={styles.cardContent} style={customStyles}>
         <h2 className={styles.cardHeader}>why complend?</h2>
         <div className={styles.cardsWrapper}>
           {data.map((item) => (
@@ -34,7 +34,7 @@ const Card = ({ type, data, handlerClick }) => {
 
   if (type === "about") {
     element = (
-      <div>
+      <div style={customStyles}>
         <img
           className={styles.bgImg}
           src="/img/MainBg/background.png"
@@ -68,7 +68,7 @@ const Card = ({ type, data, handlerClick }) => {
 
   if (type === "become-member") {
     element = (
-      <div className={styles.becomeMemberContainer}>
+      <div className={styles.becomeMemberContainer} style={customStyles}>
         <h2 className={styles.becomeMemberHeader}>Become member</h2>
         <div className={styles.becomeMemberWrapper}>
           {data.map((item) => (
@@ -81,7 +81,7 @@ const Card = ({ type, data, handlerClick }) => {
                 />
                 <p className={styles.becomeMemberText}>{item.description}</p>
                 <p className={styles.becomeMemberText}>{item.description2}</p>
-                <button onClick={handlerClick} className={styles.blueButton}>
+                <button onClick={handleSubmit} className={styles.blueButton}>
                   {item.button}
                 </button>
               </div>
@@ -101,7 +101,7 @@ const Card = ({ type, data, handlerClick }) => {
 
   if (type === "trading-platform") {
     element = (
-      <div className={styles.platformContainer}>
+      <div className={styles.platformContainer} style={customStyles}>
         {data.map((item) => (
           <div className={styles.platformContent} key={item.id}>
             <img className={styles.platformBgImg} src={item.bgImg} alt="" />
@@ -113,7 +113,7 @@ const Card = ({ type, data, handlerClick }) => {
                 <span className={styles.titleSpan}> complend.</span>
               </h1>
               <p className={styles.platformText}>{item.description}</p>
-              <button onClick={handlerClick} className={styles.blueButton}>
+              <button onClick={handleSubmit} className={styles.blueButton}>
                 {item.button}
               </button>
             </div>
