@@ -4,14 +4,14 @@ import styles from "./Navbar.module.css";
 
 function Navbar({ handleLaunchApp }) {
   return (
-    <div className={styles.navBar}>
-      <div className={styles.logo}>
+    <div className={styles.navBarContent}>
+      <div className={styles.navBarlogo}>
         <div>
           <Logo />
         </div>
         <span>COMPLAND</span>
       </div>
-      <div className={styles.btn}>
+      <div className={styles.navBarBtn}>
         <button onClick={handleLaunchApp}>Lounch App</button>
       </div>
     </div>
