@@ -3,8 +3,7 @@ import React from "react";
 import Card from "./Cards/Card";
 import NavBar from "./NavBar/NavBar";
 import Footer from "./Footer/Footer";
-import BecomeMember from "./BecomeMember/BecomeMember";
-import AboutProjects from "./AboutProjects/AboutProjects";
+
 
 // styles
 // import styles from "./Landing.module.css";
@@ -94,9 +93,9 @@ const Landing = () => {
   return (
     <div>
       <NavBar />
-      <Card Card={CARD_DATA} />
-      <AboutProjects Data={OFFER_DATA} />
-      <BecomeMember Data={DATA} />
+      <Card type={'default'} data={CARD_DATA} />
+      <Card type={'about'} data={OFFER_DATA} />
+      <Card type={'become-member'} data={DATA} />
       <Footer/>
     </div>
   );

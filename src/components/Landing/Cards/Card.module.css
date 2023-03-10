@@ -1,3 +1,4 @@
+/* default */
 .cardContent {
   display: flex;
   flex-direction: column;
@@ -5,7 +6,7 @@
   padding: 40px;
 }
 
-.heading {
+.cardHeader {
   font-size: 48px;
   line-height: 67.2px;
   text-align: center;
@@ -47,7 +48,7 @@
   height: 170px;
 }
 
-.img {
+.cardImg {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -113,7 +114,7 @@
 }
 
 @media (max-width: 767px) {
-  .heading {
+  .cardHeader {
     font-size: 34px;
   }
   .cardContent {
@@ -122,5 +123,222 @@
 
   .card {
     padding: 40px 24px;
+  }
+}
+
+/* become-member */
+.becomeMemberContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 150px;
+}
+
+.becomeMemberHeader {
+  font-size: 48px;
+  line-height: 62.4px;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.becomeMemberWrapper {
+  margin-top: 100px;
+}
+
+.becomeMemberContent {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.text {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 25.6px;
+  max-width: 80%;
+  font-size: 16px;
+}
+
+.becomeMemberInfo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 50px;
+  width: calc(50% - 15px);
+}
+
+.elipse {
+  mix-blend-mode: overlay;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.button {
+  padding: 16px 50px;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  line-height: 19.6px;
+  background: #3d5afe;
+  border-radius: 32px;
+}
+
+.becomeMemberImgWrapper {
+  position: relative;
+  width: calc(50% - 15px);
+  height: 400px;
+}
+
+.img {
+  position: absolute;
+  z-index: -1;
+  object-fit: cover;
+  max-width: 589px;
+  height: 100%;
+  width: 100%;
+  right: 0;
+}
+
+@media (max-width: 1365px) {
+  .becomeMemberContainer {
+    padding: 80px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .becomeMemberContainer {
+    padding: 40px;
+  }
+
+  .becomeMemberContent {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .text {
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .becomeMemberInfo {
+    margin-top: 50px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .imgWrapper {
+    max-width: 589px;
+    width: 100%;
+  }
+}
+
+/* about */
+.aboutContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 150px;
+  gap: 80px;
+}
+
+.bgImg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.aboutHeader {
+  padding-top: 120px;
+  text-align: center;
+  font-size: 48px;
+  line-height: 140%;
+  text-transform: capitalize;
+}
+
+.aboutContent {
+  padding: 80px 150px;
+  display: flex;
+  width: 100%;
+}
+
+.imgWrapper {
+  position: relative;
+  min-width: 549px;
+  min-height: 390px;
+}
+
+.aboutImg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+}
+
+.becomeMemberInfo {
+  padding-top: 100px;
+}
+
+.aboutTitle {
+  font-size: 32px;
+  line-height: 41.6px;
+  font-family: "Uber Move";
+}
+
+.aboutText {
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 26.5px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "Uber Move";
+}
+
+@media (max-width: 1365px) {
+  .becomeMemberContent {
+    padding: 80px;
+  }
+
+  .aboutInfo {
+    padding-top: 70px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .becomeMemberContent {
+    padding: 40px;
+    flex-direction: column;
+  }
+
+  .aboutInfo {
+    padding-top: 0px;
+    text-align: center;
+  }
+
+  .img {
+    position: inherit;
+  }
+}
+
+@media (max-width: 767px) {
+  .imgWrapper {
+    min-width: auto;
+    min-height: auto;
+  }
+
+  .becomeMemberContent {
+    padding: 40px 0px 0px 0px;
+  }
+
+  .aboutInfo {
+    padding: 0px 30px;
   }
 }
