@@ -102,9 +102,9 @@ function App() {
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      {/* <main>
+      <main>
         <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-          <img src={img} alt="img" />
+          {/* <img src={img} alt="img" /> */}
           <Header
             title={"COMPLEND"}
             logoSvg={<Logo />}
@@ -130,8 +130,8 @@ function App() {
           <Footer />
         </div>
         <SideBar />
-      </main> */}
-      <Landing />
+      </main>
+      {/* <Landing /> */}
     </Web3ReactProvider>
   );
 }

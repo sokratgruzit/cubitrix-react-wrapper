@@ -18,3 +18,6 @@ export { default as ClaimedReward } from "./ClaimedReward";
 export { default as WalletBalance } from "./WalletBalance";
 export { default as TotalStaked } from "./TotalStaked";
 export { default as TotalUnstaked } from "./TotalUnstaked";
+export { default as NoHistoryIcon } from "./NoHistory";
+export { default as AddSquareIcon } from "./AddSquare";
+export { default as StickyNoteIcon } from "./StickyNote";
