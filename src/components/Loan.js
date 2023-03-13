@@ -58,7 +58,7 @@ const Loan = () => {
   }
 
   function handleCreateNewLoanOffering(loan) {
-    const mutatedLoan = { ...loan };
+    const mutatedLoan = { ...loan, lender: account };
 
     axios
       .post("/api/loan/create-loan", mutatedLoan)
@@ -70,18 +70,18 @@ const Loan = () => {
   }
 
   // function takeLoan(loanId) {
-  //   axios
-  //     .post("/api/take-loan", {
-  //       id: "63fde87727b972bedffa5210",
-  //       borrower: account,
-  //       collateral: ["big nft"],
-  //     })
-  //     .then((res) => {
-  //       setLoans((prev) =>
-  //         prev.map((loan) => (loan._id === loanId ? res.data.result : loan)),
-  //       );
-  //     })
-  //     .catch((e) => console.log(e.message));
+  // axios
+  //   .post("/api/take-loan", {
+  //     id: "63fde87727b972bedffa5210",
+  //     borrower: account,
+  //     collateral: ["big nft"],
+  //   })
+  //   .then((res) => {
+  //     setLoans((prev) =>
+  //       prev.map((loan) => (loan._id === loanId ? res.data.result : loan)),
+  //     );
+  //   })
+  //   .catch((e) => console.log(e.message));
   // }
 
   function handleTakeLoan(loanId) {
@@ -89,32 +89,57 @@ const Loan = () => {
       id: loanId,
       borrower: account,
     };
-    fetch("http://localhost:4000/api/loan/take-loan", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(mutatedLoan),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error(error));
+    axios
+      .post("/api/loan/take-loan", mutatedLoan)
+      .then((res) => {
+        console.log(res.data);
+        // setLoans((prev) =>
+        //   prev.map((loan) => (loan._id === loanId ? res.data.result : loan)),
+        // );
+      })
+      .catch((e) => console.log(e.message));
   }
 
   // function repayLoan(loanId) {
-  //   axios
-  //     .post("/api/repay-loan", {
-  //       id: loanId,
-  //       borrower: account,
-  //       repayAmount: 1,
-  //     })
-  //     .then((res) => {
-  //       setUserLoans((prev) =>
-  //         prev.map((loan) => (loan._id === loanId ? res.data.result : loan)),
-  //       );
-  //     })
-  //     .catch((e) => console.log(e.message));
+  // axios
+  //   .post("/api/repay-loan", {
+  //     id: loanId,
+  //     borrower: account,
+  //     repayAmount: 1,
+  //   })
+  //   .then((res) => {
+  //     setUserLoans((prev) =>
+  //       prev.map((loan) => (loan._id === loanId ? res.data.result : loan)),
+  //     );
+  //   })
+  //   .catch((e) => console.log(e.message));
   // }
+
+  function handleRepayLoan(data) {
+    data.borrower = account;
+    axios
+      .post("/api/loan/repay-loan", data)
+      .then((res) => {
+        console.log(res.data);
+        // setUserLoans((prev) =>
+        //   prev.map((loan) => (loan._id === loanId ? res.data.result : loan)),
+        // );
+      })
+      .catch((e) => console.log(e.message));
+  }
+
+  function handleMakeOffer(loan) {
+    const data = { ...loan, borrower: account };
+
+    console.log(data);
+
+    // axios
+    //   .post("/api/loan/send-loan-offer", data)
+    //   .then((res) => {
+    //     console.log(res.data);
+    //   })
+    //   .catch((e) => console.log(e.message));
+  }
 
   // function defaultLoan(loanId) {
   //   axios
@@ -153,6 +178,23 @@ const Loan = () => {
         // );
       })
       .catch((e) => console.log(e.message));
+  }
+
+  function handleRescindOffer(loanId) {
+    const data = { id: loanId, borrower: account, offerId: "not yet defined" };
+
+    console.log(data);
+
+    // fetch("http://localhost:4000/api/loan/rescind-loan-offer", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => console.log(data))
+    //   .catch((error) => console.error(error));
   }
 
   useEffect(() => {
@@ -352,19 +394,16 @@ const Loan = () => {
   // );
   return (
     <LoanTest
+      account={account}
       allLoanOffers={allLoanOffers}
       yourLending={yourLending}
       yourBorrowing={yourBorrowing}
       createNewLoanOffering={handleCreateNewLoanOffering}
       handleDeleteLoanOffer={handleDeleteLoanOffer}
-      // handleTakeLoan={handleTakeLoan}
-      // handleRepayLoan={handleRepayLoan}
-      // makeOffer={(loanId) => {
-      //   console.log("temporariliy skip make offer");
-      //   handleMakeOffer(loanId);
-      //   // handleTakeLoan(loanId);
-      // }}
-      // rescindOffer={handleRescindOffer}
+      handleTakeLoan={handleTakeLoan}
+      handleRepayLoan={handleRepayLoan}
+      makeOffer={handleMakeOffer}
+      rescindOffer={handleRescindOffer}
     />
   );
 };
