@@ -34,7 +34,7 @@
 .footerForm {
     position: relative;
     max-width: 664px;
-        width: 100%;
+    width: 100%;
 }
 
 .footerForm input {
@@ -104,34 +104,42 @@
 
 @media (max-width: 1200px) {
     .footerForm input {
-        width: 500px;
-
-}
+    width: 500px;
+    }
 }
 
 @media (max-width: 1025px) {
     .footerForm input {
         width: 400px;
-}
+    }
 }
 
 @media (max-width: 900px) {
-.footerContent {
-display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto auto auto;
-    gap: 30px;
-    justify-content: center;
-    padding: 30px 0;
-    align-items: center;
-}
+    .footerContent {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto auto auto;
+        gap: 30px;
+        justify-content: center;
+        padding: 30px 0;
+        align-items: center;
+    }
 
-.footerIcons {
-    grid-row: 2;
-justify-content: center;
-}
+    .footerIcons {
+        grid-row: 2;
+        justify-content: center;
+    }
 
-.footerLogo {
-    justify-content: center;
-}
+    .footerLogo {
+        justify-content: center;
+    }
+    
+    .footerForm input {
+        width: 300px;
+    }
+
+    .footerForm button {
+        padding: 12px 10px; 
+        font-size: 12px;
+    }
 }

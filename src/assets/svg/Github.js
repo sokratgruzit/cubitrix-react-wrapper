@@ -1,6 +1,6 @@
 import React from "react";
 
-const GitHub = () => {
+const Github = () => {
   return (
     <svg
       width="20"
@@ -24,4 +24,4 @@ const GitHub = () => {
   );
 };
 
-export default GitHub;
+export default Github;

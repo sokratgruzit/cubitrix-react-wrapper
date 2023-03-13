@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 
 function Navbar({ handleLaunchApp }) {
   return (
-    <div className={styles.navBarContent}>
+    <div className={styles.navBarContent} >
       <div className={styles.navBarlogo}>
         <div>
           <Logo />

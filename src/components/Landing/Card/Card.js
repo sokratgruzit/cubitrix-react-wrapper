@@ -4,7 +4,7 @@ import SwiperWrapper from "../SwiperWrapper/SwiperWrapper";
 
 import styles from "./Card.module.css";
 
-const Card = ({ type, data, handleSubmit, customStyles }) => {
+const Card = ({ type, data, handleSubmit, customStyles, projectsData }) => {
   let element = null;
 
   if (type === "default") {
@@ -117,7 +117,16 @@ const Card = ({ type, data, handleSubmit, customStyles }) => {
                 {item.button}
               </button>
             </div>
-            <div></div>
+            <div className={styles.platformWrapper}>
+              {projectsData.map((item) => (
+                <div className={`${styles.platformBox} ${item.active && styles.platformBoxActive}`}>
+                  {item.svg}
+                  <p>
+                    {item.title}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>

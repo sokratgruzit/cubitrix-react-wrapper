@@ -6,10 +6,18 @@ import Navbar from "./Landing/Navbar/Navbar";
 import Footer from "./Landing/Footer/Footer";
 
 // svgs
-import FaceBook from "../assets/svg/FaceBook";
-import Linkedin from "../assets/svg/Linkedin";
-import Twitter from "../assets/svg/Twitter";
-import GitHub from "../assets/svg/GitHub";
+import { 
+  Facebook, 
+  Linkedin, 
+  Twitter, 
+  Github, 
+  TradeIcon,
+  StakingIcon,
+  DashboardIcon,
+  ExtensionsIcon,
+  LoansIcon
+} from '../assets/svg';
+
 
 const Landing = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +30,7 @@ const Landing = () => {
     console.log("submit");
   };
 
-  const CARD_DATA = [
+  const defaultCardsData = [
     {
       id: 1,
       title: "We Believe in Endless Possibilities ",
@@ -46,7 +54,7 @@ const Landing = () => {
     },
   ];
   
-  const OFFER_DATA = [
+  const aboutProjectsData = [
     {
       id: 1,
       title: "Analitical Tools",
@@ -92,7 +100,7 @@ const Landing = () => {
   ];
   
 
-  const DATA = [
+  const becomeMemberData = [
     {
       id: 1,
       description:
@@ -104,7 +112,7 @@ const Landing = () => {
     },
   ];
 
-  const TRADING_PLATFORM = [
+  const dashboardData = [
     {
       id: 1,
       description:
@@ -114,9 +122,33 @@ const Landing = () => {
     },
   ];
 
+  const projectsData = [
+    {
+      title: 'Trade',
+      svg: <TradeIcon />
+    },
+    {
+      title: 'Staking',
+      svg: <StakingIcon />
+    },
+    {
+      title: 'Dashboard',
+      svg: <DashboardIcon />,
+      active: true
+    },
+    {
+      title: 'Extensions',
+      svg: <ExtensionsIcon />
+    },
+    {
+      title: 'Loans',
+      svg: <LoansIcon />,
+    },
+  ];
+
   const footerData = [
     {
-      svg: <FaceBook />,
+      svg: <Facebook />,
       onClick: () => console.log('facebook')
     },
     {
@@ -128,7 +160,7 @@ const Landing = () => {
       onClick: () => console.log('twitter')
     },
     {
-      svg: <GitHub />,
+      svg: <Github />,
       onClick: () => console.log('github')
     }
   ];
@@ -138,16 +170,17 @@ const Landing = () => {
       <Navbar handleLaunchApp={handleLaunchApp} />
       <Card
         type={"trading-platform"}
-        data={TRADING_PLATFORM}
+        data={dashboardData}
         handleSubmit={handleSubmit}
+        projectsData={projectsData}
       />
       <Card
         type={"default"}
-        data={CARD_DATA}
+        data={defaultCardsData}
         customStyles={{ marginTop: "80px" }}
       />
-      <Card type={"about"} data={OFFER_DATA} />
-      <Card type={"become-member"} data={DATA} handleSubmit={handleSubmit} />
+      <Card type={"about"} data={aboutProjectsData} />
+      <Card type={"become-member"} data={becomeMemberData} handleSubmit={handleSubmit} />
       <Footer data={footerData} email={email} setEmail={setEmail} handleSubmit={handleSubmit} />
     </>
   );
