@@ -215,8 +215,8 @@ const Referal = () => {
       generateTableData("codes");
       generateTableData("rebates");
       getReferralTotal();
-      getOptions();
     }
+    getOptions();
   }, [account]);
 
   let referralCodeTh = [
