@@ -104,7 +104,7 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <main>
         <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-          <img src={img} alt="img" />
+          {/* <img src={img} alt="img" /> */}
           <Header
             title={"COMPLEND"}
             logoSvg={<Logo />}
