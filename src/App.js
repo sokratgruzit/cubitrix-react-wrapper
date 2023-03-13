@@ -41,16 +41,17 @@ function App() {
 
   useEffect(() => {
     async function fetchGitData() {
-      await axios.post("/api/test", {
-        o: "sokratgruzit",
-        r: "core-assets",
-        p: "blockchains/aeternity/info/logo.png",
-        t: "download_url"
-      })
-      .then((res) => {
-        setImg(res.data);
-      })
-      .catch((e) => {});
+      await axios
+        .post("/api/test", {
+          o: "sokratgruzit",
+          r: "core-assets",
+          p: "blockchains/aeternity/info/logo.png",
+          t: "download_url",
+        })
+        .then((res) => {
+          setImg(res.data);
+        })
+        .catch((e) => {});
     }
 
     fetchGitData();
@@ -102,7 +103,7 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <main>
         <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-          <img src={img} alt="img" />
+          {/* <img src={img} alt="img" /> */}
           <Header
             title={"COMPLEND"}
             logoSvg={<Logo />}

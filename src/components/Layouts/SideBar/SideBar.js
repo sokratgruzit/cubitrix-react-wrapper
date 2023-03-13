@@ -32,6 +32,7 @@ const SideBarRight = () => {
 
   const [personalData, setPersonalData] = useState(null);
   const { connect, disconnect, error, setError, MetaMaskEagerlyConnect } = useConnect();
+
   const dispatch = useDispatch();
 
   const [personalDataState, setPersonalDataState] = useState({
