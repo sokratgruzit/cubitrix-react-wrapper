@@ -33,6 +33,7 @@ const SideBarRight = () => {
   const [personalData, setPersonalData] = useState(null);
   const { connect, disconnect, error, setError, MetaMaskEagerlyConnect } =
     useConnect();
+
   const dispatch = useDispatch();
 
   const [personalDataState, setPersonalDataState] = useState({
@@ -93,6 +94,11 @@ const SideBarRight = () => {
       })
       .catch((e) => {});
   };
+
+  useEffect(() => {
+    updateState();
+    // eslint-disable-next-line
+  }, [account]);
 
   const handleClose = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
