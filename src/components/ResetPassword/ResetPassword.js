@@ -8,7 +8,11 @@ const ResetPassword = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const [statuses, setStatuses] = useState({ loading: false, error: "", success: "" });
+  const [statuses, setStatuses] = useState({
+    loading: false,
+    error: "",
+    success: "",
+  });
 
   const handlePasswordSetup = (data) => {
     setStatuses({ loading: true, error: "", success: "" });

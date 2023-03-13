@@ -31,7 +31,8 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect, error, setError, MetaMaskEagerlyConnect } = useConnect();
+  const { connect, disconnect, error, setError, MetaMaskEagerlyConnect } =
+    useConnect();
 
   const dispatch = useDispatch();
 
@@ -59,9 +60,14 @@ const SideBarRight = () => {
   const [base32, setBase32] = useState("");
   const [qrcodeUrl, setqrCodeUrl] = useState("");
 
-  const [signInState, setSignInState] = useState({ loading: false, error: false });
+  const [signInState, setSignInState] = useState({
+    loading: false,
+    error: false,
+  });
   const [otpState, setOtpState] = useState({ loading: false, error: false });
-  const [resetPasswordState, setResetPasswordState] = useState({ loading: false });
+  const [resetPasswordState, setResetPasswordState] = useState({
+    loading: false,
+  });
   const [resetPasswordStatus, setresetPasswordStatus] = useState({
     loading: false,
     error: "",
@@ -110,9 +116,16 @@ const SideBarRight = () => {
     setSecurityDataState((prev) => ({ ...prev, loading: true, error: "" }));
 
     axios
-      .post("/api/accounts/update_profile_auth", { ...formData, address: account })
+      .post("/api/accounts/update_profile_auth", {
+        ...formData,
+        address: account,
+      })
       .then((res) => {
-        setSecurityDataState((prev) => ({ ...prev, loading: false, saved: true }));
+        setSecurityDataState((prev) => ({
+          ...prev,
+          loading: false,
+          saved: true,
+        }));
         updateState();
         setTimeout(() => {
           setSecurityDataState((prev) => ({ ...prev, saved: false }));
@@ -132,13 +145,20 @@ const SideBarRight = () => {
     personalData.avatar = account;
     setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
     axios
-      .post("/api/accounts/update_profile", { ...personalData, address: account })
+      .post("/api/accounts/update_profile", {
+        ...personalData,
+        address: account,
+      })
       .then((res) => {
         if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
         updateState();
-        setPersonalDataState((prev) => ({ ...prev, loading: false, saved: true }));
+        setPersonalDataState((prev) => ({
+          ...prev,
+          loading: false,
+          saved: true,
+        }));
         setTimeout(() => {
           setPersonalDataState((prev) => ({ ...prev, saved: false }));
         }, 3000);
@@ -189,7 +209,11 @@ const SideBarRight = () => {
         email,
       })
       .then((res) => {
-        setResetPasswordState((prev) => ({ ...prev, loading: false, success: res.data }));
+        setResetPasswordState((prev) => ({
+          ...prev,
+          loading: false,
+          success: res.data,
+        }));
       })
       .catch((e) => {
         setResetPasswordState((prev) => ({
@@ -216,10 +240,17 @@ const SideBarRight = () => {
           if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
           updateState();
           setProcceed2fa(false);
-          dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+          dispatch({
+            type: "SET_SIDE_BAR",
+            payload: { sideBar: "UserAccount" },
+          });
         })
         .catch((e) => {
-          setSignInState((prev) => ({ ...prev, loading: false, error: e.response.data }));
+          setSignInState((prev) => ({
+            ...prev,
+            loading: false,
+            error: e.response.data,
+          }));
         });
     }
   };
@@ -249,7 +280,9 @@ const SideBarRight = () => {
 
   const disableOTP = () => {
     axios
-      .post("/api/accounts/otp/disable", { address: account ? account : signInAddress })
+      .post("/api/accounts/otp/disable", {
+        address: account ? account : signInAddress,
+      })
       .then((res) => {})
       .catch((e) => {});
   };
@@ -402,7 +435,10 @@ const SideBarRight = () => {
           <UserAccount
             sideBarClose={handleClose}
             goBack={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "connect" },
+              })
             }
             personalData={personalData}
             handlePersonalData={handlePersonalData}
@@ -423,7 +459,10 @@ const SideBarRight = () => {
               }
             }}
             handleForgetPassword={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "resetPassword" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "resetPassword" },
+              })
             }
           />
         )}
@@ -432,7 +471,10 @@ const SideBarRight = () => {
             onClick={handleLogin}
             sideBarClose={handleClose}
             goBack={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "connect" },
+              })
             }
             signInState={signInState}
             otpEnabled={procceed2fa}
@@ -446,7 +488,10 @@ const SideBarRight = () => {
           <ResetPassword
             sideBarClose={handleClose}
             goBack={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "UserAccount" },
+              })
             }
             resetPasswordState={resetPasswordStatus}
             handleResetPassword={handleSetUpPassword}
