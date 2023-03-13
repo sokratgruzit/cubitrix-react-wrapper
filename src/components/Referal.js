@@ -86,25 +86,27 @@ const Referal = () => {
 
       let codesData = {};
 
-      data.forEach((item) => {
-        item.referral_type === "binary"
-          ? (codesData = { ...codesData, binary: item.referral })
-          : (codesData = { ...codesData, referral: item.referral });
-      });
+      Array.isArray(data) &&
+        data?.forEach((item) => {
+          item.referral_type === "binary"
+            ? (codesData = { ...codesData, binary: item.referral })
+            : (codesData = { ...codesData, referral: item.referral });
+        });
 
       if (data.length === 0) {
-        const { data: generateCodeData } = await axios.post(
+        const { data: generateCodeData } = axios.post(
           "/api/referral/bind_referral_to_user",
           {
             address: account,
           }
         );
 
-        generateCodeData.forEach((item) => {
-          item.referral_type === "binary"
-            ? (codesData = { ...codesData, binary: item.referral })
-            : (codesData = { ...codesData, referral: item.referral });
-        });
+        Array.isArray(data) &&
+          generateCodeData?.forEach((item) => {
+            item.referral_type === "binary"
+              ? (codesData = { ...codesData, binary: item.referral })
+              : (codesData = { ...codesData, referral: item.referral });
+          });
       }
 
       setReferralCodes(codesData);
