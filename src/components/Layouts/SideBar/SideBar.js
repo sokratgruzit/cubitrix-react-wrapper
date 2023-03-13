@@ -77,7 +77,7 @@ const SideBarRight = () => {
 
   const updateState = () => {
     axios
-      .post("/accounts/get_account", {
+      .post("/api/accounts/get_account", {
         address: account,
       })
       .then((res) => {
@@ -88,6 +88,11 @@ const SideBarRight = () => {
       })
       .catch((e) => {});
   };
+
+  useEffect(() => {
+    updateState();
+    // eslint-disable-next-line
+  }, [account]);
 
   const handleClose = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
@@ -105,7 +110,7 @@ const SideBarRight = () => {
     setSecurityDataState((prev) => ({ ...prev, loading: true, error: "" }));
 
     axios
-      .post("/accounts/update_profile_auth", { ...formData, address: account })
+      .post("/api/accounts/update_profile_auth", { ...formData, address: account })
       .then((res) => {
         setSecurityDataState((prev) => ({ ...prev, loading: false, saved: true }));
         updateState();
@@ -127,7 +132,7 @@ const SideBarRight = () => {
     personalData.avatar = account;
     setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
     axios
-      .post("/accounts/update_profile", { ...personalData, address: account })
+      .post("/api/accounts/update_profile", { ...personalData, address: account })
       .then((res) => {
         if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
@@ -166,7 +171,7 @@ const SideBarRight = () => {
 
   const resendEmail = (e) => {
     axios
-      .post("/accounts/resend-email", {
+      .post("/api/accounts/resend-email", {
         address: account ? account : signInAddress,
       })
       .then((res) => {
@@ -180,7 +185,7 @@ const SideBarRight = () => {
   const resetPassword = (email) => {
     setResetPasswordState({ loading: true, success: "", error: "" });
     axios
-      .post("/accounts/get-reset-password-email", {
+      .post("/api/accounts/get-reset-password-email", {
         email,
       })
       .then((res) => {
@@ -200,7 +205,7 @@ const SideBarRight = () => {
       setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
 
       axios
-        .post("/accounts/recovery/login", {
+        .post("/api/accounts/recovery/login", {
           account,
           email,
           password,
@@ -244,7 +249,7 @@ const SideBarRight = () => {
 
   const disableOTP = () => {
     axios
-      .post("/accounts/otp/disable", { address: account ? account : signInAddress })
+      .post("/api/accounts/otp/disable", { address: account ? account : signInAddress })
       .then((res) => {})
       .catch((e) => {});
   };
@@ -252,7 +257,7 @@ const SideBarRight = () => {
   const verifyOTP = (code) => {
     setTwoFactorSetUpState({ loading: false, error: "" });
     axios
-      .post("/accounts/otp/verify", {
+      .post("/api/accounts/otp/verify", {
         address: account ? account : signInAddress,
         token: code,
       })
@@ -269,7 +274,9 @@ const SideBarRight = () => {
   async function generateOtp() {
     try {
       await axios
-        .post("/accounts/otp/generate", { address: account ? account : signInAddress })
+        .post("/api/accounts/otp/generate", {
+          address: account ? account : signInAddress,
+        })
         .then((res) => {
           const { base32, otpauth_url } = res.data;
           setBase32(base32);
@@ -284,7 +291,7 @@ const SideBarRight = () => {
     setOtpState({ loading: true, error: "" });
 
     await axios
-      .post("/accounts/otp/validate", {
+      .post("/api/accounts/otp/validate", {
         token,
         address: signInAddress,
       })
@@ -303,7 +310,7 @@ const SideBarRight = () => {
     setresetPasswordStatus({ loading: true, error: "", success: "" });
     if (opt === "email") {
       axios
-        .post("/accounts/get-reset-password-email", {
+        .post("/api/accounts/get-reset-password-email", {
           email: userMetaData?.email,
         })
         .then((res) => {

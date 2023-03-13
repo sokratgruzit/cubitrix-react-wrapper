@@ -5,6 +5,7 @@ import Trade from "./components/Trade";
 import Loan from "./components/Loan";
 import Referal from "./components/Referal";
 import Staking from "./components/Staking";
+import Landing from "./components/Landing";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Layouts/Footer/Footer";
 import Extensions from "./components/Extensions";
@@ -61,7 +62,7 @@ function App() {
     if (account && chainId) {
       const fetchData = async () => {
         await axios
-          .post("/accounts/login", {
+          .post("/api/accounts/login", {
             address: account,
           })
           .then((res) => {})
@@ -130,6 +131,7 @@ function App() {
         </div>
         <SideBar />
       </main>
+      {/* <Landing /> */}
     </Web3ReactProvider>
   );
 }

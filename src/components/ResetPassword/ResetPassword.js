@@ -13,7 +13,7 @@ const ResetPassword = () => {
   const handlePasswordSetup = (data) => {
     setStatuses({ loading: true, error: "", success: "" });
     axios
-      .post("/accounts/reset-password", {
+      .post("/api/accounts/reset-password", {
         code: params.code,
         password: data.newPassword,
       })
