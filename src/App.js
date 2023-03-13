@@ -62,7 +62,7 @@ function App() {
     if (account && chainId) {
       const fetchData = async () => {
         await axios
-          .post("/accounts/login", {
+          .post("/api/accounts/login", {
             address: account,
           })
           .then((res) => {})
