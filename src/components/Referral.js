@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 // UI
 import {
-  Referral,
+  Referral as ReferralUI,
   Popup,
   PopupElement,
   LevelSystem,
@@ -16,7 +16,7 @@ import { StickyNoteIcon, AddSquareIcon, NoHistoryIcon } from "../assets/svg";
 // api
 import axios from "../api/axios";
 
-const Referal = () => {
+const Referral = () => {
   const [createCodePopupActive, setCreateCodePopupActive] = useState(false);
   const [levelSystemPopupActive, setLevelSystemPopupActive] = useState(false);
   const [createCodeObject, setCreateCodeObject] = useState({});
@@ -446,7 +446,7 @@ const Referal = () => {
 
   return (
     <>
-      <Referral
+      <ReferralUI
         cards={referralCards}
         handleCreateCode={handleCreateCode}
         referralHistoryTableHead={referralHistoryTh}
@@ -511,4 +511,4 @@ const Referal = () => {
   );
 };
 
-export default Referal;
+export default Referral;

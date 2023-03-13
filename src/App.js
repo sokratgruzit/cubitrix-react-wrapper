@@ -3,7 +3,7 @@ import "./App.css";
 import Dashboard from "./components/Dashboard";
 import Trade from "./components/Trade";
 import Loan from "./components/Loan";
-import Referal from "./components/Referal";
+import Referral from "./components/Referral";
 import Staking from "./components/Staking";
 import Landing from "./components/Landing";
 import { Routes, Route } from "react-router-dom";
@@ -122,7 +122,7 @@ function App() {
             <Route path="/loan" element={<Loan />} />
             <Route path="/trade" element={<Trade />} />
             <Route path="/staking" element={<Staking />} />
-            <Route path="/referal" element={<Referal />} />
+            <Route path="/referral" element={<Referral />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
             <Route path="/reset-password/:code" element={<ResetPassword />} />
