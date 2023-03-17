@@ -4,9 +4,9 @@ const INIT_STATE = {
     loan: process.env.REACT_APP_LOAN,
     notify: process.env.REACT_APP_NOTIFY,
     staking: process.env.REACT_APP_STAKING,
-    referal: process.env.REACT_APP_REFERAL,
-    connect: process.env.REACT_APP_CONNECT
-  }
+    referral: process.env.REACT_APP_REFERRAL,
+    connect: process.env.REACT_APP_CONNECT,
+  },
 };
 
 const extensionsReducer = (state = INIT_STATE, action) => {
