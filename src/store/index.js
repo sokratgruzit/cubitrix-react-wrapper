@@ -6,9 +6,11 @@ import storage from "redux-persist/lib/storage";
 import extensionsReducer from "./extensionsReducer";
 import {
   connectReducer,
-  stakeReducer,
+  // stakeReducer,
 } from "@cubitrix/cubitrix-react-connect-module";
 import appStateReducer from "./appStateReducer";
+import {stakeReducer} from "./stakeReducer";
+
 
 const persistConfig = {
   key: "root",
