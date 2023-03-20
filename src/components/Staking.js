@@ -18,6 +18,9 @@ import { useTableParameters } from "../hooks/useTableParameters";
 // UI
 import { Staking, Button } from "@cubitrix/cubitrix-react-ui-module";
 
+// api
+import axios from "../api/axios";
+
 const Stake = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
@@ -268,7 +271,14 @@ const Stake = () => {
       approve();
     }
     if (account && !isAllowance) {
-      stake();
+      stake(async () => {
+        await axios.post(
+          "/api/accounts/activate-account",
+          {
+            address: account,
+          }
+        );
+      });
     }
   };
 
