@@ -155,19 +155,19 @@ const Stake = () => {
       return stakersRecord.map((item, index) => {
         return (
           <div
-            className={`table-parent ${
-              mobileExpand === item.id ? "active" : ""
-            }`}
+            className={`table-parent ${mobileExpand === item.id ? "active" : ""}`}
             key={index}
             onClick={() => {
               mobileExpandFunc(item.id);
-            }}>
+            }}
+          >
             <div className={"table"}>
               {th?.slice(0, 5).map((i, index) => (
                 <div
                   key={index}
                   className={`td col ${i.mobileWidth ? true : false}`}
-                  style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}>
+                  style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}
+                >
                   <span>
                     {
                       [
@@ -185,13 +185,12 @@ const Stake = () => {
                 th.slice(5, 7).map((i, index) => (
                   <div
                     key={index}
-                    className={`td col ${i.position} ${
-                      i.mobileWidth ? true : false
-                    }`}
+                    className={`td col ${i.position} ${i.mobileWidth ? true : false}`}
                     style={{
                       width: `${mobile ? i.mobileWidth : i.width}%`,
                       marginRight: `${width < 1450 ? "10px" : "0"}`,
-                    }}>
+                    }}
+                  >
                     <Button
                       element={"staking-button"}
                       label={index === 0 ? "Unstake" : "Harvest"}
@@ -210,7 +209,8 @@ const Stake = () => {
                 height="7"
                 viewBox="0 0 12 7"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M10.299 1.33325L6.47141 5.16089C6.01937 5.61293 5.27968 5.61293 4.82764 5.16089L1 1.33325"
                   stroke="white"
@@ -243,9 +243,7 @@ const Stake = () => {
                           active={index === 5}
                           customStyles={{ borderRadius: "32px" }}
                           onClick={() => th[index].onClick(index)}
-                          disabled={
-                            index === 5 ? item.unstaked : item.withdrawan
-                          }
+                          disabled={index === 5 ? item.unstaked : item.withdrawan}
                         />
                       </div>
                     ))}

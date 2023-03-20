@@ -3,11 +3,10 @@ import "./App.css";
 import Dashboard from "./components/Dashboard";
 import Trade from "./components/Trade";
 import Loan from "./components/Loan";
-import Referal from "./components/Referal";
+import Referral from "./components/Referral";
 import Staking from "./components/Staking";
 import Landing from "./components/Landing";
 import { Routes, Route } from "react-router-dom";
-import Footer from "./components/Layouts/Footer/Footer";
 import Extensions from "./components/Extensions";
 import Web3 from "web3";
 import { Web3ReactProvider } from "@web3-react/core";
@@ -122,12 +121,11 @@ function App() {
             <Route path="/loan" element={<Loan />} />
             <Route path="/trade" element={<Trade />} />
             <Route path="/staking" element={<Staking />} />
-            <Route path="/referal" element={<Referal />} />
+            <Route path="/referral" element={<Referral />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/verify/:id" element={<VerifyEmail />} />
             <Route path="/reset-password/:code" element={<ResetPassword />} />
           </Routes>
-          <Footer />
         </div>
         <SideBar />
       </main>
