@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@cubitrix/cubitrix-react-connect-module": "0.0.35",
+    "@cubitrix/cubitrix-react-connect-module": "0.0.39",
     "@cubitrix/cubitrix-react-ui-module": "^0.2.50",
     "@cubitrix/cubitrix-react-trade-module": "0.0.2",
     "@reduxjs/toolkit": "^1.9.1",

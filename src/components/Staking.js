@@ -11,6 +11,7 @@ import {
 } from "../assets/svg";
 
 import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useStake } from "../hooks/use-stake";
 
 // hooks
 import { useTableParameters } from "../hooks/useTableParameters";
@@ -23,7 +24,8 @@ import axios from "../api/axios";
 
 const Stake = () => {
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
+  var Router = "0xAF0af9e311Aec4E08f0657E6F4112e83a1De77bd"; // Staking contract Address
+  // var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
   const {
     approve,
@@ -261,7 +263,7 @@ const Stake = () => {
     // eslint-disable-next-line
   }, [stakersRecord]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!account) {
       handleConnect();
     }
@@ -269,13 +271,27 @@ const Stake = () => {
       approve();
     }
     if (account && !isAllowance) {
+      // await axios
+      //   .post("/api/accounts/activate-account", {
+      //     address: account,
+      //   })
+      //   .then((res) => {
+      //     if (res.data?.account) {
+      //       dispatch({ type: "SET_SYSTEM_ACCOUNT_DATA", payload: res.data.account });
+      //     }
+      //   })
+      //   .catch((e) => {});
       stake(async () => {
-        await axios.post(
-          "/api/accounts/activate-account",
-          {
+        await axios
+          .post("/api/accounts/activate-account", {
             address: account,
-          }
-        );
+          })
+          .then((res) => {
+            if (res.data?.account) {
+              dispatch({ type: "SET_SYSTEM_ACCOUNT_DATA", payload: res.data.account });
+            }
+          })
+          .catch((e) => {});
       });
     }
   };
