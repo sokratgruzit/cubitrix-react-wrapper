@@ -46,6 +46,7 @@ const Referral = () => {
   const width = 1300;
 
   const handleCreateCode = () => setCreateCodePopupActive(true);
+  const handleLevelSystem = () => setLevelSystemPopupActive(true);
 
   const referralCards = [
     {
@@ -133,6 +134,8 @@ const Referral = () => {
         }
       );
 
+      console.log(data)
+
       if (table === "codes") {
         setCodesTableData(data.referral_code);
         setCodesPaginationTotal(data.total_pages);
@@ -205,7 +208,10 @@ const Referral = () => {
         address: account,
       });
 
-      generateCode();
+      await generateCode();
+      await generateTableData("codes");
+      await generateTableData("rebates");
+      await getReferralTotal();
     } catch (err) {
       console.log(err);
     }
@@ -321,68 +327,91 @@ const Referral = () => {
     {
       level: "VIP 1",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_1,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_1}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_1 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_1 ? 
+        levelSystemTableOptions?.referral_binary_percentage_lvl_1 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 2",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_2,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_2}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_2 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_2 ? levelSystemTableOptions?.referral_binary_percentage_lvl_2 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 3",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_3,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_3}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_3 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_3 ? levelSystemTableOptions?.referral_binary_percentage_lvl_3 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 4",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_4,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_4}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_4 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_4 ? levelSystemTableOptions?.referral_binary_percentage_lvl_4 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 5",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_5,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_5}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_5 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_5 ? levelSystemTableOptions?.referral_binary_percentage_lvl_5 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 6",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_6,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_6}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_6 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_6 ? levelSystemTableOptions?.referral_binary_percentage_lvl_6 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 7",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_7,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_7}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_7  || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_7 ? levelSystemTableOptions?.referral_binary_percentage_lvl_7 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 8",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_8,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_8}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_8  || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_8 ? levelSystemTableOptions?.referral_binary_percentage_lvl_8 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 9",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_9,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_9}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_9  || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_9 ? levelSystemTableOptions?.referral_binary_percentage_lvl_9 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 10",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_10,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_10}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_10 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_10 ? levelSystemTableOptions?.referral_binary_percentage_lvl_10 + '%' : "-"
+      }`,
     },
     {
       level: "VIP 11",
       complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_11,
-      rebaseRate: `${levelSystemTableOptions?.referral_binary_percentage_lvl_11}%`,
+        levelSystemTableOptions?.referral_binary_max_amount_lvl_11 || '-',
+      rebaseRate: `${
+        levelSystemTableOptions.referral_binary_percentage_lvl_11 ? levelSystemTableOptions?.referral_binary_percentage_lvl_11 + '%' : "-"
+      }`,
     },
   ];
 
@@ -392,8 +421,7 @@ const Referral = () => {
       <Button
         element={"referral-button"}
         label={"Create Code"}
-        icon={<AddSquareIcon color={"#FFF"} />}
-        active={true}
+        icon={<AddSquareIcon color={"#00C6FF"} />}
         onClick={handleCreateCode}
       />
     ),
@@ -434,13 +462,11 @@ const Referral = () => {
   const referralCodesCardData = [
     {
       title: "Referral Code",
-      value: referralCodes?.referral,
-      color: "#57D29E",
+      value: referralCodes?.referral || "-",
     },
     {
       title: "Binary Code",
-      value: referralCodes?.binary,
-      color: "#6E62FC",
+      value: referralCodes?.binary || "-",
     },
   ];
 
@@ -457,7 +483,6 @@ const Referral = () => {
         referralHistoryTableEmpty={referralHistoryTableEmpty}
         referralHistoryTableLoading={referralHistoryTableLoading}
         referralCodeTableLoading={referralCodeTableLoading}
-        totalReferralRebatesLabel={"Total Referral Rebates"}
         referralHistoryPaginationCurrent={rebatesCurrentPage}
         referralHistoryPaginationTotal={rebatesPaginationTotal}
         referralHistoryPaginationEvent={(page) => {
@@ -472,6 +497,7 @@ const Referral = () => {
         }}
         referralRebatesTotal={referralRebatesTotal}
         referralCodesCardData={referralCodesCardData}
+        handleLevelSystem={handleLevelSystem}
       />
       {createCodePopupActive && (
         <Popup
@@ -489,6 +515,7 @@ const Referral = () => {
           label={"Create Referral Code"}
           handlePopUpClose={() => setCreateCodePopupActive(false)}
           customStyles={{ width: "423px" }}
+          headerCustomStyles={{ background: "#272C57" }}
         />
       )}
       {levelSystemPopupActive && (
@@ -505,6 +532,7 @@ const Referral = () => {
           description={
             "Everyone starts with the Casual tier, and you can level up the tier by increasing your Comland holding"
           }
+          headerCustomStyles={{ background: "#272C57" }}
         />
       )}
     </>
