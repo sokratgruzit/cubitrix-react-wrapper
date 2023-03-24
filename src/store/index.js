@@ -4,12 +4,9 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import extensionsReducer from "./extensionsReducer";
-import {
-  connectReducer,
-  // stakeReducer,
-} from "@cubitrix/cubitrix-react-connect-module";
+import { connectReducer, stakeReducer } from "@cubitrix/cubitrix-react-connect-module";
 import appStateReducer from "./appStateReducer";
-import {stakeReducer} from "./stakeReducer";
+// import {stakeReducer} from "./stakeReducer";
 
 
 const persistConfig = {

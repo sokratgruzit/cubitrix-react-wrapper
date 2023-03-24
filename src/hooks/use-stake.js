@@ -4,11 +4,9 @@ import STACK_ABI from "../abi/stack.json";
 import WBNB from "../abi/WBNB.json";
 import moment from "moment";
 
-// import { useConnect } from ".";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-// import { INIT_STATE } from "../reducers/stakeReducer";
-import { INIT_STATE } from '../store/stakeReducer';
+import { INIT_STATE } from "../store/stakeReducer";
 
 export const useStake = ({ Router, tokenAddress }) => {
   const { library } = useConnect();
@@ -48,9 +46,7 @@ export const useStake = ({ Router, tokenAddress }) => {
           balance: balanceInEth,
         },
       });
-      var allowance = await tokenContract.methods
-        .allowance(account, Router)
-        .call();
+      var allowance = await tokenContract.methods.allowance(account, Router).call();
 
       if (allowance <= 2) {
         dispatch({
@@ -96,12 +92,7 @@ export const useStake = ({ Router, tokenAddress }) => {
     });
     try {
       var contract = new web3Obj.eth.Contract(WBNB, tokenAddress);
-
-      var decimals = await contract.methods.decimals().call();
-
-      var pow = 10 ** decimals;
-
-      var amountIn = 10 ** pow;
+      var amountIn = 10 ** 69;
       amountIn = amountIn.toLocaleString("fullwide", { useGrouping: false });
       await contract.methods
         .approve(Router, amountIn.toString())
@@ -127,9 +118,8 @@ export const useStake = ({ Router, tokenAddress }) => {
     }
   };
 
-  const stake = async (afterStake) => {
-    console.log(depositAmount)
-    if (parseFloat(depositAmount) <= 0) {
+  const stake = async () => {
+    if (isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) <= 0) {
       notify(true, "Error! please enter amount");
       return;
     }
@@ -163,13 +153,9 @@ export const useStake = ({ Router, tokenAddress }) => {
               timeperiodDate: INIT_STATE.timeperiodDate,
               timeperiod: INIT_STATE.timeperiod,
             },
-          })
+          });
           notify(false, "Staking process complete.");
-        })
-        .then(() => {
-          afterStake();
         });
-      
     } catch (err) {
       dispatch({
         type: "UPDATE_STAKE_STATE",
@@ -259,9 +245,7 @@ export const useStake = ({ Router, tokenAddress }) => {
     try {
       var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       var decimals = await tokenContract.methods.decimals().call();
-      var getBalance = await tokenContract.methods
-        .balanceOf(account.toString())
-        .call();
+      var getBalance = await tokenContract.methods.balanceOf(account.toString()).call();
       var pow = 10 ** decimals;
       var balanceInEth = getBalance / pow;
       dispatch({
@@ -272,13 +256,9 @@ export const useStake = ({ Router, tokenAddress }) => {
       });
 
       var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
-      var totalStakedToken = await contract.methods.totalStakedToken
-        .call()
-        .call();
+      var totalStakedToken = await contract.methods.totalStakedToken.call().call();
       var totalStakers = await contract.methods.totalStakers.call().call();
-      var realtimeReward = await contract.methods
-        .realtimeReward(account)
-        .call();
+      var realtimeReward = await contract.methods.realtimeReward(account).call();
       var Stakers = await contract.methods.Stakers(account).call();
 
       var totalStakedTokenUser = Stakers.totalStakedTokenUser / pow;
@@ -290,20 +270,16 @@ export const useStake = ({ Router, tokenAddress }) => {
       Stakers.totalUnstakedTokenUser = totalUnstakedTokenUser;
       Stakers.currentStaked = currentStaked;
       Stakers.realtimeReward = realtimeReward / pow;
-      Stakers.totalClaimedRewardTokenUser =
-        Stakers.totalClaimedRewardTokenUser / pow;
+      Stakers.totalClaimedRewardTokenUser = Stakers.totalClaimedRewardTokenUser / pow;
       var stakersRecord = [];
       for (var i = 0; i < parseInt(Stakers.stakeCount); i++) {
-        var stakersRecordData = await contract.methods
-          .stakersRecord(account, i)
-          .call();
+        var stakersRecordData = await contract.methods.stakersRecord(account, i).call();
 
         var realtimeRewardPerBlock = await contract.methods
           .realtimeRewardPerBlock(account, i.toString())
           .call();
 
-        stakersRecordData.realtimeRewardPerBlock =
-          realtimeRewardPerBlock[0] / pow;
+        stakersRecordData.realtimeRewardPerBlock = realtimeRewardPerBlock[0] / pow;
 
         stakersRecordData.unstaketime = moment
           .unix(stakersRecordData.unstaketime)
@@ -355,9 +331,7 @@ export const useStake = ({ Router, tokenAddress }) => {
   const setMaxWithdrawal = async () => {
     var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
     var decimals = await tokenContract.methods.decimals().call();
-    var getBalance = await tokenContract.methods
-      .balanceOf(account.toString())
-      .call();
+    var getBalance = await tokenContract.methods.balanceOf(account.toString()).call();
     var pow = 10 ** decimals;
     var balanceInEth = getBalance / pow;
     dispatch({
@@ -423,7 +397,7 @@ export const useStake = ({ Router, tokenAddress }) => {
       account,
     }),
     // eslint-disable-next-line
-    [account, depositAmount, timeperiod]
+    [account, depositAmount, timeperiod],
   );
 
   return values;

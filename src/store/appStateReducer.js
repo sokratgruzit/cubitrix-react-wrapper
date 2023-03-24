@@ -19,6 +19,13 @@ const appStateReducer = (state = INIT_STATE, action) => {
     };
   }
 
+  if (action.type === "SET_SYSTEM_ACCOUNT_DATA") {
+    return {
+      ...state,
+      userData: { ...state.userData, system: [action.payload] },
+    };
+  }
+
   return state;
 };
 
