@@ -31,7 +31,7 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect, error, setError, MetaMaskEagerlyConnect } = useConnect();
+  const { connect, disconnect, error, setError } = useConnect();
 
   const dispatch = useDispatch();
 
@@ -74,11 +74,6 @@ const SideBarRight = () => {
   });
   const [signInAddress, setSignInAddress] = useState("");
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
-
-  useEffect(() => {
-    MetaMaskEagerlyConnect(injected);
-    // eslint-disable-next-line
-  }, []);
 
   const updateState = () => {
     axios
