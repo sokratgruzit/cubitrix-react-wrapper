@@ -2,6 +2,7 @@ const INIT_STATE = {
   sideBarOpen: false,
   sideBar: "",
   userData: null,
+  triedReconnect: false,
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -23,6 +24,13 @@ const appStateReducer = (state = INIT_STATE, action) => {
     return {
       ...state,
       userData: { ...state.userData, system: [action.payload] },
+    };
+  }
+
+  if (action.type === "SET_TRIED_RECONNECT") {
+    return {
+      ...state,
+      triedReconnect: action.payload,
     };
   }
 
