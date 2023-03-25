@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import { useSelector } from "react-redux";
-
 import { Dashboard as DasboardMain } from "@cubitrix/cubitrix-react-ui-module";
 
 const Dashboard = () => {
@@ -11,9 +9,7 @@ const Dashboard = () => {
   function loadCoinsList(page, startLoading, finishLoading) {
     if (startLoading) startLoading();
     fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8
-        
-      &page=${page}&sparkline=true&price_change_percentage=24h`
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=${page}&sparkline=true&price_change_percentage=24h`
     )
       .then((response) => response.json())
       .then((data) => {
