@@ -6,7 +6,7 @@ const Logo = () => {
       viewBox='0 0 40 40'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'>
-      <g clip-path='url(#clip0_2599_7858)'>
+      <g clipPath='url(#clip0_2599_7858)'>
         <path
           d='M20.0059 -0.000158956C19.9982 -0.00255118 19.9901 -0.00255118 19.9825 -0.000158956C13.9025 3.50782 8.85429 8.556 5.34625 14.6359C1.83821 20.7159 -0.00578025 27.6128 1.36113e-05 34.6322C6.07723 38.1409 12.971 39.9881 19.9883 39.9881C27.0057 39.9881 33.8994 38.1409 39.9766 34.6322C39.9809 27.6145 38.1375 20.7194 34.6318 14.6401C31.1261 8.56071 26.0818 3.51142 20.0059 -0.000158956V-0.000158956ZM27.9988 27.8584C25.5687 29.2638 22.8111 30.0037 20.0039 30.0037C17.1967 30.0037 14.4391 29.2638 12.009 27.8584C12.0081 25.0542 12.7456 22.2992 14.1473 19.8704C15.5491 17.4416 17.5656 15.4248 19.9942 14.0226C22.4244 15.4235 24.4434 17.439 25.8485 19.8668C27.2535 22.2947 27.9951 25.0495 27.9988 27.8546V27.8584Z'
           fill='#C2F5C1'
@@ -44,8 +44,8 @@ const Logo = () => {
           x2='13.5826'
           y2='27.0951'
           gradientUnits='userSpaceOnUse'>
-          <stop stop-color='#C2F5C1' stop-opacity='0' />
-          <stop offset='1' stop-color='#C2F5C1' />
+          <stop stopColor='#C2F5C1' stopOpacity='0' />
+          <stop offset='1' stopColor='#C2F5C1' />
         </linearGradient>
         <linearGradient
           id='paint1_linear_2599_7858'
@@ -54,8 +54,8 @@ const Logo = () => {
           x2='26.3044'
           y2='26.6474'
           gradientUnits='userSpaceOnUse'>
-          <stop stop-color='#C2F5C1' stop-opacity='0' />
-          <stop offset='1' stop-color='#C2F5C1' />
+          <stop stopColor='#C2F5C1' stopOpacity='0' />
+          <stop offset='1' stopColor='#C2F5C1' />
         </linearGradient>
         <linearGradient
           id='paint2_linear_2599_7858'
@@ -64,8 +64,8 @@ const Logo = () => {
           x2='20.0019'
           y2='16.348'
           gradientUnits='userSpaceOnUse'>
-          <stop stop-color='#C2F5C1' stop-opacity='0' />
-          <stop offset='1' stop-color='#C2F5C1' />
+          <stop stopColor='#C2F5C1' stopOpacity='0' />
+          <stop offset='1' stopColor='#C2F5C1' />
         </linearGradient>
         <clipPath id='clip0_2599_7858'>
           <rect width='40' height='40' fill='white' />
