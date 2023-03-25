@@ -33,6 +33,7 @@ function App() {
   const account = useSelector((state) => state.connect.account);
   const chainId = useSelector((state) => state.connect.chainId);
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
+  const balance = useSelector((state) => state.appState.userData?.system?.[0]?.balance);
   const location = useLocation();
   const dispatch = useDispatch();
   const [img, setImg] = useState("");
@@ -141,6 +142,7 @@ function App() {
           handleConnect={handleConnect}
           handleNotifications={handleNotifications}
           verified={emailVerified}
+          amount={balance ?? 0}
         />
         <Routes>
           <Route path="/" element={<Dashboard />} />
