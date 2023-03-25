@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Dashboard as DasboardMain } from "@cubitrix/cubitrix-react-ui-module";
 
 const Dashboard = () => {
   const [topCoins, setTopCoins] = useState([]);
   const [coinsList, setCoinsList] = useState([]);
+  const navigate = useNavigate();
 
   function loadCoinsList(page, startLoading, finishLoading) {
     if (startLoading) startLoading();
@@ -35,13 +37,17 @@ const Dashboard = () => {
       })
       .catch((error) => console.log(error));
   }, []);
+
+  const handleGetStarted = () => {
+    navigate("/staking");
+  };
   return (
     // {balance ?? "0"} tokens
     <DasboardMain
       topCoins={topCoins}
       coinsList={coinsList}
       loadCoinsList={loadCoinsList}
-      handleGetStarted={() => console.log("get started")}
+      handleGetStarted={handleGetStarted}
     />
   );
 };
