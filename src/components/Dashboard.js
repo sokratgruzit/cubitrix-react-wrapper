@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { Dashboard as DasboardMain } from "@cubitrix/cubitrix-react-ui-module";
 
@@ -7,6 +7,9 @@ const Dashboard = () => {
   const [topCoins, setTopCoins] = useState([]);
   const [coinsList, setCoinsList] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log(location)
 
   function loadCoinsList(page, startLoading, finishLoading) {
     if (startLoading) startLoading();

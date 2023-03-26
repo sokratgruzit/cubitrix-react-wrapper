@@ -5,6 +5,7 @@ import Trade from "./components/Trade";
 import Loan from "./components/Loan";
 import Referral from "./components/Referral";
 import Staking from "./components/Staking";
+import CreateAccount from "./components/CreateAccount";
 import { Routes, Route } from "react-router-dom";
 import Extensions from "./components/Extensions";
 
@@ -33,7 +34,9 @@ function App() {
   const account = useSelector((state) => state.connect.account);
   const chainId = useSelector((state) => state.connect.chainId);
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
-  const balance = useSelector((state) => state.appState.userData?.system?.[0]?.balance);
+  const balance = useSelector(
+    (state) => state.appState.userData?.system?.[0]?.balance
+  );
   const location = useLocation();
   const dispatch = useDispatch();
   const [img, setImg] = useState("");
@@ -117,7 +120,10 @@ function App() {
           })
           .then((res) => {
             if (res.data?.account) {
-              dispatch({ type: "SET_SYSTEM_ACCOUNT_DATA", payload: res.data.account });
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.account,
+              });
             }
           })
           .catch((e) => {});
@@ -145,14 +151,15 @@ function App() {
           amount={balance ?? 0}
         />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/loan" element={<Loan />} />
-          <Route path="/trade" element={<Trade />} />
-          <Route path="/staking" element={<Staking />} />
-          <Route path="/referral" element={<Referral />} />
-          <Route path="/extensions" element={<Extensions />} />
-          <Route path="/verify/:id" element={<VerifyEmail />} />
-          <Route path="/reset-password/:code" element={<ResetPassword />} />
+          <Route path='/' element={<Dashboard />} />
+          <Route path='/loan' element={<Loan />} />
+          <Route path='/trade' element={<Trade />} />
+          <Route path='/staking' element={<Staking />} />
+          <Route path='/referral' element={<Referral />} />
+          <Route path='/extensions' element={<Extensions />} />
+          <Route path='/verify/:id' element={<VerifyEmail />} />
+          <Route path='/reset-password/:code' element={<ResetPassword />} />
+          <Route path="/create-account" element={<CreateAccount />} />
         </Routes>
       </div>
       <SideBar />
