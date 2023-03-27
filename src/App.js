@@ -34,9 +34,7 @@ function App() {
   const account = useSelector((state) => state.connect.account);
   const chainId = useSelector((state) => state.connect.chainId);
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
-  const balance = useSelector(
-    (state) => state.appState.userData?.system?.[0]?.balance
-  );
+  const balance = useSelector((state) => state.appState.userData?.system?.[0]?.balance);
   const location = useLocation();
   const dispatch = useDispatch();
   const [img, setImg] = useState("");
@@ -136,7 +134,6 @@ function App() {
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-        {/* <img src={img} alt="img" /> */}
         <Header
           title={"COMPLEND"}
           logoSvg={<Logo />}
@@ -151,14 +148,14 @@ function App() {
           amount={balance ?? 0}
         />
         <Routes>
-          <Route path='/' element={<Dashboard />} />
-          <Route path='/loan' element={<Loan />} />
-          <Route path='/trade' element={<Trade />} />
-          <Route path='/staking' element={<Staking />} />
-          <Route path='/referral' element={<Referral />} />
-          <Route path='/extensions' element={<Extensions />} />
-          <Route path='/verify/:id' element={<VerifyEmail />} />
-          <Route path='/reset-password/:code' element={<ResetPassword />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/loan" element={<Loan />} />
+          <Route path="/trade" element={<Trade />} />
+          <Route path="/staking" element={<Staking />} />
+          <Route path="/referral" element={<Referral />} />
+          <Route path="/extensions" element={<Extensions />} />
+          <Route path="/verify/:id" element={<VerifyEmail />} />
+          <Route path="/reset-password/:code" element={<ResetPassword />} />
           <Route path="/create-account" element={<CreateAccount />} />
         </Routes>
       </div>
