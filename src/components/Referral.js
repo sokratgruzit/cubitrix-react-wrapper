@@ -28,10 +28,8 @@ const Referral = () => {
   const [codesCurrentPage, setCodesCurrentPage] = useState(1);
   const [codesPaginationTotal, setCodesPaginationTotal] = useState(1);
   const [rebatesPaginationTotal, setRebatesPaginationTotal] = useState(1);
-  const [referralCodeTableLoading, setReferralCodeTableLoading] =
-    useState(false);
-  const [referralHistoryTableLoading, setReferralHistoryTableLoading] =
-    useState(false);
+  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
+  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [createCodeError, setCreateCodeError] = useState("");
 
   const account = useSelector((state) => state.connect.account);
@@ -80,12 +78,9 @@ const Referral = () => {
 
   const generateCode = async () => {
     try {
-      const { data } = await axios.post(
-        "/api/referral/get_referrals_by_address",
-        {
-          address: account,
-        }
-      );
+      const { data } = await axios.post("/api/referral/get_referrals_by_address", {
+        address: account,
+      });
 
       let codesData = {};
 
@@ -101,7 +96,7 @@ const Referral = () => {
           "/api/referral/bind_referral_to_user",
           {
             address: account,
-          }
+          },
         );
 
         Array.isArray(data) &&
@@ -132,10 +127,10 @@ const Referral = () => {
             : "get_referral_rebates_history_of_user"
         }`,
         {
-          address: "koko123aaa",
+          address: account,
           limit: 5,
           page: page || 1,
-        }
+        },
       );
 
       if (table === "codes") {
@@ -155,12 +150,9 @@ const Referral = () => {
 
   const getReferralTotal = async () => {
     try {
-      const { data } = await axios.post(
-        "/api/referral/get_referral_data_of_user",
-        {
-          address: account,
-        }
-      );
+      const { data } = await axios.post("/api/referral/get_referral_data_of_user", {
+        address: account,
+      });
 
       let total = {
         rebatesUniLevel: 0,
@@ -204,33 +196,52 @@ const Referral = () => {
   };
 
   const handleCreateCodeSubmit = async () => {
-    setCreateCodeError('');
+    setCreateCodeError("");
     try {
-      await axios.post("/api/referral/assign_refferal_to_user", {
-        referral: createCodeObject.referral,
-        address: account,
-      });
-
-      await generateCode();
-      await generateTableData("codes");
-      await generateTableData("rebates");
-      await getReferralTotal();
+      Promise.allSettled([
+        axios.post("/api/referral/assign_refferal_to_user", {
+          referral: createCodeObject.referral,
+          address: account,
+        }),
+        generateCode(),
+        generateTableData("codes"),
+        generateTableData("rebates"),
+        getReferralTotal(),
+      ]);
+      // await axios.post("/api/referral/assign_refferal_to_user", {
+      //   referral: createCodeObject.referral,
+      //   address: account,
+      // });
+      // await generateCode();
+      // await generateTableData("codes");
+      // await generateTableData("rebates");
+      // await getReferralTotal();
       setCreateCodePopupActive(false);
     } catch (err) {
       console.log(err);
-      setCreateCodeError(err.response.data)
+      setCreateCodeError(err.response.data);
       setTimeout(() => {
-        setCreateCodeError('');
-      }, 3000)
+        setCreateCodeError("");
+      }, 3000);
     }
   };
 
   useEffect(() => {
     if (account && triedReconnect) {
-      generateCode();
-      generateTableData("codes");
-      generateTableData("rebates");
-      getReferralTotal();
+      Promise.allSettled([
+        axios.post("/api/referral/assign_refferal_to_user", {
+          referral: createCodeObject.referral,
+          address: account,
+        }),
+        generateCode(),
+        generateTableData("codes"),
+        generateTableData("rebates"),
+        getReferralTotal(),
+      ]);
+      // generateCode();
+      // generateTableData("codes");
+      // generateTableData("rebates");
+      // getReferralTotal();
     }
     getOptions();
   }, [account]);
@@ -334,8 +345,7 @@ const Referral = () => {
     },
     {
       level: "VIP 1",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_1 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_1 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_1
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_1 + "%"
@@ -344,8 +354,7 @@ const Referral = () => {
     },
     {
       level: "VIP 2",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_2 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_2 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_2
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_2 + "%"
@@ -354,8 +363,7 @@ const Referral = () => {
     },
     {
       level: "VIP 3",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_3 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_3 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_3
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_3 + "%"
@@ -364,8 +372,7 @@ const Referral = () => {
     },
     {
       level: "VIP 4",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_4 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_4 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_4
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_4 + "%"
@@ -374,8 +381,7 @@ const Referral = () => {
     },
     {
       level: "VIP 5",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_5 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_5 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_5
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_5 + "%"
@@ -384,8 +390,7 @@ const Referral = () => {
     },
     {
       level: "VIP 6",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_6 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_6 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_6
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_6 + "%"
@@ -394,8 +399,7 @@ const Referral = () => {
     },
     {
       level: "VIP 7",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_7 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_7 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_7
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_7 + "%"
@@ -404,8 +408,7 @@ const Referral = () => {
     },
     {
       level: "VIP 8",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_8 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_8 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_8
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_8 + "%"
@@ -414,8 +417,7 @@ const Referral = () => {
     },
     {
       level: "VIP 9",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_9 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_9 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_9
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_9 + "%"
@@ -424,8 +426,7 @@ const Referral = () => {
     },
     {
       level: "VIP 10",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_10 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_10 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_10
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_10 + "%"
@@ -434,8 +435,7 @@ const Referral = () => {
     },
     {
       level: "VIP 11",
-      complandHolding:
-        levelSystemTableOptions?.referral_binary_max_amount_lvl_11 || "-",
+      complandHolding: levelSystemTableOptions?.referral_binary_max_amount_lvl_11 || "-",
       rebaseRate: `${
         levelSystemTableOptions.referral_binary_percentage_lvl_11
           ? levelSystemTableOptions?.referral_binary_percentage_lvl_11 + "%"
@@ -550,11 +550,7 @@ const Referral = () => {
       {levelSystemPopupActive && (
         <Popup
           popUpElement={
-            <LevelSystem
-              tableHead={popUpTh}
-              tableData={popUpTd}
-              mobile={width <= 1300}
-            />
+            <LevelSystem tableHead={popUpTh} tableData={popUpTd} mobile={width <= 1300} />
           }
           label={"Referrer Level System"}
           handlePopUpClose={() => setLevelSystemPopupActive(false)}
