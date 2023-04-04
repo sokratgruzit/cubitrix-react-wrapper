@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
@@ -8,6 +8,7 @@ import {
   TotalStaked,
   TotalUnstaked,
   WalletBalance,
+  AddSquareIcon
 } from "../assets/svg";
 
 import { useStake } from "@cubitrix/cubitrix-react-connect-module";
@@ -16,12 +17,15 @@ import { useStake } from "@cubitrix/cubitrix-react-connect-module";
 import { useTableParameters } from "../hooks/useTableParameters";
 
 // UI
-import { Staking, Button } from "@cubitrix/cubitrix-react-ui-module";
+import { Staking as StakingUI, Button, Popup, Calculator } from "@cubitrix/cubitrix-react-ui-module";
 
 // api
 import axios from "../api/axios";
 
-const Stake = () => {
+const Staking = () => {
+  const [createStakingPopUpActive, setCreateStakingPopUpActive] =
+    useState(false);
+
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -30,7 +34,7 @@ const Stake = () => {
     stake,
     unstake,
     harvest,
-    setMaxWithdrawal,
+    setMaxWithdrawal: handleMaxClick,
     handleTimeperiodDate,
     handleDepositAmount,
     handleTimePeriod,
@@ -63,6 +67,10 @@ const Stake = () => {
         payload: { sideBarOpen: !sideBarOpen, sideBar: "connect" },
       });
     }
+  };
+
+  const handlePopUpOpen = () => {
+    setCreateStakingPopUpActive(true);
   };
 
   const th = [
@@ -104,16 +112,16 @@ const Stake = () => {
     },
     {
       name: "",
-      width: 10,
+      width: 7,
       id: 6,
-      mobileWidth: 35,
+      mobileWidth: 20,
       position: "right",
       className: "buttons-th",
       onClick: (index) => harvest(index),
     },
   ];
 
-  const { mobile, mobileExpand, mobileExpandFunc, width, durationOptions } =
+  const { durationOptions } =
     useTableParameters("staking");
 
   const accountSummaryData = [
@@ -153,115 +161,7 @@ const Stake = () => {
     ],
   ];
 
-  let tableData = useMemo(() => {
-    if (stakersRecord?.length > 0) {
-      return stakersRecord.map((item, index) => {
-        return (
-          <div
-            className={`table-parent ${mobileExpand === item.id ? "active" : ""}`}
-            key={index}
-            onClick={() => {
-              mobileExpandFunc(item.id);
-            }}
-          >
-            <div className={"table"}>
-              {th?.slice(0, 5).map((i, index) => (
-                <div
-                  key={index}
-                  className={`td col ${i.mobileWidth ? true : false}`}
-                  style={{ width: `${mobile ? i.mobileWidth : i.width}%` }}
-                >
-                  <span>
-                    {
-                      [
-                        item.amount,
-                        item.staketime,
-                        item.unstaketime,
-                        "CML",
-                        parseFloat(item.realtimeRewardPerBlock).toFixed(10),
-                      ][index]
-                    }
-                  </span>
-                </div>
-              ))}
-              {width > 940 &&
-                th.slice(5, 7).map((i, index) => (
-                  <div
-                    key={index}
-                    className={`td col ${i.position} ${i.mobileWidth ? true : false}`}
-                    style={{
-                      width: `${mobile ? i.mobileWidth : i.width}%`,
-                      marginRight: `${width < 1450 ? "10px" : "0"}`,
-                    }}
-                  >
-                    <Button
-                      element={"staking-button"}
-                      label={index === 0 ? "Unstake" : "Harvest"}
-                      active={index === 0}
-                      customStyles={{ borderRadius: "32px" }}
-                      onClick={() => i.onClick(index)}
-                      disabled={index === 0 ? item.unstaked : item.withdrawan}
-                    />
-                  </div>
-                ))}
-            </div>
-            <div className="table-more" />
-            <div className="icon-place">
-              <svg
-                width="12"
-                height="7"
-                viewBox="0 0 12 7"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10.299 1.33325L6.47141 5.16089C6.01937 5.61293 5.27968 5.61293 4.82764 5.16089L1 1.33325"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div className="table-mobile">
-              <div className="table-mobile-content">
-                {[1, 2, 3].map((index) => (
-                  <div className="td" key={index}>
-                    <div className="mobile-ttl">{th[index].name}</div>
-                    <span>
-                      {index === 1 && item.staketime}
-                      {index === 2 && item.unstaketime}
-                      {index === 3 && "CML"}
-                    </span>
-                  </div>
-                ))}
-                {width <= 940 && (
-                  <div className="table-buttons">
-                    {[5, 6].map((index) => (
-                      <div className="td" key={index}>
-                        <Button
-                          element="staking-button"
-                          label={index === 5 ? "Unstake" : "Harvest"}
-                          active={index === 5}
-                          customStyles={{ borderRadius: "32px" }}
-                          onClick={() => th[index].onClick(index)}
-                          disabled={index === 5 ? item.unstaked : item.withdrawan}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      });
-    }
-    // eslint-disable-next-line
-  }, [stakersRecord]);
-
-  const handleSubmit = async () => {
+  const handleCalculatorSubmit = async () => {
     if (!account) {
       handleConnect();
     }
@@ -277,7 +177,10 @@ const Stake = () => {
           })
           .then((res) => {
             if (res.data?.account) {
-              dispatch({ type: "SET_SYSTEM_ACCOUNT_DATA", payload: res.data.account });
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.account,
+              });
             }
           })
           .catch((e) => {});
@@ -285,28 +188,58 @@ const Stake = () => {
     }
   };
 
+  const tableEmptyData = {
+    label: "Stake to earn Complend reward",
+    button: (
+      <Button
+        element={"referral-button"}
+        label={"Create Staking"}
+        icon={<AddSquareIcon color={`#00C6FF`} />}
+        onClick={handlePopUpOpen}
+      />
+    ),
+  };
+
   return (
     <>
-      <Staking
+      <StakingUI
         account={account}
-        durationOptions={durationOptions}
         stackContractInfo={stackContractInfo}
         loading={loading}
-        isAllowance={isAllowance}
-        handleCalculatorSubmit={handleSubmit}
-        timeperiod={timeperiod}
-        handleTimePeriod={handleTimePeriod}
-        depositAmount={depositAmount}
-        handleDepositAmount={handleDepositAmount}
-        handleTimeperiodDate={handleTimeperiodDate}
-        timeperiodDate={timeperiodDate}
-        handleMaxClick={setMaxWithdrawal}
         accountSummaryData={accountSummaryData}
-        tableData={tableData}
         tableHead={th}
+        stakersRecord={stakersRecord}
+        tableEmptyData={tableEmptyData}
+        handlePopUpOpen={handlePopUpOpen}
       />
+      {createStakingPopUpActive && (
+        <Popup
+          popUpElement={
+            <Calculator
+              {...{
+                durationOptions,
+                handleCalculatorSubmit,
+                handleMaxClick,
+                loading,
+                isAllowance,
+                account,
+                timeperiod,
+                handleTimePeriod,
+                depositAmount,
+                handleDepositAmount,
+                timeperiodDate,
+                handleTimeperiodDate,
+              }}
+            />
+          }
+          label={"Staking Calculator"}
+          handlePopUpClose={() => setCreateStakingPopUpActive(false)}
+          description={"Stake Complend to earn Complend reward"}
+          headerCustomStyles={{ background: "#272C57" }}
+        />
+      )}
     </>
   );
 };
 
-export default Stake;
+export default Staking;
