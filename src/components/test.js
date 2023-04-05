@@ -1,11 +1,13 @@
 import React from "react";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import axios from "../api/axios";
 
 const Test = () => {
   const account = useSelector((state) => state.connect.account);
+  const dispatch = useDispatch();
+
   function openLoanAccount() {
     axios
       .post("/api/accounts/create_different_accounts", {
@@ -32,6 +34,23 @@ const Test = () => {
       })
       .catch((e) => console.log(e.response));
   }
+
+  function testChangeExtension() {
+    axios
+      .post("/api/accounts/manage_extensions", {
+        address: account,
+        extensions: { referral: "true" },
+      })
+      .then((res) => {
+        if (res?.data?.account) {
+          dispatch({
+            type: "UPDATE_ACTIVE_EXTENSIONS",
+            payload: res.data.account.extensions,
+          });
+        }
+      })
+      .catch((e) => console.log(e.response));
+  }
   return (
     <div
       style={{
@@ -47,6 +66,7 @@ const Test = () => {
       <button onClick={startTransition}>
         send balance from main to loan account 20 tokens
       </button>
+      <button onClick={testChangeExtension}> shit shit shit</button>
     </div>
   );
 };

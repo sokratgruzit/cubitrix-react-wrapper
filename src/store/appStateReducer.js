@@ -27,6 +27,13 @@ const appStateReducer = (state = INIT_STATE, action) => {
     };
   }
 
+  if (action.type === "UPDATE_ACTIVE_EXTENSIONS") {
+    return {
+      ...state,
+      userData: { ...state.userData, ...action.payload },
+    };
+  }
+
   if (action.type === "SET_TRIED_RECONNECT") {
     return {
       ...state,

@@ -80,8 +80,8 @@ const VerifyEmail = (props) => {
                   <>
                     <span>Your email address hasn’t been verified.</span>
                     <span>
-                      Please try again or click on the reset button to receive a
-                      new verification mail.
+                      Please try again or click on the reset button to receive a new
+                      verification mail.
                     </span>
                   </>
                 )}

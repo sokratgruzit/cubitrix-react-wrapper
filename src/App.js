@@ -24,6 +24,7 @@ import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 
 import { injected } from "./connector";
+import Test from "./components/test";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -131,6 +132,8 @@ function App() {
     // eslint-disable-next-line
   }, [account]);
 
+  console.log(exts);
+
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
@@ -157,6 +160,7 @@ function App() {
           <Route path="/verify/:id" element={<VerifyEmail />} />
           <Route path="/reset-password/:code" element={<ResetPassword />} />
           <Route path="/create-account" element={<CreateAccount />} />
+          <Route path="/test" element={<Test />} />
         </Routes>
       </div>
       <SideBar />
