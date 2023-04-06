@@ -8,6 +8,7 @@ import Staking from "./components/Staking";
 import CreateAccount from "./components/CreateAccount";
 import { Routes, Route } from "react-router-dom";
 import Extensions from "./components/Extensions";
+import ExtensionItem from "./components/ExtensionItem";
 
 import { useSelector, useDispatch } from "react-redux";
 import SideBar from "./components/Layouts/SideBar/SideBar";
@@ -132,7 +133,7 @@ function App() {
     // eslint-disable-next-line
   }, [account]);
 
-  console.log(exts);
+  // console.log(exts);
 
   return (
     <main>
@@ -157,6 +158,7 @@ function App() {
           <Route path="/staking" element={<Staking />} />
           <Route path="/referral" element={<Referral />} />
           <Route path="/extensions" element={<Extensions />} />
+          <Route path="/extensions/:id" element={<ExtensionItem />} />
           <Route path="/verify/:id" element={<VerifyEmail />} />
           <Route path="/reset-password/:code" element={<ResetPassword />} />
           <Route path="/create-account" element={<CreateAccount />} />
