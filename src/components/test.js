@@ -25,7 +25,6 @@ const Test = () => {
       .post("/api/transactions/deposit_transaction", {
         tx_type: "deposit",
         from: account,
-        to: "0xA3403975861B601aE111b4eeAFbA94060a58d0CA",
         amount: 20,
         tx_currency: "ether",
       })
