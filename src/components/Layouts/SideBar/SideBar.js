@@ -26,7 +26,7 @@ import QRCode from "qrcode";
 
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
-  const userMetaData = useSelector((state) => state.appState.userData?.meta[0]);
+  const userMetaData = useSelector((state) => state.appState.userData?.meta?.[0]);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
 

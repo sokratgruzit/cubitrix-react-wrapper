@@ -8,7 +8,7 @@ import {
   TotalStaked,
   TotalUnstaked,
   WalletBalance,
-  AddSquareIcon
+  AddSquareIcon,
 } from "../assets/svg";
 
 import { useStake } from "@cubitrix/cubitrix-react-connect-module";
@@ -17,14 +17,18 @@ import { useStake } from "@cubitrix/cubitrix-react-connect-module";
 import { useTableParameters } from "../hooks/useTableParameters";
 
 // UI
-import { Staking as StakingUI, Button, Popup, Calculator } from "@cubitrix/cubitrix-react-ui-module";
+import {
+  Staking as StakingUI,
+  Button,
+  Popup,
+  Calculator,
+} from "@cubitrix/cubitrix-react-ui-module";
 
 // api
 import axios from "../api/axios";
 
 const Staking = () => {
-  const [createStakingPopUpActive, setCreateStakingPopUpActive] =
-    useState(false);
+  const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false);
 
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
@@ -121,8 +125,7 @@ const Staking = () => {
     },
   ];
 
-  const { durationOptions } =
-    useTableParameters("staking");
+  const { durationOptions } = useTableParameters("staking");
 
   const accountSummaryData = [
     [

@@ -8,7 +8,6 @@ import { connectReducer, stakeReducer } from "@cubitrix/cubitrix-react-connect-m
 import appStateReducer from "./appStateReducer";
 // import {stakeReducer} from "./stakeReducer";
 
-
 const persistConfig = {
   key: "root",
   storage,
@@ -16,7 +15,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  extensions: persistReducer(persistConfig, extensionsReducer),
+  extensions: extensionsReducer,
   connect: persistReducer(persistConfig, connectReducer),
   appState: appStateReducer,
   stake: persistReducer(persistConfig, stakeReducer),

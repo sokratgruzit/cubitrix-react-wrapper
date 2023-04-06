@@ -20,7 +20,6 @@ const extensionsReducer = (state = INIT_STATE, action) => {
         },
       };
     case "UPDATE_ACTIVE_EXTENSIONS":
-      console.log(action.payload);
       return {
         ...state,
         activeExtensions: {
