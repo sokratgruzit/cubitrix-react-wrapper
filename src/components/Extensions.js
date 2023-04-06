@@ -14,7 +14,6 @@ const Extensions = () => {
   // console.log((activeExtensions));
 
   function testChangeExtension(title, boolean) {
-
     axios
       .post("/api/accounts/manage_extensions", {
         address: account,

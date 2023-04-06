@@ -29,13 +29,14 @@ import Test from "./components/test";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
-  const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  const sideBar = useSelector((state) => state.appState.sideBar);
-  const emailVerified = useSelector((state) => state.appState.emailVerified);
-  const exts = useSelector((state) => state.extensions.activeExtensions);
+  const sideBarOpen = useSelector((state) => state.appState?.sideBarOpen);
+  const sideBar = useSelector((state) => state.appState?.sideBar);
+  const emailVerified = useSelector((state) => state.appState?.emailVerified);
+  const exts = useSelector((state) => state.extensions?.activeExtensions);
   const account = useSelector((state) => state.connect.account);
   const chainId = useSelector((state) => state.connect.chainId);
-  const triedReconnect = useSelector((state) => state.appState.triedReconnect);
+  const providerType = useSelector((state) => state.connect.providerType);
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const balance = useSelector((state) => state.appState.userData?.system?.[0]?.balance);
   const location = useLocation();
   const dispatch = useDispatch();
@@ -107,7 +108,9 @@ function App() {
     MetaMaskEagerlyConnect(injected, () => {
       dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
     });
-
+    if (!providerType) {
+      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+    }
     // eslint-disable-next-line
   }, []);
 
@@ -129,6 +132,29 @@ function App() {
           .catch((e) => {});
       }
       init();
+    }
+    // eslint-disable-next-line
+  }, [account]);
+
+  useEffect(() => {
+    if (!account && triedReconnect) {
+      dispatch({
+        type: "UPDATE_ACTIVE_EXTENSIONS",
+        payload: {
+          trade: "false",
+          loan: "false",
+          notify: "false",
+          staking: "false",
+          referral: "false",
+          connect: "false",
+        },
+      });
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: {
+          userData: null,
+        },
+      });
     }
     // eslint-disable-next-line
   }, [account]);

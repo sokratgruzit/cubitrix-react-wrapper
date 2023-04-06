@@ -23,14 +23,17 @@ const appStateReducer = (state = INIT_STATE, action) => {
   if (action.type === "SET_SYSTEM_ACCOUNT_DATA") {
     return {
       ...state,
-      userData: { ...state.userData, system: [action.payload] },
+      userData: { ...state?.userData, system: [action.payload] },
     };
   }
 
   if (action.type === "UPDATE_ACTIVE_EXTENSIONS") {
     return {
       ...state,
-      userData: { ...state.userData, ...action.payload },
+      userData: {
+        ...state?.userData,
+        extensions: { ...state?.userData?.extensions, ...action.payload },
+      },
     };
   }
 
