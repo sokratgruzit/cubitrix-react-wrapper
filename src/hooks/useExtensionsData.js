@@ -18,7 +18,11 @@ export const useExtensionsData = () => {
 
   const handleChangeExtension = (title, value) => {
     if (title === "loan" && (!isActive || !emailVerified)) return;
-    if ((title === "staking" || title === "referral" || title === "trade") && !emailVerified) return;
+    if (
+      (title === "staking" || title === "referral" || title === "trade") &&
+      !emailVerified
+    )
+      return;
 
     setExtsActive({ ...extsActive, [title]: value ? "true" : "false" });
 
@@ -38,7 +42,7 @@ export const useExtensionsData = () => {
       })
       .catch((e) => {
         console.log(e.response);
-        setExtsActive({ ...extsActive, [title]: !value });
+        setExtsActive({ ...extsActive, [title]: !value ? "true" : "false" });
       });
   };
 
