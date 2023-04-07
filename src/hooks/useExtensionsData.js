@@ -5,6 +5,7 @@ import { StakingIcon } from "../assets/svg";
 
 // api
 import axios from "../api/axios";
+import { useEffect, useState } from "react";
 
 export const useExtensionsData = () => {
   const account = useSelector((state) => state.connect.account);
@@ -13,30 +14,37 @@ export const useExtensionsData = () => {
   const appState = useSelector((state) => state.appState);
   const emailVerified = appState.emailVerified;
   const isActive = appState.userData?.system?.[0]?.active;
+  const [extsActive, setExtsActive] = useState({});
 
   const handleChangeExtension = (title, value) => {
-    if (title === "loan") {
-      if (!isActive || !emailVerified) return;
-    }
-    if (title === "staking" || title === "referral" || title === "trade") {
-      if (!emailVerified) return;
-    }
+    if (title === "loan" && (!isActive || !emailVerified)) return;
+    if ((title === "staking" || title === "referral" || title === "trade") && !emailVerified) return;
+
+    setExtsActive({ ...extsActive, [title]: value ? "true" : "false" });
+
     axios
       .post("/api/accounts/manage_extensions", {
         address: account,
         extensions: { [title]: value === true ? "true" : "false" },
       })
       .then((res) => {
-        console.log(res.data);
         if (res?.data?.account) {
           dispatch({
             type: "UPDATE_ACTIVE_EXTENSIONS",
             payload: res.data.account.extensions,
           });
         }
+        setExtsActive(res.data.account.extensions);
       })
-      .catch((e) => console.log(e.response));
+      .catch((e) => {
+        console.log(e.response);
+        setExtsActive({ ...extsActive, [title]: !value });
+      });
   };
+
+  useEffect(() => {
+    setExtsActive(activeExtensions);
+  }, [activeExtensions]);
 
   const extensionsCardsData = [
     {
@@ -48,7 +56,7 @@ export const useExtensionsData = () => {
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) =>
         handleChangeExtension(title.toLowerCase(), value),
-      active: activeExtensions.trade === "true" ? true : false,
+      active: extsActive.trade === "true" ? true : false,
       disabled: !(isActive && emailVerified),
     },
     {
@@ -60,7 +68,7 @@ export const useExtensionsData = () => {
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) =>
         handleChangeExtension(title.toLowerCase(), value),
-      active: activeExtensions.staking === "true" ? true : false,
+      active: extsActive.staking === "true" ? true : false,
       disabled: !emailVerified,
     },
     {
@@ -72,7 +80,7 @@ export const useExtensionsData = () => {
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) =>
         handleChangeExtension(title.toLowerCase(), value),
-      active: activeExtensions.loan === "true" ? true : false,
+      active: extsActive.loan === "true" ? true : false,
       disabled: !(isActive && emailVerified),
     },
     {
@@ -84,7 +92,7 @@ export const useExtensionsData = () => {
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) =>
         handleChangeExtension(title.toLowerCase(), value),
-      active: activeExtensions.referral === "true" ? true : false,
+      active: extsActive.referral === "true" ? true : false,
       disabled: !emailVerified,
     },
     {
@@ -95,7 +103,7 @@ export const useExtensionsData = () => {
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) => handleChangeExtension("notify", value),
-      active: activeExtensions.notify === "true" ? true : false,
+      active: extsActive.notify === "true" ? true : false,
       disabled: false,
     },
   ];
