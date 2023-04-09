@@ -188,6 +188,7 @@ const Staking = () => {
           })
           .catch((e) => {});
       });
+      setCreateStakingPopUpActive(false);
     }
   };
 

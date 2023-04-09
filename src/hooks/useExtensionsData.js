@@ -17,9 +17,9 @@ export const useExtensionsData = () => {
   const [extsActive, setExtsActive] = useState({});
 
   const handleChangeExtension = (title, value) => {
-    if (title === "loan" && (!isActive || !emailVerified)) return;
+    if ((title === "loan" || title === "trade") && (!isActive || !emailVerified)) return;
     if (
-      (title === "staking" || title === "referral" || title === "trade") &&
+      (title === "staking" || title === "referral" || title === "notify") &&
       !emailVerified
     )
       return;
@@ -58,8 +58,7 @@ export const useExtensionsData = () => {
       description:
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) =>
-        handleChangeExtension(title.toLowerCase(), value),
+      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
       active: extsActive.trade === "true" ? true : false,
       disabled: !(isActive && emailVerified),
     },
@@ -70,8 +69,7 @@ export const useExtensionsData = () => {
       description:
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) =>
-        handleChangeExtension(title.toLowerCase(), value),
+      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
       active: extsActive.staking === "true" ? true : false,
       disabled: !emailVerified,
     },
@@ -82,8 +80,7 @@ export const useExtensionsData = () => {
       description:
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) =>
-        handleChangeExtension(title.toLowerCase(), value),
+      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
       active: extsActive.loan === "true" ? true : false,
       disabled: !(isActive && emailVerified),
     },
@@ -94,8 +91,7 @@ export const useExtensionsData = () => {
       description:
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) =>
-        handleChangeExtension(title.toLowerCase(), value),
+      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
       active: extsActive.referral === "true" ? true : false,
       disabled: !emailVerified,
     },
@@ -108,7 +104,7 @@ export const useExtensionsData = () => {
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) => handleChangeExtension("notify", value),
       active: extsActive.notify === "true" ? true : false,
-      disabled: false,
+      disabled: !emailVerified,
     },
   ];
 

@@ -48,24 +48,6 @@ function App() {
   const { MetaMaskEagerlyConnect } = useConnect();
 
   useEffect(() => {
-    async function fetchGitData() {
-      await axios
-        .post("/api/test", {
-          o: "sokratgruzit",
-          r: "core-assets",
-          p: "blockchains/aeternity/info/logo.png",
-          t: "download_url",
-        })
-        .then((res) => {
-          setImg(res.data);
-        })
-        .catch((e) => {});
-    }
-
-    fetchGitData();
-  }, []);
-
-  useEffect(() => {
     if (account && chainId) {
       const fetchData = async () => {
         await axios

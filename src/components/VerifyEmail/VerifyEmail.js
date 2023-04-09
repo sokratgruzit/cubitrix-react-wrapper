@@ -93,6 +93,7 @@ const VerifyEmail = (props) => {
               onClick={handleClick}
               type="btn-primary"
               size="btn-sm"
+              customStyles={{ background: '#00C6FF'}}
             />
           </div>
         </div>
