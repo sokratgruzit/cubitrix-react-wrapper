@@ -89,6 +89,10 @@ const SideBarRight = () => {
           type: "UPDATE_ACTIVE_EXTENSIONS",
           payload: res.data.success.data.accounts[0].extensions,
         });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
       })
       .catch((e) => {});
   };

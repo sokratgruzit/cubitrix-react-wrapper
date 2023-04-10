@@ -31,6 +31,7 @@ const Referral = () => {
   const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
   const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [createCodeError, setCreateCodeError] = useState("");
+  const [createCodeSuccess, setCreateCodeSuccess] = useState("");
 
   const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
@@ -197,8 +198,9 @@ const Referral = () => {
 
   const handleCreateCodeSubmit = async () => {
     setCreateCodeError("");
+    setCreateCodeSuccess("");
     try {
-      Promise.allSettled([
+      const results = await Promise.allSettled([
         axios.post("/api/referral/assign_refferal_to_user", {
           referral: createCodeObject.referral,
           address: account,
@@ -208,15 +210,17 @@ const Referral = () => {
         generateTableData("rebates"),
         getReferralTotal(),
       ]);
-      // await axios.post("/api/referral/assign_refferal_to_user", {
-      //   referral: createCodeObject.referral,
-      //   address: account,
-      // });
-      // await generateCode();
-      // await generateTableData("codes");
-      // await generateTableData("rebates");
-      // await getReferralTotal();
-      setCreateCodePopupActive(false);
+
+      if (results[0].status === "rejected") {
+        setCreateCodeError(results[0].reason.response.data);
+      } else {
+        setCreateCodeSuccess("Referral Added Successfully");
+      }
+
+      setTimeout(() => {
+        setCreateCodePopupActive(false);
+        setCreateCodeSuccess("");
+      }, 3000);
     } catch (err) {
       console.log(err);
       setCreateCodeError(err.response.data);
@@ -539,6 +543,7 @@ const Referral = () => {
               submitButtonLabel={"Enter a Code"}
               customStyles={{ gridTemplateColumns: "100%" }}
               popUpElementError={createCodeError}
+              popUpElementSuccess={createCodeSuccess}
             />
           }
           label={"Create Referral Code"}

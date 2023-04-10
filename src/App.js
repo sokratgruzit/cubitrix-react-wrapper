@@ -18,7 +18,7 @@ import { Header } from "@cubitrix/cubitrix-react-ui-module";
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
@@ -41,6 +41,9 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
   const [img, setImg] = useState("");
+  const appState = useSelector((state) => state.appState);
+  const isExtensionsLoaded = appState.isExtensionsLoaded
+  const { activeExtensions } = useSelector((state) => state.extensions);
 
   const { MetaMaskEagerlyConnect } = useConnect();
 
@@ -161,10 +164,10 @@ function App() {
         />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/loan" element={<Loan />} />
-          <Route path="/trade" element={<Trade />} />
-          <Route path="/staking" element={<Staking />} />
-          <Route path="/referral" element={<Referral />} />
+          <Route path="/loan" element={isExtensionsLoaded && activeExtensions.loan === "false" ? <Navigate to="/" /> : <Loan />} />
+          <Route path="/trade" element={isExtensionsLoaded && activeExtensions.trade === "false" ? <Navigate to="/" /> : <Trade />} />
+          <Route path="/staking" element={isExtensionsLoaded && activeExtensions.staking === "false" ? <Navigate to="/" /> : <Staking />} />
+          <Route path="/referral" element={isExtensionsLoaded && activeExtensions.referral === "false" ? <Navigate to="/" /> : <Referral />} />
           <Route path="/extensions" element={<Extensions />} />
           <Route path="/extensions/:id" element={<ExtensionItem />} />
           <Route path="/verify/:id" element={<VerifyEmail />} />
