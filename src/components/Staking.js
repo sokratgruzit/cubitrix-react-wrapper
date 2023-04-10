@@ -170,7 +170,26 @@ const Staking = () => {
     }
 
     if (account && isAllowance) {
-      approve(account);
+      approve(account, () => {
+        stake(async () => {
+          await axios
+            .post("/api/accounts/activate-account", {
+              address: account,
+            })
+            .then((res) => {
+              if (res.data?.account) {
+                dispatch({
+                  type: "SET_SYSTEM_ACCOUNT_DATA",
+                  payload: res.data.account,
+                });
+              }
+            })
+            .catch((e) => {});
+        });
+        setTimeout(() => {
+          setCreateStakingPopUpActive(false);
+        }, 500);
+      });
     }
     if (account && !isAllowance) {
       stake(async () => {
@@ -188,7 +207,9 @@ const Staking = () => {
           })
           .catch((e) => {});
       });
-      setCreateStakingPopUpActive(false);
+      setTimeout(() => {
+        setCreateStakingPopUpActive(false);
+      }, 500);
     }
   };
 
