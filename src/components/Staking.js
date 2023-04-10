@@ -192,11 +192,9 @@ const Staking = () => {
                 payload: res.data.account,
               });
             }
-            setTimeout(() => {
-              setCreateStakingPopUpActive(false);
-            }, 500);
           })
           .catch((e) => {});
+        setCreateStakingPopUpActive(false);
       });
     }
   };

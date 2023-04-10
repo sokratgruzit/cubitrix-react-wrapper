@@ -211,8 +211,8 @@ const Referral = () => {
         getReferralTotal(),
       ]);
 
-      if (results[0].status === "rejected") {
-        setCreateCodeError(results[0].reason.response.data);
+      if (results?.[0].status === "rejected") {
+        setCreateCodeError(results?.[0]?.reason?.response?.data);
       } else {
         setCreateCodeSuccess("Referral Added Successfully");
       }
@@ -220,6 +220,7 @@ const Referral = () => {
       setTimeout(() => {
         setCreateCodePopupActive(false);
         setCreateCodeSuccess("");
+        setCreateCodeError("");
       }, 3000);
     } catch (err) {
       console.log(err);
@@ -233,10 +234,10 @@ const Referral = () => {
   useEffect(() => {
     if (account && triedReconnect) {
       Promise.allSettled([
-        axios.post("/api/referral/assign_refferal_to_user", {
-          referral: createCodeObject.referral,
-          address: account,
-        }),
+        // axios.post("/api/referral/assign_refferal_to_user", {
+        //   referral: createCodeObject.referral,
+        //   address: account,
+        // }),
         generateCode(),
         generateTableData("codes"),
         generateTableData("rebates"),
