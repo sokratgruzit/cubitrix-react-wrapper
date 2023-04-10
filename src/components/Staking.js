@@ -29,6 +29,7 @@ import axios from "../api/axios";
 
 const Staking = () => {
   const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false);
+  const [approveResonse, setApproveResonse] = useState(null);
 
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
@@ -165,30 +166,17 @@ const Staking = () => {
   ];
 
   const handleCalculatorSubmit = async () => {
+    setApproveResonse(null);
     if (!account) {
       handleConnect();
     }
 
     if (account && isAllowance) {
-      approve(account, () => {
-        stake(async () => {
-          await axios
-            .post("/api/accounts/activate-account", {
-              address: account,
-            })
-            .then((res) => {
-              if (res.data?.account) {
-                dispatch({
-                  type: "SET_SYSTEM_ACCOUNT_DATA",
-                  payload: res.data.account,
-                });
-              }
-            })
-            .catch((e) => {});
+      approve(() => {
+        setApproveResonse({
+          status: "success",
+          message: "Approved successfully, please stake desired amount.",
         });
-        setTimeout(() => {
-          setCreateStakingPopUpActive(false);
-        }, 500);
       });
     }
     if (account && !isAllowance) {
@@ -204,12 +192,12 @@ const Staking = () => {
                 payload: res.data.account,
               });
             }
+            setTimeout(() => {
+              setCreateStakingPopUpActive(false);
+            }, 500);
           })
           .catch((e) => {});
       });
-      setTimeout(() => {
-        setCreateStakingPopUpActive(false);
-      }, 500);
     }
   };
 
@@ -255,6 +243,7 @@ const Staking = () => {
                 timeperiodDate,
                 handleTimeperiodDate,
               }}
+              approveResonse={approveResonse}
             />
           }
           label={"Staking Calculator"}

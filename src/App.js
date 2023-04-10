@@ -19,7 +19,7 @@ import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { useLocation, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
@@ -40,9 +40,8 @@ function App() {
   const balance = useSelector((state) => state.appState.userData?.system?.[0]?.balance);
   const location = useLocation();
   const dispatch = useDispatch();
-  const [img, setImg] = useState("");
   const appState = useSelector((state) => state.appState);
-  const isExtensionsLoaded = appState.isExtensionsLoaded
+  const isExtensionsLoaded = appState.isExtensionsLoaded;
   const { activeExtensions } = useSelector((state) => state.extensions);
 
   const { MetaMaskEagerlyConnect } = useConnect();
@@ -164,10 +163,46 @@ function App() {
         />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/loan" element={isExtensionsLoaded && activeExtensions.loan === "false" ? <Navigate to="/" /> : <Loan />} />
-          <Route path="/trade" element={isExtensionsLoaded && activeExtensions.trade === "false" ? <Navigate to="/" /> : <Trade />} />
-          <Route path="/staking" element={isExtensionsLoaded && activeExtensions.staking === "false" ? <Navigate to="/" /> : <Staking />} />
-          <Route path="/referral" element={isExtensionsLoaded && activeExtensions.referral === "false" ? <Navigate to="/" /> : <Referral />} />
+          <Route
+            path="/loan"
+            element={
+              isExtensionsLoaded && activeExtensions.loan === "false" ? (
+                <Navigate to="/" />
+              ) : (
+                <Loan />
+              )
+            }
+          />
+          <Route
+            path="/trade"
+            element={
+              isExtensionsLoaded && activeExtensions.trade === "false" ? (
+                <Navigate to="/" />
+              ) : (
+                <Trade />
+              )
+            }
+          />
+          <Route
+            path="/staking"
+            element={
+              isExtensionsLoaded && activeExtensions.staking === "false" ? (
+                <Navigate to="/" />
+              ) : (
+                <Staking />
+              )
+            }
+          />
+          <Route
+            path="/referral"
+            element={
+              isExtensionsLoaded && activeExtensions.referral === "false" ? (
+                <Navigate to="/" />
+              ) : (
+                <Referral />
+              )
+            }
+          />
           <Route path="/extensions" element={<Extensions />} />
           <Route path="/extensions/:id" element={<ExtensionItem />} />
           <Route path="/verify/:id" element={<VerifyEmail />} />

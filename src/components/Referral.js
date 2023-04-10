@@ -248,6 +248,7 @@ const Referral = () => {
       // getReferralTotal();
     }
     getOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   let referralCodeTh = [

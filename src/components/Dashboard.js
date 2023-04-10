@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { Dashboard as DasboardMain } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,7 +9,6 @@ const Dashboard = () => {
   const [coinsList, setCoinsList] = useState([]);
   const userData = useSelector((state) => state.appState?.userData);
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
 
   function loadCoinsList(page, startLoading, finishLoading) {
