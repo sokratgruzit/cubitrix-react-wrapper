@@ -4,42 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Dashboard as DasboardMain } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector, useDispatch } from "react-redux";
 
+// const dashboardImg = require("../../assets/img/dashboard/rocket.png");
+
 const Dashboard = () => {
-  const [topCoins, setTopCoins] = useState([]);
-  const [coinsList, setCoinsList] = useState([]);
   const userData = useSelector((state) => state.appState?.userData);
+  const account = useSelector((state) => state.connect?.account);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  function loadCoinsList(page, startLoading, finishLoading) {
-    if (startLoading) startLoading();
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=${page}&sparkline=true&price_change_percentage=24h`,
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setTimeout(() => {
-          setCoinsList((prev) => [...prev, ...data]);
-        }, 200);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        if (finishLoading) finishLoading();
-      });
-  }
-  useEffect(() => {
-    fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=24h",
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setTopCoins(data);
-        setCoinsList(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
 
   const handleGetStarted = () => {
     if (userData?.meta?.[0]?.email && userData?.extensions.staking === "true") {
@@ -53,13 +24,47 @@ const Dashboard = () => {
       });
     }
   };
+
+  function handleConnect() {
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: true, sideBar: "connect" },
+    });
+  }
+
+  const allImages = {
+    dashboardHeader: {
+      rocket: "/img/dashboard/rocket.png",
+      dots: "/img/dashboard/dots.png",
+      man: "/img/dashboard/man.png",
+      planet: "/img/dashboard/planet.png",
+      dotsRight: "/img/dashboard/dotsRight.png",
+      bottom: "/img/dashboard/bottom.svg",
+    },
+    topcoins: {
+      EthCard: "/img/dashboard/coinCards/EthCard.png",
+      BitcoinCard: "/img/dashboard/coinCards/BitcoinCard.png",
+      TetherCard: "/img/dashboard/coinCards/TetherCard.png",
+      TopCoinsIcon: "/img/dashboard/TopCoinsIcon.png",
+      ball: "/img/dashboard/ball.svg",
+      silverCoin: "/img/dashboard/silverCoin.png",
+    },
+    meditation: {
+      MeditationPerson: "/img/dashboard/MeditationPerson.png",
+      MeditationBG: "/img/dashboard/MeditationBG.png",
+    },
+    startNow: {
+      startNowBG: "/img/dashboard/startNowBG.png",
+      bg: "/img/dashboard/startNowBG.png",
+    },
+  };
   return (
     // {balance ?? "0"} tokens
     <DasboardMain
-      topCoins={topCoins}
-      coinsList={coinsList}
-      loadCoinsList={loadCoinsList}
       handleGetStarted={handleGetStarted}
+      account={account}
+      handleConnect={handleConnect}
+      allImages={allImages}
     />
   );
 };
