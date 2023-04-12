@@ -55,9 +55,36 @@ const Dashboard = () => {
     },
     startNow: {
       startNowBG: "/img/dashboard/startNowBG.png",
-      bg: "/img/dashboard/startNowBG.png",
     },
   };
+
+  function handleAction(act) {
+    window.scrollTo(0, 0);
+    if (act === "Become a Member") {
+      return dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: true, sideBar: "connect" },
+      });
+    }
+
+    if (userData?.meta?.[0]?.email) {
+      if (act === "Make Staking" && userData?.extensions.staking === "true") {
+        return navigate("/staking");
+      }
+      if (act === "Trade Now" && userData?.extensions.trade === "true") {
+        return navigate("/trade");
+      }
+      if (act === "Make Loan" && userData?.extensions.loan === "true") {
+        return navigate("/loan");
+      }
+      navigate("/extensions");
+    } else {
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: true, sideBar: "connect" },
+      });
+    }
+  }
   return (
     // {balance ?? "0"} tokens
     <DasboardMain
@@ -65,6 +92,32 @@ const Dashboard = () => {
       account={account}
       handleConnect={handleConnect}
       allImages={allImages}
+      info={[
+        {
+          title: "USERS",
+          amount: "1.3 B",
+          action: (act) => handleAction(act),
+          linkTitle: "Become a Member",
+        },
+        {
+          title: "TRADE",
+          amount: "8 M",
+          action: (act) => handleAction(act),
+          linkTitle: "Trade Now",
+        },
+        {
+          title: "STAKED",
+          amount: "4 B",
+          action: (act) => handleAction(act),
+          linkTitle: "Make Staking",
+        },
+        {
+          title: "LOAN",
+          amount: "1 B",
+          action: (act) => handleAction(act),
+          linkTitle: "Make Loan",
+        },
+      ]}
     />
   );
 };
