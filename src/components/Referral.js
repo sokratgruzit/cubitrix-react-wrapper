@@ -92,8 +92,12 @@ const Referral = () => {
             : (codesData = { ...codesData, referral: item.referral });
         });
 
+      if (data.length > 0) {
+        setReferralCodes(codesData);
+      }
+
       if (data.length === 0) {
-        const { data: generateCodeData } = axios.post(
+        const { data: generateCodeData } = await axios.post(
           "/api/referral/bind_referral_to_user",
           {
             address: account,
@@ -109,8 +113,6 @@ const Referral = () => {
 
         setReferralCodes(codesData);
       }
-
-      setReferralCodes(codesData);
     } catch (err) {
       console.log(err);
     }
@@ -233,20 +235,15 @@ const Referral = () => {
 
   useEffect(() => {
     if (account && triedReconnect) {
-      Promise.allSettled([
-        // axios.post("/api/referral/assign_refferal_to_user", {
-        //   referral: createCodeObject.referral,
-        //   address: account,
-        // }),
-        generateCode(),
-        generateTableData("codes"),
-        generateTableData("rebates"),
-        getReferralTotal(),
-      ]);
-      // generateCode();
-      // generateTableData("codes");
-      // generateTableData("rebates");
-      // getReferralTotal();
+      async function handleRefferalStart() {
+        await Promise.allSettled([
+          generateTableData("codes"),
+          generateTableData("rebates"),
+          getReferralTotal(),
+          generateCode(),
+        ]);
+      }
+      handleRefferalStart();
     }
     getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
