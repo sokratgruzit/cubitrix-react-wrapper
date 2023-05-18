@@ -16,8 +16,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   extensions: extensionsReducer,
-  connect: persistReducer(persistConfig, connectReducer),
   appState: appStateReducer,
+  connect: persistReducer(persistConfig, connectReducer),
   stake: persistReducer(persistConfig, stakeReducer),
 });
 
