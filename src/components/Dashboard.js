@@ -13,9 +13,9 @@ const Dashboard = () => {
   const dispatch = useDispatch();
 
   const handleGetStarted = () => {
-    if (userData?.meta?.[0]?.email && userData?.extensions.staking === "true") {
+    if (userData?.meta?.email && userData?.extensions.staking === "true") {
       navigate("/staking");
-    } else if (userData?.meta?.[0]?.email) {
+    } else if (userData?.meta?.email) {
       navigate("/extensions");
     } else {
       dispatch({
@@ -67,7 +67,7 @@ const Dashboard = () => {
       });
     }
 
-    if (userData?.meta?.[0]?.email) {
+    if (userData?.meta?.email) {
       if (act === "Make Staking" && userData?.extensions.staking === "true") {
         return navigate("/staking");
       }

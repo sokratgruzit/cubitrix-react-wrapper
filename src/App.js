@@ -29,6 +29,10 @@ import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
 import Success from "./components/Coinbase/Success";
 import Cancel from "./components/Coinbase/Cancel";
+import LandingRegistration from "./components/LandingRegistration";
+
+import PrivateRoute from "./PrivateRoute";
+import HomePage from "./components/HomePage";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -151,7 +155,7 @@ function App() {
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-        <Header
+        {/* <Header
           title={"COMPLEND"}
           logoSvg={<Logo />}
           modules={exts}
@@ -163,9 +167,12 @@ function App() {
           handleNotifications={handleNotifications}
           verified={emailVerified}
           amount={balance ?? 0}
-        />
+        /> */}
+        {/* <Route path="/" element={<Dashboard />} /> */}
+        {/* <Route path="/" element={<LandingRegistration />} /> */}
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<HomePage />} />
+          {/* <PrivateRoute path="/dashboard" element={<Dashboard />} /> */}
           <Route
             path="/loan"
             element={
@@ -213,8 +220,8 @@ function App() {
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/test" element={<Test />} />
           <Route path="/top-up" element={<TopUp />} />
-          <Route path="/coinbase/success/:jwtToken" element={<Success />} />
-          <Route path="/coinbase/cancel/:jwtToken" element={<Cancel />} />
+          <Route path="/coinbase/success" element={<Success />} />
+          <Route path="/coinbase/cancel" element={<Cancel />} />
         </Routes>
       </div>
       <SideBar />

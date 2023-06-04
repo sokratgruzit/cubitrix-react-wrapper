@@ -5,7 +5,6 @@ import axios from "../../api/axios";
 
 const Cancel = () => {
   const { jwtToken } = useParams();
-  const navigate = useNavigate();
   const account = useSelector((state) => state.connect.account);
 
   // useEffect(() => {
