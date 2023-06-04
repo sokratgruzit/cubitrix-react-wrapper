@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@cubitrix/cubitrix-react-connect-module": "0.0.46",
-    "@cubitrix/cubitrix-react-ui-module": "^0.3.42",
+    "@cubitrix/cubitrix-react-ui-module": "^0.3.43",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

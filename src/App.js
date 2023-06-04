@@ -231,7 +231,7 @@ function App() {
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? 'sideOpen' : ''}`}>
-        <Header
+        {/* <Header
           title={'COMPLEND'}
           logoSvg={<Logo />}
           modules={exts}
@@ -243,7 +243,7 @@ function App() {
           handleNotifications={handleNotifications}
           verified={emailVerified}
           amount={balance ?? 0}
-        />
+        /> */}
         {/* <Route path="/" element={<Dashboard />} /> */}
         {/* <Route path="/" element={<LandingRegistration />} /> */}
         <Routes>

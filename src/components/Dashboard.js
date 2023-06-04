@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+import { useNavigate } from 'react-router-dom'
+
 import { Dashboard as DashboardUI } from '@cubitrix/cubitrix-react-ui-module'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -7,6 +9,7 @@ import { useMobileWidth } from '../hooks/useMobileWidth'
 import { AddSquareIcon, NoHistoryIcon } from '../assets/svg'
 
 const Dashboard = () => {
+  const sideBarOpen = useSelector(state => state.appState?.sideBarOpen)
   const [codesTableData, setCodesTableData] = useState([])
   const [rebatesTableData, setRebatesTableData] = useState([])
   const [transactionsData, setTransactionsData] = useState({})
@@ -28,6 +31,10 @@ const Dashboard = () => {
   const account = useSelector(state => state.connect.account)
 
   const { width } = useMobileWidth()
+
+  const navigate = useNavigate()
+
+  const dispatch = useDispatch()
 
   const generateTableData = async (table, page) => {
     if (table === 'codes') {
@@ -330,6 +337,15 @@ const Dashboard = () => {
     platinium: '/img/dashboard/platinium.png',
   }
 
+  const handleWithdraw = () => [
+    dispatch({
+      type: 'SET_SIDE_BAR',
+      payload: { sideBarOpen: !sideBarOpen, sideBar: 'withdraw' },
+    }),
+  ]
+
+  const handleDeposit = () => navigate('/staking')
+
   return (
     <DashboardUI
       transactionsData={transactionsData}
@@ -348,9 +364,9 @@ const Dashboard = () => {
       transactionsTableLoading={transactionsTableLoading}
       accountsData={accountsData}
       cardImgs={cardImgs}
-      handleDeposit={() => console.log('hi')}
+      handleDeposit={handleDeposit}
       handleExchange={() => console.log('hi')}
-      handleWithdraw={() => console.log('hi')}
+      handleWithdraw={handleWithdraw}
     />
   )
 }
