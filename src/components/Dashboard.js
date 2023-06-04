@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import { Dashboard as DashboardUI } from '@cubitrix/cubitrix-react-ui-module'
-// import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { useMobileWidth } from '../hooks/useMobileWidth'
 import { AddSquareIcon, NoHistoryIcon } from '../assets/svg'
@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false)
   const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false)
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false)
+  const account = useSelector(state => state.connect.account)
 
   const { width } = useMobileWidth()
 
@@ -44,7 +45,7 @@ const Dashboard = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          address: '0x43f59F41518903A274c7897dfFB24DB86a0dd23a',
+          address: account,
           limit: 3,
           page: 1,
         }),
@@ -70,7 +71,7 @@ const Dashboard = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        address: '0xe72c1054c1900fc6c266fec9bedc178e72793a35',
+        address: account,
         limit: 3,
         page: 1,
       }),
@@ -78,11 +79,13 @@ const Dashboard = () => {
 
     const data = await response.json()
 
+    const amountsToFrom = data?.amounts_to_from || {}
     setTransactionsData(data)
+
     setTotalTransactions({
-      total_transaction: data.total_transaction,
-      received: data.amounts_to_from[0].toCount,
-      spent: data.amounts_to_from[0].fromSum,
+      total_transaction: data?.total_transaction || 0,
+      received: amountsToFrom.toCount || 0,
+      spent: amountsToFrom.fromSum || 0,
     })
     setTransactionsTableLoading(false)
   }
@@ -94,7 +97,7 @@ const Dashboard = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        address: '0x3bfc0a5f09bf01e71124b6ba5faa3642b2757de3',
+        address: account,
       }),
     })
 
@@ -120,7 +123,7 @@ const Dashboard = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        address: '0xe72c1054c1900fc6c266fec9bedc178e72793a35',
+        address: account,
       }),
     })
 

@@ -88,8 +88,7 @@ const TopUp = () => {
       style={{
         display: "flex",
         gap: "30px",
-        paddingTop: "200px",
-        background: "#2f3674",
+        paddingTop: "40px",
         height: "calc(100vh)",
       }}
     >
