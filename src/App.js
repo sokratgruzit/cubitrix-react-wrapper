@@ -26,6 +26,7 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 
 import { injected } from "./connector";
 import Test from "./components/test";
+import TopUp from "./components/TopUp/TopUp";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -209,6 +210,7 @@ function App() {
           <Route path="/reset-password/:code" element={<ResetPassword />} />
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/top-up" element={<TopUp />} />
         </Routes>
       </div>
       <SideBar />
