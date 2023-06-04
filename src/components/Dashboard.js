@@ -346,6 +346,13 @@ const Dashboard = () => {
 
   const handleDeposit = () => navigate('/staking')
 
+  const handleExchange = () => [
+    dispatch({
+      type: 'SET_SIDE_BAR',
+      payload: { sideBarOpen: !sideBarOpen, sideBar: 'exchange' },
+    }),
+  ]
+
   return (
     <DashboardUI
       transactionsData={transactionsData}
@@ -365,7 +372,7 @@ const Dashboard = () => {
       accountsData={accountsData}
       cardImgs={cardImgs}
       handleDeposit={handleDeposit}
-      handleExchange={() => console.log('hi')}
+      handleExchange={handleExchange}
       handleWithdraw={handleWithdraw}
     />
   )
