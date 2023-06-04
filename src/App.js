@@ -27,6 +27,8 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 import { injected } from "./connector";
 import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
+import Success from "./components/Coinbase/Success";
+import Cancel from "./components/Coinbase/Cancel";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -211,6 +213,8 @@ function App() {
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/test" element={<Test />} />
           <Route path="/top-up" element={<TopUp />} />
+          <Route path="/coinbase/success/:jwtToken" element={<Success />} />
+          <Route path="/coinbase/cancel/:jwtToken" element={<Cancel />} />
         </Routes>
       </div>
       <SideBar />
