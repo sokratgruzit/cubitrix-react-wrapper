@@ -339,6 +339,7 @@ export const useStake = ({ Router, tokenAddress }) => {
     var getBalance = await tokenContract.methods.balanceOf(account.toString()).call();
     var pow = 10 ** decimals;
     var balanceInEth = getBalance / pow;
+
     dispatch({
       type: "UPDATE_STAKE_STATE",
       payload: {
