@@ -1,13 +1,12 @@
 import { useSelector } from "react-redux";
 import LandingRegistration from "./LandingRegistration";
-import Dashboard from "./Dashboard";
 import { useState, useEffect } from "react";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import WBNB from "../abi/WBNB.json";
 import { LoadingScreen } from "@cubitrix/cubitrix-react-ui-module";
 
-function HomePage() {
+function HomePage({ children }) {
   // const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const metaAcc = useSelector((state) => state.appState?.userData?.meta);
@@ -75,9 +74,9 @@ function HomePage() {
     }
   }, [account, triedReconnect, metaAcc, web3Obj]);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  // if (loading) {
+  //   return <LoadingScreen />;
+  // }
 
   async function getBalance() {
     var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
@@ -90,11 +89,7 @@ function HomePage() {
     return balanceInEth;
   }
 
-  return step === 4 ? (
-    <Dashboard />
-  ) : (
-    <LandingRegistration step={step} setStep={setStep} />
-  );
+  return step === 4 ? children : <LandingRegistration step={step} setStep={setStep} />;
 }
 
 export default HomePage;

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 
 import { Transactions as TransactionsUI } from '@cubitrix/cubitrix-react-ui-module'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import { useMobileWidth } from '../hooks/useMobileWidth'
-import { AddSquareIcon, NoHistoryIcon } from '../assets/svg'
+import { NoHistoryIcon } from '../assets/svg'
+
+import axios from '../api/axios'
 
 const Transactions = () => {
   const [transactionsData, setTransactionsData] = useState({})
@@ -24,30 +26,33 @@ const Transactions = () => {
 
   const generateTransactionsData = async () => {
     setLoading(true)
-    const response = await fetch(`http://localhost:4000/api/transactions/get_transactions_of_user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+
+    try {
+      const apiUrl = '/api/transactions/get_transactions_of_user'
+      const requestBody = {
         address: account,
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
-      }),
-    })
+        account: filterObject?.account === 'main' ? 'system' : filterObject?.account,
+      }
 
-    const data = await response.json()
+      const response = await axios.post(apiUrl, requestBody)
 
-    const amountsToFrom = data?.amounts_to_from || {}
-    setTransactionsPaginationTotal(data?.total_pages)
-    setTransactionsData(data)
-    setTotalTransactions({
-      total_transaction: data?.total_transaction || 0,
-      received: amountsToFrom?.toCount || 0,
-      spent: amountsToFrom?.fromSum || 0,
-    })
-    setLoading(false)
+      const data = response.data
+
+      const amountsToFrom = data?.amounts_to_from || {}
+      setTransactionsPaginationTotal(data?.total_pages)
+      setTransactionsData(data)
+      setTotalTransactions({
+        total_transaction: data?.total_transaction || 0,
+        received: amountsToFrom?.toCount || 0,
+        spent: amountsToFrom?.fromSum || 0,
+      })
+      setLoading(false)
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   useEffect(() => {
@@ -149,7 +154,7 @@ const Transactions = () => {
       type: 'lable-input-select',
       options: [
         { name: 'All', value: 'all' },
-        { name: 'Main', value: 'system' },
+        { name: 'Main', value: 'main' },
         { name: 'Trade', value: 'trade' },
         { name: 'Loan', value: 'loan' },
       ],
