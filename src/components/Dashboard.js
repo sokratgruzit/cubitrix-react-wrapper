@@ -6,7 +6,9 @@ import { Dashboard as DashboardUI } from '@cubitrix/cubitrix-react-ui-module'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { useMobileWidth } from '../hooks/useMobileWidth'
-import { AddSquareIcon, NoHistoryIcon } from '../assets/svg'
+import { NoHistoryIcon } from '../assets/svg'
+
+import axios from '../api/axios'
 
 const Dashboard = () => {
   const sideBarOpen = useSelector(state => state.appState?.sideBarOpen)
@@ -42,101 +44,106 @@ const Dashboard = () => {
     } else {
       setReferralHistoryTableLoading(true)
     }
-    const response = await fetch(
-      `http://localhost:4000/api/referral/${
+
+    try {
+      const apiUrl = `/api/referral/${
         table === 'codes' ? 'get_referral_code_of_user' : 'get_referral_rebates_history_of_user'
-      }`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          address: account,
-          limit: 3,
-          page: 1,
-        }),
+      }`
+
+      const requestBody = {
+        address: account,
+        limit: 3,
+        page: 1,
       }
-    )
 
-    const data = await response.json()
+      const response = await axios.post(apiUrl, requestBody)
 
-    if (table === 'codes') {
-      setCodesTableData(data.referral_code)
-      setReferralCodeTableLoading(false)
-    } else {
-      setRebatesTableData(data.referral_rebates_history)
-      setReferralHistoryTableLoading(false)
+      const data = response.data
+
+      if (table === 'codes') {
+        setCodesTableData(data.referral_code)
+        setReferralCodeTableLoading(false)
+      } else {
+        setRebatesTableData(data.referral_rebates_history)
+        setReferralHistoryTableLoading(false)
+      }
+    } catch (error) {
+      console.error('Error:', error)
     }
   }
 
   const generateTransactionsData = async () => {
     setTransactionsTableLoading(true)
-    const response = await fetch(`http://localhost:4000/api/transactions/get_transactions_of_user`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+
+    try {
+      const apiUrl = '/api/transactions/get_transactions_of_user'
+
+      const requestBody = {
         address: account,
         limit: 3,
         page: 1,
-      }),
-    })
+      }
 
-    const data = await response.json()
+      const response = await axios.post(apiUrl, requestBody)
 
-    const amountsToFrom = data?.amounts_to_from || {}
-    setTransactionsData(data)
+      const data = response.data
 
-    setTotalTransactions({
-      total_transaction: data?.total_transaction || 0,
-      received: amountsToFrom.toCount || 0,
-      spent: amountsToFrom.fromSum || 0,
-    })
-    setTransactionsTableLoading(false)
+      const amountsToFrom = data?.amounts_to_from || {}
+      setTransactionsData(data)
+
+      setTotalTransactions({
+        total_transaction: data?.total_transaction || 0,
+        received: amountsToFrom.toCount || 0,
+        spent: amountsToFrom.fromSum || 0,
+      })
+      setTransactionsTableLoading(false)
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   const generateTotalReferralData = async () => {
-    const response = await fetch(`http://localhost:4000/api/referral/get_referral_code_of_user_dashboard`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const apiUrl = '/api/referral/get_referral_code_of_user_dashboard'
+      const requestBody = {
         address: account,
-      }),
-    })
+      }
 
-    const data = await response.json()
+      const response = await axios.post(apiUrl, requestBody)
 
-    setTotalReferralData(prev => ({
-      ...prev,
-      uni: {
-        levelUser: data?.referral_count_binary || 0,
-        totalComission: data?.referral_sum_uni[0]?.amount || 0,
-      },
-      binary: {
-        levelUser: data?.referral_count_uni || 0,
-        totalComission: data?.referral_sum_binary[0]?.amount || 0,
-      },
-    }))
+      const data = response.data
+
+      setTotalReferralData(prev => ({
+        ...prev,
+        uni: {
+          levelUser: data?.referral_count_binary || 0,
+          totalComission: data?.referral_sum_uni[0]?.amount || 0,
+        },
+        binary: {
+          levelUser: data?.referral_count_uni || 0,
+          totalComission: data?.referral_sum_binary[0]?.amount || 0,
+        },
+      }))
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   const generateAccountsData = async () => {
-    const response = await fetch(`http://localhost:4000/api/accounts/get_account_balances`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const apiUrl = '/api/accounts/get_account_balances'
+      const requestBody = {
         address: account,
-      }),
-    })
+      }
 
-    const data = await response.json()
+      const response = await axios.post(apiUrl, requestBody)
 
-    setAccountsData(data?.data)
+      const data = response.data
+
+      setAccountsData(data?.data)
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   useEffect(() => {
