@@ -354,7 +354,7 @@ const Landing = () => {
           left: "100px",
         }}
       >
-        <p style={{ color: "white" }}>shiiit, step {step}</p>
+        <p style={{ color: "white" }}>step {step}</p>
       </div>
     </>
   );
