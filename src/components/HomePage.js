@@ -7,10 +7,10 @@ import WBNB from "../abi/WBNB.json";
 import { LoadingScreen } from "@cubitrix/cubitrix-react-ui-module";
 
 function HomePage({ children }) {
-  // const account = useSelector((state) => state.connect.account);
+  const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const metaAcc = useSelector((state) => state.appState?.userData?.meta);
-  const { account, library } = useConnect();
+  const { library } = useConnect();
   var web3Obj = library;
 
   const [loading, setLoading] = useState(true);

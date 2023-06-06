@@ -34,6 +34,7 @@ import LandingRegistration from "./components/LandingRegistration";
 
 import PrivateRoute from "./PrivateRoute";
 import HomePage from "./components/HomePage";
+import Landing from "./components/Landing";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -249,15 +250,17 @@ function App() {
         />
         {/* <Route path="/" element={<Dashboard />} /> */}
         {/* <Route path="/" element={<LandingRegistration />} /> */}
+
         <Routes>
-          <Route
+          <Route path="/" element={<Landing />} />
+          {/* <Route
             path="/"
             element={
               <HomePage>
                 <DashboardSharedLayout links={links} children={<Dashboard />} />
               </HomePage>
             }
-          />
+          /> */}
           <Route
             path="/dashboard"
             element={<DashboardSharedLayout links={links} children={<Dashboard />} />}
