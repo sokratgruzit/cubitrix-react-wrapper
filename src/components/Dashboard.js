@@ -331,7 +331,7 @@ const Dashboard = () => {
   }
 
   const transactionsTableEmpty = {
-    label: 'No Referral Rebates History',
+    label: 'No Transaction History',
     icon: <NoHistoryIcon />,
   }
 
