@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Landing as LandingMain, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 import QRCode from "qrcode";
 
@@ -20,6 +20,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const metaAcc = useSelector((state) => state.appState?.userData?.meta);
   const { connect, library, disconnect, connectionLoading } = useConnect();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   var web3Obj = library;
 
@@ -120,32 +121,36 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
     },
   };
 
-  useEffect(() => {
-    if (triedReconnect) {
-      if (account) {
-        if (web3Obj && metaAcc) {
-          if (
-            metaAcc?.address === account?.toLowerCase() &&
-            metaAcc.email &&
-            metaAcc.name
-          ) {
-            getBalance().then((balance) => {
-              if (balance >= 100) {
-                setStep(4);
-              } else {
-                setStep(3);
-              }
-            });
-          } else {
-            setStep(2);
-          }
-        }
-      } else {
-        setStep(1);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, web3Obj, metaAcc, triedReconnect]);
+  // useEffect(() => {
+  //   if (triedReconnect) {
+  //     if (account) {
+  //       if (web3Obj && metaAcc) {
+  //         if (
+  //           metaAcc?.address === account?.toLowerCase() &&
+  //           metaAcc.email &&
+  //           metaAcc.name
+  //         ) {
+  //           getBalance().then((balance) => {
+  //             if (balance >= 100) {
+  //               setStep(4);
+  //               dispatch({
+  //                 type: "UPDATE_ACTIVE_EXTENSIONS",
+  //                 payload: { dashboard: "true" },
+  //               });
+  //             } else {
+  //               setStep(3);
+  //             }
+  //           });
+  //         } else {
+  //           setStep(2);
+  //         }
+  //       }
+  //     } else {
+  //       setStep(1);
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [account, web3Obj, metaAcc, triedReconnect]);
 
   // useEffect(() => {
   //   console.log(account, triedReconnect);
@@ -343,20 +348,6 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
       });
   }
 
-  async function handleCoindbasePayment(amount) {
-    axios
-      .post("api/transactions/coinbase_deposit_transaction", {
-        from: account,
-        amount,
-      })
-      .then((res) => {
-        setHostedUrl(res?.data?.responseData?.hosted_url);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -386,9 +377,38 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
       });
   }
 
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
+
+  async function handleCoindbasePayment(amount) {
+    axios
+      .post("api/transactions/coinbase_deposit_transaction", {
+        from: account,
+        amount,
+      })
+      .then((res) => {
+        setHostedUrl(res?.data?.responseData?.hosted_url);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  async function handlePurchaseEvent(method, amount) {
+    console.log(amount);
+    if (method === "Coinbase") {
+      handleCoindbasePayment(amount);
+    }
+  }
+
   return (
     <>
       <LandingMain
+        animate={animate}
+        account={account}
         handleGetStarted={() => console.log("get started")}
         handleConnect={() => console.log("hi")}
         startTrade={() => console.log("start trade")}
@@ -483,6 +503,10 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
           resendEmail={resendEmail}
           disconnect={disconnect}
           closeLandingSteps={() => setInitialRegister(false)}
+          qrcode={qrCodeUrl}
+          handlePurchaseEvent={handlePurchaseEvent}
+          exchangeRate={2}
+          tranasctionFee={1}
         />
       )}
     </>
