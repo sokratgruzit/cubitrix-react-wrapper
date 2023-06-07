@@ -39,7 +39,7 @@ const Transactions = () => {
       }
 
       const requestBody = {
-        address: "0x43f59f41518903a274c7897dffb24db86a0dd23a",
+        address: account,
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
