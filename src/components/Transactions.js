@@ -14,7 +14,7 @@ const Transactions = () => {
   const [filterObject, setFilterObject] = useState({
     type: 'all',
     account: 'all',
-    date: 'all',
+    time: 'all',
   })
   const [loading, setLoading] = useState(false)
 
@@ -29,12 +29,25 @@ const Transactions = () => {
 
     try {
       const apiUrl = '/api/transactions/get_transactions_of_user'
+      const time = filterObject?.time
+      let year, month, day
+
+      if (time instanceof Date) {
+        year = time.getFullYear()
+        month = time.getMonth()
+        day = time.getDate()
+      }
+
       const requestBody = {
         address: account,
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
         account: filterObject?.account === 'main' ? 'system' : filterObject?.account,
+        time:
+          time instanceof Date
+            ? `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+            : filterObject?.time,
       }
 
       const response = await axios.post(apiUrl, requestBody)
@@ -57,7 +70,7 @@ const Transactions = () => {
 
   useEffect(() => {
     generateTransactionsData()
-  }, [filterObject?.type, filterObject?.date, filterObject?.account, transactionsCurrentPage])
+  }, [filterObject?.type, filterObject?.time, filterObject?.account, transactionsCurrentPage])
 
   const transactionHeader = [
     {
@@ -198,7 +211,7 @@ const Transactions = () => {
   ]
 
   const transactionsTableEmpty = {
-    label: 'No Referral Rebates History',
+    label: 'No Transaction History',
     icon: <NoHistoryIcon />,
   }
   return (

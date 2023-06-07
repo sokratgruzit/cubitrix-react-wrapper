@@ -121,36 +121,36 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
     },
   };
 
-  // useEffect(() => {
-  //   if (triedReconnect) {
-  //     if (account) {
-  //       if (web3Obj && metaAcc) {
-  //         if (
-  //           metaAcc?.address === account?.toLowerCase() &&
-  //           metaAcc.email &&
-  //           metaAcc.name
-  //         ) {
-  //           getBalance().then((balance) => {
-  //             if (balance >= 100) {
-  //               setStep(4);
-  //               dispatch({
-  //                 type: "UPDATE_ACTIVE_EXTENSIONS",
-  //                 payload: { dashboard: "true" },
-  //               });
-  //             } else {
-  //               setStep(3);
-  //             }
-  //           });
-  //         } else {
-  //           setStep(2);
-  //         }
-  //       }
-  //     } else {
-  //       setStep(1);
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [account, web3Obj, metaAcc, triedReconnect]);
+  useEffect(() => {
+    if (triedReconnect) {
+      if (account) {
+        if (web3Obj && metaAcc) {
+          if (
+            metaAcc?.address === account?.toLowerCase() &&
+            metaAcc.email &&
+            metaAcc.name
+          ) {
+            getBalance().then((balance) => {
+              if (balance >= 100) {
+                setStep(4);
+                dispatch({
+                  type: "UPDATE_ACTIVE_EXTENSIONS",
+                  payload: { dashboard: "true" },
+                });
+              } else {
+                setStep(3);
+              }
+            });
+          } else {
+            setStep(2);
+          }
+        }
+      } else {
+        setStep(1);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, web3Obj, metaAcc, triedReconnect]);
 
   // useEffect(() => {
   //   console.log(account, triedReconnect);
