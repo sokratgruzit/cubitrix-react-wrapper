@@ -30,8 +30,10 @@ import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
 import Success from "./components/Coinbase/Success";
 import Cancel from "./components/Coinbase/Cancel";
+import WBNB from "./abi/WBNB.json";
 
 import Landing from "./components/Landing";
+import LandingRegistration from "./components/LandingRegistration";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -50,7 +52,7 @@ function App() {
   const isExtensionsLoaded = appState.isExtensionsLoaded;
   const { activeExtensions } = useSelector((state) => state.extensions);
 
-  const { MetaMaskEagerlyConnect } = useConnect();
+  const { library, MetaMaskEagerlyConnect } = useConnect();
 
   useEffect(() => {
     if (account && chainId) {
@@ -95,7 +97,7 @@ function App() {
   };
 
   useEffect(() => {
-    MetaMaskEagerlyConnect(injected, () => {
+    MetaMaskEagerlyConnect(injected, (e) => {
       dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
     });
     if (!providerType) {
@@ -238,10 +240,58 @@ function App() {
     },
   ];
 
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(5);
   const [initialRegister, setInitialRegister] = useState(true);
   const navigate = useNavigate();
 
+  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  const metaAcc = appState?.userData?.meta;
+  useEffect(() => {
+    setInitialRegister(true);
+    if (triedReconnect) {
+      if (account) {
+        if (library && metaAcc) {
+          if (
+            metaAcc?.address === account?.toLowerCase() &&
+            metaAcc.email &&
+            metaAcc.name
+          ) {
+            getBalance().then((balance) => {
+              if (balance >= 100) {
+                if (appState?.userData?.staked.length < 1) {
+                  setStep(4);
+                } else {
+                  setStep(5);
+                  dispatch({
+                    type: "UPDATE_ACTIVE_EXTENSIONS",
+                    payload: { dashboard: "true" },
+                  });
+                }
+              } else {
+                setStep(3);
+              }
+            });
+          } else {
+            setStep(2);
+          }
+        }
+      } else {
+        setStep(1);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, library, metaAcc]);
+
+  async function getBalance() {
+    var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
+    var decimals = await tokenContract.methods.decimals().call();
+    var getBalance = await tokenContract.methods.balanceOf(account).call();
+
+    var pow = 10 ** decimals;
+    var balanceInEth = getBalance / pow;
+
+    return balanceInEth;
+  }
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
@@ -258,10 +308,16 @@ function App() {
           handleNotifications={handleNotifications}
           verified={emailVerified}
           amount={balance ?? 0}
-          initialRegister={step < 4}
+          initialRegister={step < 5}
           setInitialRegister={setInitialRegister}
         />
-
+        {initialRegister && step < 5 && (
+          <LandingRegistration
+            step={step}
+            setStep={setStep}
+            setInitialRegister={setInitialRegister}
+          />
+        )}
         <Routes>
           <Route
             path="/"
