@@ -20,12 +20,13 @@ import {
 
 import { MetaMask, WalletConnect } from '../../../assets/svg'
 
-import { useConnect } from '@cubitrix/cubitrix-react-connect-module'
+import { useConnect, useStake } from '@cubitrix/cubitrix-react-connect-module'
 
 import { injected, walletConnect } from '../../../connector'
 
 import { useEffect, useState } from 'react'
 import QRCode from 'qrcode'
+import { useTableParameters } from '../../../hooks/useTableParameters'
 
 const SideBarRight = () => {
   const appState = useSelector(state => state.appState)
@@ -35,6 +36,17 @@ const SideBarRight = () => {
 
   const [personalData, setPersonalData] = useState(null)
   const { connect, disconnect, error, setError } = useConnect()
+
+  var Router = '0xd472C9aFa90046d42c00586265A3F62745c927c0' // Staking contract Address
+  var tokenAddress = '0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb' // Staking Token Address
+  const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } = useStake({
+    Router,
+    tokenAddress,
+  })
+
+  const { depositAmount, timeperiod, isAllowance, loading, timeperiodDate } = useSelector(state => state.stake)
+
+  const balance = useSelector(state => state.appState?.userData?.balance)
 
   const dispatch = useDispatch()
 
@@ -78,6 +90,9 @@ const SideBarRight = () => {
   const [signInAddress, setSignInAddress] = useState('')
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState('')
 
+  const [success, setSuccess] = useState(null)
+  const [helpText, setHelpText] = useState('')
+  const [showHelpText, setShowHelpText] = useState(false)
   const [currentObject, setCurrentObject] = useState({
     amount: '0',
     transfer_amount: '0',
@@ -374,6 +389,8 @@ const SideBarRight = () => {
     }
   }
 
+  const { durationOptions } = useTableParameters('staking')
+
   const withdrawInputs = [
     {
       title: 'Transfer type',
@@ -481,11 +498,13 @@ const SideBarRight = () => {
       name: 'amount',
       type: 'default',
       placeholder: '0',
-      onChange: e =>
+      onChange: e => {
+        handleDepositAmount(e.target.value)
         setCurrentObject(prev => ({
           ...prev,
           [e.target.name]: e.target.value,
-        })),
+        }))
+      },
     },
   ]
 
@@ -652,6 +671,58 @@ const SideBarRight = () => {
       price: '$0.00',
     },
   ]
+
+  const handleDepositSubmit = async () => {
+    setSuccess(null)
+    setHelpText('')
+    setShowHelpText(false)
+
+    if (depositAmount < 1 && currentObject?.amount === '0') {
+      setHelpText('Please enter valid amount to stake.')
+      setShowHelpText(true)
+      setSuccess(false)
+      setTimeout(() => {
+        setSuccess(null)
+        setHelpText('')
+        setShowHelpText(false)
+      }, 3000)
+    }
+
+    if (account && isAllowance) {
+      approve(() => {
+        setSuccess(true)
+        setHelpText('Approved successfully, please stake desired amount.')
+        setShowHelpText(true)
+      })
+    }
+    if (account && !isAllowance) {
+      stake(async () => {
+        await axios
+          .post('/api/accounts/activate-account', {
+            address: account,
+          })
+          .then(res => {
+            if (res.data?.account) {
+              dispatch({
+                type: 'SET_SYSTEM_ACCOUNT_DATA',
+                payload: res.data.account,
+              })
+              setSuccess(true)
+              setHelpText('Staking was successful.')
+              setShowHelpText(true)
+              setTimeout(() => {
+                setSuccess(null)
+                setHelpText('')
+                setShowHelpText(false)
+                setCurrentObject(prev => ({ ...prev, amount: '0' }))
+                handleDepositAmount(0)
+              }, 3000)
+            }
+          })
+          .catch(e => {})
+      })
+    }
+  }
 
   return (
     <>
@@ -829,14 +900,19 @@ const SideBarRight = () => {
             inputs={depositInputs}
             currentObject={currentObject}
             cardImg={'/img/dashboard/cpl.png'}
-            handleSubmit={handleClose}
-            buttonLabel={'Stake'}
-            success={true}
-            helpText={'hi'}
-            showHelpText={false}
+            handleSubmit={handleDepositSubmit}
+            buttonLabel={loading ? 'Loading' : 'Stake'}
+            success={success}
+            helpText={helpText}
+            showHelpText={showHelpText}
             accountType={'CPL'}
-            accountBalance={'1,400.00'}
-            accountBalanceSecond={'$2,034.04'}
+            accountBalance={balance}
+            accountBalanceSecond={`$${balance * 2}`}
+            durationOptions={durationOptions}
+            timeperiod={timeperiod}
+            timeperiodDate={timeperiodDate}
+            handleTimePeriod={handleTimePeriod}
+            handleTimeperiodDate={handleTimeperiodDate}
           />
         )}
       </SideBar>

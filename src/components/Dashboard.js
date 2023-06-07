@@ -347,21 +347,21 @@ const Dashboard = () => {
   const handleWithdraw = () => [
     dispatch({
       type: 'SET_SIDE_BAR',
-      payload: { sideBarOpen: !sideBarOpen, sideBar: 'withdraw' },
+      payload: { sideBarOpen: true, sideBar: 'withdraw' },
     }),
   ]
 
   const handleDeposit = () => [
     dispatch({
       type: 'SET_SIDE_BAR',
-      payload: { sideBarOpen: !sideBarOpen, sideBar: 'deposit' },
+      payload: { sideBarOpen: true, sideBar: 'deposit' },
     }),
   ]
 
   const handleExchange = () => [
     dispatch({
       type: 'SET_SIDE_BAR',
-      payload: { sideBarOpen: !sideBarOpen, sideBar: 'exchange' },
+      payload: { sideBarOpen: true, sideBar: 'exchange' },
     }),
   ]
 
