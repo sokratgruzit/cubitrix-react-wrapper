@@ -124,7 +124,7 @@ const Referral = () => {
       : setReferralHistoryTableLoading(true);
     try {
       const { data } = await axios.post(
-        `http://localhost:4000/api/referral/${
+        `/api/referral/${
           table === "codes"
             ? "get_referral_code_of_user"
             : "get_referral_rebates_history_of_user"
