@@ -892,6 +892,13 @@ const SideBarRight = () => {
             currentObject={currentObject}
             cardImg={"/img/dashboard/cpl.png"}
             handleSubmit={handleClose}
+            buttonLabel={'Continue'}
+            success={true}
+            helpText={'hi'}
+            showHelpText={false}
+            accountType={'CPL'}
+            accountBalance={'1,400.00'}
+            accountBalanceSecond={'$2,034.04'}
           />
         )}
         {sideBar === "exchange" && (
@@ -902,6 +909,13 @@ const SideBarRight = () => {
             cardImg={"/img/dashboard/cpl.png"}
             accounts={exchangeAccounts}
             handleSubmit={handleClose}
+            buttonLabel={'Continue'}
+            success={true}
+            helpText={'hi'}
+            showHelpText={false}
+            accountType={'CPL'}
+            accountBalance={'1,400.00'}
+            accountBalanceSecond={'$2,034.04'}
           />
         )}
       </SideBar>
