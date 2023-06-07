@@ -724,6 +724,30 @@ const SideBarRight = () => {
     }
   }
 
+  const handleExchangeSubmit = async () => {
+    setHelpText('Exchange was successful.')
+    setShowHelpText(true)
+    setSuccess(true)
+    setTimeout(() => {
+      setSuccess(null)
+      setHelpText('')
+      setShowHelpText(false)
+      setCurrentObject(prev => ({ ...prev, transfer_amount: '0', receive_amount: '0' }))
+    }, 3000)
+  }
+
+  const handleWithdrawSubmit = async () => {
+    setHelpText('Withdraw was successful.')
+    setShowHelpText(true)
+    setSuccess(true)
+    setTimeout(() => {
+      setSuccess(null)
+      setHelpText('')
+      setShowHelpText(false)
+      setCurrentObject(prev => ({ ...prev, clientId: '', amount: '0' }))
+    }, 3000)
+  }
+
   return (
     <>
       {error === 'no metamask' && (
@@ -867,11 +891,11 @@ const SideBarRight = () => {
             inputs={withdrawInputs}
             currentObject={currentObject}
             cardImg={'/img/dashboard/cpl.png'}
-            handleSubmit={handleClose}
+            handleSubmit={handleWithdrawSubmit}
             buttonLabel={'Continue'}
-            success={true}
-            helpText={'hi'}
-            showHelpText={false}
+            success={success}
+            helpText={helpText}
+            showHelpText={showHelpText}
             accountType={'CPL'}
             accountBalance={'1,400.00'}
             accountBalanceSecond={'$2,034.04'}
@@ -884,11 +908,11 @@ const SideBarRight = () => {
             currentObject={currentObject}
             cardImg={'/img/dashboard/cpl.png'}
             accounts={exchangeAccounts}
-            handleSubmit={handleClose}
+            handleSubmit={handleExchangeSubmit}
             buttonLabel={'Continue'}
-            success={true}
-            helpText={'hi'}
-            showHelpText={false}
+            success={success}
+            helpText={helpText}
+            showHelpText={showHelpText}
             accountType={'CPL'}
             accountBalance={'1,400.00'}
             accountBalanceSecond={'$2,034.04'}
