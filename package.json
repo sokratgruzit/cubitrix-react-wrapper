@@ -5,7 +5,7 @@
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.0-placeholder-for-preset-env.1",
     "@cubitrix/cubitrix-react-connect-module": "0.0.46",
-    "@cubitrix/cubitrix-react-ui-module": "^0.3.57",
+    "@cubitrix/cubitrix-react-ui-module": "^0.3.63",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
