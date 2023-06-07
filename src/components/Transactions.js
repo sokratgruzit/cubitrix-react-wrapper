@@ -12,9 +12,9 @@ const Transactions = () => {
   const [transactionsData, setTransactionsData] = useState({})
   const [totalTransactions, setTotalTransactions] = useState({})
   const [filterObject, setFilterObject] = useState({
-    type: 'all',
-    account: 'all',
-    time: 'all',
+    type: '',
+    account: '',
+    time: '',
   })
   const [loading, setLoading] = useState(false)
 
@@ -39,7 +39,7 @@ const Transactions = () => {
       }
 
       const requestBody = {
-        address: account,
+        address: "0x43f59f41518903a274c7897dffb24db86a0dd23a",
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
