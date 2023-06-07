@@ -229,7 +229,7 @@ function App() {
     },
   ];
 
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(3);
   const [initialRegister, setInitialRegister] = useState(true);
   const navigate = useNavigate();
 
