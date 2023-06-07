@@ -19,8 +19,8 @@ import { DashboardSharedLayout, Header } from "@cubitrix/cubitrix-react-ui-modul
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { useLocation, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, Navigate, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
@@ -30,10 +30,7 @@ import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
 import Success from "./components/Coinbase/Success";
 import Cancel from "./components/Coinbase/Cancel";
-import LandingRegistration from "./components/LandingRegistration";
 
-import PrivateRoute from "./PrivateRoute";
-import HomePage from "./components/HomePage";
 import Landing from "./components/Landing";
 
 window.Buffer = window.Buffer || Buffer;
@@ -232,12 +229,17 @@ function App() {
     },
   ];
 
+  const [step, setStep] = useState(4);
+  const [initialRegister, setInitialRegister] = useState(true);
+  const navigate = useNavigate();
+
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
         <Header
           title={"COMPLEND"}
           logoSvg={<Logo />}
+          onLogoClick={() => navigate("/")}
           modules={exts}
           account={account}
           location={location}
@@ -247,20 +249,22 @@ function App() {
           handleNotifications={handleNotifications}
           verified={emailVerified}
           amount={balance ?? 0}
+          initialRegister={step < 4}
+          setInitialRegister={setInitialRegister}
         />
-        {/* <Route path="/" element={<Dashboard />} /> */}
-        {/* <Route path="/" element={<LandingRegistration />} /> */}
 
         <Routes>
-          <Route path="/" element={<Landing />} />
-          {/* <Route
+          <Route
             path="/"
             element={
-              <HomePage>
-                <DashboardSharedLayout links={links} children={<Dashboard />} />
-              </HomePage>
+              <Landing
+                step={step}
+                setStep={setStep}
+                initialRegister={initialRegister}
+                setInitialRegister={setInitialRegister}
+              />
             }
-          /> */}
+          />
           <Route
             path="/dashboard"
             element={<DashboardSharedLayout links={links} children={<Dashboard />} />}
