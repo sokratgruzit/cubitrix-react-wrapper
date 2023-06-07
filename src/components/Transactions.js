@@ -14,7 +14,7 @@ const Transactions = () => {
   const [filterObject, setFilterObject] = useState({
     type: 'all',
     account: 'all',
-    date: 'all',
+    date: 'Any time',
   })
   const [loading, setLoading] = useState(false)
 
@@ -29,12 +29,25 @@ const Transactions = () => {
 
     try {
       const apiUrl = '/api/transactions/get_transactions_of_user'
+      const date = filterObject?.date
+      let year, month, day
+
+      if (date instanceof Date) {
+        year = date.getFullYear()
+        month = date.getMonth()
+        day = date.getDate()
+      }
+
       const requestBody = {
         address: account,
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
         account: filterObject?.account === 'main' ? 'system' : filterObject?.account,
+        date:
+          date instanceof Date
+            ? `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+            : filterObject?.date,
       }
 
       const response = await axios.post(apiUrl, requestBody)
@@ -58,6 +71,8 @@ const Transactions = () => {
   useEffect(() => {
     generateTransactionsData()
   }, [filterObject?.type, filterObject?.date, filterObject?.account, transactionsCurrentPage])
+
+  console.log(filterObject)
 
   const transactionHeader = [
     {
@@ -186,7 +201,7 @@ const Transactions = () => {
     },
     {
       title: 'Choose Time',
-      name: 'time',
+      name: 'date',
       type: 'date-picker-input',
       defaultAny: 'Any Time',
       onChange: e =>
