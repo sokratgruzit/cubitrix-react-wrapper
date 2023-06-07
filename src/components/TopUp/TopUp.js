@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TopUp as TopUpUI } from "@cubitrix/cubitrix-react-ui-module";
+import { TopUp as TopUpUI, TopUpDashboard } from "@cubitrix/cubitrix-react-ui-module";
 import QRCode from "qrcode";
 import axios from "../../api/axios";
 import { useSelector, useDispatch } from "react-redux";
@@ -34,6 +34,7 @@ const TopUp = () => {
   const account = useSelector((state) => state.connect.account);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [hostedUrl, setHostedUrl] = useState("");
+  const dispatch = useDispatch();
 
   const [receivePaymentAddress, setReceivePaymentAddress] = useState("0xouraddress");
 
@@ -83,6 +84,17 @@ const TopUp = () => {
         console.error(err);
       });
   }
+
+  async function handlePurchase(method, tokenAmount) {
+    console.log(method, tokenAmount);
+    if (method === "Coinbase") {
+      console.log("her");
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: true, sideBar: "Notify" },
+      });
+    }
+  }
   return (
     <div
       style={{
@@ -92,13 +104,14 @@ const TopUp = () => {
         height: "calc(100vh)",
       }}
     >
-      <TopUpUI
+      <TopUpDashboard
         receivePaymentAddress={receivePaymentAddress}
         methods={methods}
-        qrcode={qrCodeUrl}
-        handlePaymentConfirm={handlePaymentConfirm}
-        handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
         paymentTypes={paymentTypes}
+        qrcode={qrCodeUrl}
+        handlePurchaseEvent={handlePurchase}
+        exchangeRate={2}
+        tranasctionFee={1}
       />
     </div>
   );

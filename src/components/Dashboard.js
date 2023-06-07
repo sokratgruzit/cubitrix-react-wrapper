@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
-import { Dashboard as DashboardUI } from "@cubitrix/cubitrix-react-ui-module";
-import { useSelector, useDispatch } from "react-redux";
+import { Dashboard as DashboardUI } from '@cubitrix/cubitrix-react-ui-module'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { useMobileWidth } from '../hooks/useMobileWidth'
 import { NoHistoryIcon } from '../assets/svg'
@@ -11,11 +11,11 @@ import { NoHistoryIcon } from '../assets/svg'
 import axios from '../api/axios'
 
 const Dashboard = () => {
-  const sideBarOpen = useSelector((state) => state.appState?.sideBarOpen);
-  const [codesTableData, setCodesTableData] = useState([]);
-  const [rebatesTableData, setRebatesTableData] = useState([]);
-  const [transactionsData, setTransactionsData] = useState({});
-  const [totalTransactions, setTotalTransactions] = useState({});
+  const sideBarOpen = useSelector(state => state.appState?.sideBarOpen)
+  const [codesTableData, setCodesTableData] = useState([])
+  const [rebatesTableData, setRebatesTableData] = useState([])
+  const [transactionsData, setTransactionsData] = useState({})
+  const [totalTransactions, setTotalTransactions] = useState({})
   const [totalReferralData, setTotalReferralData] = useState({
     uni: {
       levelUser: 0,
@@ -25,18 +25,18 @@ const Dashboard = () => {
       levelUser: 0,
       totalComission: 0,
     },
-  });
-  const [accountsData, setAccountsData] = useState([]);
-  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
-  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
-  const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
-  const account = useSelector((state) => state.connect.account);
+  })
+  const [accountsData, setAccountsData] = useState([])
+  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false)
+  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false)
+  const [transactionsTableLoading, setTransactionsTableLoading] = useState(false)
+  const account = useSelector(state => state.connect.account)
 
-  const { width } = useMobileWidth();
+  const { width } = useMobileWidth()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const generateTableData = async (table, page) => {
     if (table === 'codes') {
@@ -70,7 +70,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error:', error)
     }
-  };
+  }
 
   const generateTransactionsData = async () => {
     setTransactionsTableLoading(true)
@@ -147,220 +147,223 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    generateAccountsData();
-    generateTransactionsData();
-    generateTotalReferralData();
-    generateTableData("codes");
-    generateTableData("rebates");
-  }, []);
+    generateAccountsData()
+    generateTransactionsData()
+    generateTotalReferralData()
+    generateTableData('codes')
+    generateTableData('rebates')
+  }, [])
 
   const transactionHeader = [
     {
-      name: "From",
+      name: 'From',
       mobileWidth: width >= 500 ? 45 : 100,
       width: 20,
       id: 0,
-      height: "40px",
+      height: '40px',
     },
     {
-      name: "To",
+      name: 'To',
       width: 20,
       // mobileWidth: 45,
       id: 1,
-      height: "40px",
+      height: '40px',
     },
     {
-      name: "Type",
+      name: 'Type',
       width: 20,
       id: 2,
-      height: "40px",
+      height: '40px',
     },
     {
-      name: "Time",
+      name: 'Time',
       width: 20,
       id: 3,
-      height: "40px",
+      height: '40px',
       icon: (
         <svg
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ marginLeft: "2px" }}
-        >
+          width='10'
+          height='10'
+          viewBox='0 0 10 10'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+          style={{ marginLeft: '2px' }}>
           <path
-            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
-            fill="white"
+            d='M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z'
+            fill='white'
           />
           <path
-            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
-            fill="white"
+            d='M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z'
+            fill='white'
           />
         </svg>
       ),
     },
     {
-      name: "Amount",
+      name: 'Amount',
       width: 20,
       mobileWidth: width >= 500 ? 45 : false,
       id: 4,
-      height: "40px",
+      height: '40px',
       icon: (
         <svg
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ marginLeft: "2px" }}
-        >
+          width='10'
+          height='10'
+          viewBox='0 0 10 10'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+          style={{ marginLeft: '2px' }}>
           <path
-            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
-            fill="white"
+            d='M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z'
+            fill='white'
           />
           <path
-            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
-            fill="white"
+            d='M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z'
+            fill='white'
           />
         </svg>
       ),
     },
-  ];
+  ]
 
   const referralCodeHeader = [
     {
       id: 0,
-      name: "My Referral Code",
+      name: 'My Referral Code',
       width: 15,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 1,
-      name: "User Address",
+      name: 'User Address',
       width: 15,
       mobileWidth: width >= 500 ? 45 : 100,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 2,
-      name: "User Level",
+      name: 'User Level',
       width: 15,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 3,
-      name: "Rate",
+      name: 'Rate',
       width: 15,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 4,
-      name: "Total Earned",
+      name: 'Total Earned',
       width: 15,
       mobileWidth: width >= 500 ? 45 : false,
-      height: "40px",
+      height: '40px',
     },
-  ];
+  ]
 
   const referralHistoryHeader = [
     {
       id: 0,
-      name: "From",
+      name: 'From',
       width: 15,
       mobileWidth: width >= 500 ? 45 : 100,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 1,
-      name: "Referral Code",
+      name: 'Referral Code',
       width: 15,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 2,
-      name: "Referral Level",
+      name: 'Referral Level',
       width: 15,
-      height: "40px",
+      height: '40px',
     },
     {
       id: 3,
-      name: "Amount",
+      name: 'Amount',
       width: 15,
       mobileWidth: width >= 500 ? 45 : false,
-      height: "40px",
+      height: '40px',
     },
-  ];
+  ]
 
   const referralCardsData = [
     {
-      title: "Uni",
+      title: 'Uni',
       data: [
         {
-          title: "Level User",
+          title: 'Level User',
           value: totalReferralData?.uni?.levelUser,
         },
         {
-          title: "Total Comission",
+          title: 'Total Comission',
           value: totalReferralData?.uni?.totalComission,
         },
       ],
     },
     {
-      title: "Binary",
+      title: 'Binary',
       active: true,
       data: [
         {
-          title: "Level User",
+          title: 'Level User',
           value: totalReferralData?.binary?.levelUser,
         },
         {
-          title: "Total Comission",
+          title: 'Total Comission',
           value: totalReferralData?.binary?.totalComission,
         },
       ],
     },
-  ];
+  ]
 
   const referralCodeTableEmpty = {
-    label: "No Referral Code History",
+    label: 'No Referral Code History',
     icon: <NoHistoryIcon />,
-  };
+  }
 
   const referralRebatesTableEmpty = {
-    label: "No Referral Rebates History",
+    label: 'No Referral Rebates History',
     icon: <NoHistoryIcon />,
-  };
+  }
 
   const transactionsTableEmpty = {
-    label: "No Referral Rebates History",
+    label: 'No Transaction History',
     icon: <NoHistoryIcon />,
-  };
+  }
 
   const cardImgs = {
-    cpl: "/img/dashboard/cpl.png",
-    btc: "/img/dashboard/btc.png",
-    eth: "/img/dashboard/eth.png",
-    usdt: "/img/dashboard/usdt.png",
-    gold: "/img/dashboard/gold.png",
-    platinium: "/img/dashboard/platinium.png",
-  };
+    cpl: '/img/dashboard/cpl.png',
+    btc: '/img/dashboard/btc.png',
+    eth: '/img/dashboard/eth.png',
+    usdt: '/img/dashboard/usdt.png',
+    gold: '/img/dashboard/gold.png',
+    platinium: '/img/dashboard/platinium.png',
+  }
 
   const handleWithdraw = () => [
     dispatch({
-      type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: !sideBarOpen, sideBar: "withdraw" },
+      type: 'SET_SIDE_BAR',
+      payload: { sideBarOpen: true, sideBar: 'withdraw' },
     }),
-  ];
+  ]
 
-  const handleDeposit = () => navigate("/staking");
+  const handleDeposit = () => [
+    dispatch({
+      type: 'SET_SIDE_BAR',
+      payload: { sideBarOpen: true, sideBar: 'deposit' },
+    }),
+  ]
 
   const handleExchange = () => [
     dispatch({
-      type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: !sideBarOpen, sideBar: "exchange" },
+      type: 'SET_SIDE_BAR',
+      payload: { sideBarOpen: true, sideBar: 'exchange' },
     }),
-  ];
+  ]
 
   return (
     <DashboardUI
@@ -384,7 +387,7 @@ const Dashboard = () => {
       handleExchange={handleExchange}
       handleWithdraw={handleWithdraw}
     />
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

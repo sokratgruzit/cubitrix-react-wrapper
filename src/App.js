@@ -321,7 +321,10 @@ function App() {
           <Route path="/extensions/:id" element={<ExtensionItem />} />
           <Route path="/verify/:id" element={<VerifyEmail />} />
           <Route path="/reset-password/:code" element={<ResetPassword />} />
-          <Route path="/create-account" element={<CreateAccount />} />
+          <Route
+            path="/create-account"
+            element={<DashboardSharedLayout links={links} children={<CreateAccount />} />}
+          />
           <Route path="/test" element={<Test />} />
           <Route path="/coinbase/success" element={<Success />} />
           <Route path="/coinbase/cancel" element={<Cancel />} />
