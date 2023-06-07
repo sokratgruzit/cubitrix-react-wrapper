@@ -12,9 +12,9 @@ const Transactions = () => {
   const [transactionsData, setTransactionsData] = useState({})
   const [totalTransactions, setTotalTransactions] = useState({})
   const [filterObject, setFilterObject] = useState({
-    type: 'all',
-    account: 'all',
-    time: 'all',
+    type: '',
+    account: '',
+    time: '',
   })
   const [loading, setLoading] = useState(false)
 
