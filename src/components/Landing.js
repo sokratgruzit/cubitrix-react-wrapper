@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Landing as LandingMain, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
 
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ import QRCode from "qrcode";
 import { injected, walletConnect } from "../connector";
 import axios from "../api/axios";
 import WBNB from "../abi/WBNB.json";
+import { useTableParameters } from "../hooks/useTableParameters";
 
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
@@ -132,7 +133,11 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
           ) {
             getBalance().then((balance) => {
               if (balance >= 100) {
-                setStep(4);
+                if (appState?.userData?.staked.length < 1) {
+                  setStep(4);
+                } else {
+                  setStep(5);
+                }
                 dispatch({
                   type: "UPDATE_ACTIVE_EXTENSIONS",
                   payload: { dashboard: "true" },
@@ -398,11 +403,73 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   }
 
   async function handlePurchaseEvent(method, amount) {
-    console.log(amount);
     if (method === "Coinbase") {
       handleCoindbasePayment(amount);
     }
   }
+
+  const [currentObject, setCurrentObject] = useState({
+    amount: "",
+  });
+
+  const { durationOptions } = useTableParameters("staking");
+
+  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
+  const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
+    useStake({
+      Router,
+      tokenAddress,
+    });
+
+  const { depositAmount, timeperiod, isAllowance, timeperiodDate, loading } = useSelector(
+    (state) => state.stake,
+  );
+
+  const inputs = [
+    {
+      title: "Amount",
+      name: "amount",
+      type: "default",
+      placeholder: "0",
+      onChange: (e) => {
+        console.log(e, "sdddd");
+        setCurrentObject((prev) => ({
+          ...prev,
+          [e.target.name]: e.target.value,
+        }));
+      },
+    },
+  ];
+
+  const handleDepositSubmit = async () => {
+    if (depositAmount < 1 && currentObject?.amount === "0") {
+    }
+
+    if (account && isAllowance) {
+      approve(() => {});
+    }
+    if (account && !isAllowance) {
+      stake(async () => {
+        await axios
+          .post("/api/accounts/activate-account", {
+            address: account,
+          })
+          .then((res) => {
+            if (res.data?.account) {
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.account,
+              });
+              setTimeout(() => {
+                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+                handleDepositAmount(0);
+              }, 3000);
+            }
+          })
+          .catch((e) => {});
+      });
+    }
+  };
 
   return (
     <>
@@ -477,7 +544,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
         whyComplendData={defaultCardsData}
         overviewProjectsData={aboutProjectsData}
       />
-      {initialRegister && step < 4 && (
+      {initialRegister && step < 5 && (
         <LandingSteps
           account={account}
           receivePaymentAddress={receivePaymentAddress}
@@ -507,6 +574,15 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
           handlePurchaseEvent={handlePurchaseEvent}
           exchangeRate={2}
           tranasctionFee={1}
+          timeperiod={timeperiod}
+          timeperiodDate={timeperiodDate}
+          handleTimePeriod={handleTimePeriod}
+          handleTimeperiodDate={handleTimeperiodDate}
+          durationOptions={durationOptions}
+          buttonLabel={loading ? "Loading..." : "Top Up"}
+          handleSubmit={() => handleDepositSubmit()}
+          inputs={inputs}
+          currentObject={currentObject}
         />
       )}
     </>
