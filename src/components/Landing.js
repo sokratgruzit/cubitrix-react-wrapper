@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import { Landing as LandingMain, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { Landing as LandingMain } from "@cubitrix/cubitrix-react-ui-module";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import QRCode from "qrcode";
-
-import { injected, walletConnect } from "../connector";
-import axios from "../api/axios";
 import WBNB from "../abi/WBNB.json";
-import { useTableParameters } from "../hooks/useTableParameters";
 
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
@@ -19,8 +13,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
 
   const metaAcc = useSelector((state) => state.appState?.userData?.meta);
-  const { connect, library, disconnect, connectionLoading } = useConnect();
-  const navigate = useNavigate();
+  const { library } = useConnect();
   const dispatch = useDispatch();
 
   var web3Obj = library;
@@ -122,354 +115,43 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
     },
   };
 
-  useEffect(() => {
-    if (triedReconnect) {
-      if (account) {
-        if (web3Obj && metaAcc) {
-          if (
-            metaAcc?.address === account?.toLowerCase() &&
-            metaAcc.email &&
-            metaAcc.name
-          ) {
-            getBalance().then((balance) => {
-              if (balance >= 100) {
-                if (appState?.userData?.staked.length < 1) {
-                  setStep(4);
-                } else {
-                  setStep(5);
-                }
-                dispatch({
-                  type: "UPDATE_ACTIVE_EXTENSIONS",
-                  payload: { dashboard: "true" },
-                });
-              } else {
-                setStep(3);
-              }
-            });
-          } else {
-            setStep(2);
-          }
-        }
-      } else {
-        setStep(1);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, web3Obj, metaAcc, triedReconnect]);
-
   // useEffect(() => {
-  //   console.log(account, triedReconnect);
-  //   if (!account && triedReconnect) {
-  //     setStep(1);
+  //   if (triedReconnect) {
+  //     if (account) {
+  //       if (web3Obj && metaAcc) {
+  //         if (
+  //           metaAcc?.address === account?.toLowerCase() &&
+  //           metaAcc.email &&
+  //           metaAcc.name
+  //         ) {
+  //           getBalance().then((balance) => {
+  //             if (balance >= 100) {
+  // if (appState?.userData?.staked.length < 1) {
+  //   setStep(4);
+  // } else {
+  //   setStep(5);
+  // }
+
+  //             } else {
+  //               setStep(3);
+  //             }
+  //           });
+  //         } else {
+  //           setStep(2);
+  //         }
+  //       }
+  //     } else {
+  //       setStep(1);
+  //     }
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [account, triedReconnect]);
-
-  async function getBalance() {
-    var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
-    var decimals = await tokenContract.methods.decimals().call();
-    var getBalance = await tokenContract.methods.balanceOf(account).call();
-
-    var pow = 10 ** decimals;
-    var balanceInEth = getBalance / pow;
-
-    return balanceInEth;
-  }
-
-  const methods = [
-    {
-      id: "USDT",
-      title: "USDT",
-      logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
-    },
-    {
-      id: "Coinbase",
-      title: "Coinbase",
-      logo: "https://shopgeorgia.ge/assets/images/contribute/eth.png",
-    },
-  ];
-
-  const paymentTypes = [
-    {
-      id: 1,
-      title: "Pay via Crypto",
-      logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-    },
-    {
-      id: 2,
-      title: "Pay with CoinBase",
-      logo: "https://shopgeorgia.ge/assets/images/contribute/eth.png",
-    },
-  ];
-
-  const [registrationState, setRegistrationState] = useState({
-    loading: false,
-    fullnameError: "",
-    emailError: "",
-    referralError: "",
-    emailSent: false,
-  });
-
-  async function handleRegistration({ fullName, email, referral }) {
-    const errors = {};
-    if (!fullName) {
-      errors.fullNameError = "Full Name is required";
-    }
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (email && !emailRegex.test(email)) {
-      errors.emailError = "Invalid email";
-    }
-    if (!email) {
-      errors.emailError = "Email is required";
-    }
-    if (!referral) {
-      errors.referralError = "Referral code is required";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setRegistrationState({
-        ...registrationState,
-        ...errors,
-      });
-      return;
-    }
-
-    setRegistrationState({
-      ...registrationState,
-      loading: true,
-    });
-
-    axios
-      .post("api/referral/assign_refferal_to_user", {
-        referral,
-        address: account,
-      })
-      .then((res) => {
-        update_profile();
-      })
-      .catch((err) => {
-        let error = "Referral code could not be assigned";
-        if (err?.response?.data === "Referral code doesnot exist") {
-          error = "Referral code does not exist";
-        }
-        let errorsMessages = [
-          "User already activated both referral code",
-          "User already activated uni level referral code",
-          "User already activated binary level referral code",
-        ];
-        if (errorsMessages.includes(err?.response?.data)) {
-          update_profile();
-          return;
-        }
-
-        setRegistrationState({
-          ...registrationState,
-          referralError: error,
-          loading: false,
-        });
-      });
-
-    async function update_profile() {
-      axios
-        .post("/api/accounts/update_profile", {
-          address: account,
-          name: fullName,
-          email,
-        })
-        .then((res) => {
-          if (res?.data === "email sent") {
-            setRegistrationState((prev) => ({
-              ...prev,
-              emailSent: true,
-              loading: false,
-            }));
-          }
-          if (res?.data === "account updated") {
-            setRegistrationState((prev) => ({
-              ...prev,
-              loading: false,
-            }));
-            setStep(3);
-          }
-        })
-        .catch((err) => {
-          if (err?.response?.data === "email already exists & is verified") {
-            setRegistrationState((prev) => ({
-              ...prev,
-              emailError: "Email is already in use.",
-              loading: false,
-            }));
-          }
-
-          setTimeout(() => {
-            setRegistrationState({
-              ...registrationState,
-              emailError: "",
-            });
-          }, 3000);
-        });
-    }
-  }
-
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [hostedUrl, setHostedUrl] = useState("");
-
-  const [receivePaymentAddress, setReceivePaymentAddress] = useState(
-    "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
-  );
-
-  useEffect(() => {
-    if (receivePaymentAddress) {
-      QRCode.toDataURL(receivePaymentAddress)
-        .then((url) => {
-          setQrCodeUrl(url);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [receivePaymentAddress]);
-
-  useEffect(() => {
-    if (hostedUrl) {
-      window.location.href = hostedUrl;
-    }
-  }, [hostedUrl]);
-
-  async function handlePaymentConfirm(userAddress, selectedMethod, amount, date) {
-    axios
-      .post("api/transactions/pending_deposit_transaction", {
-        from: account,
-        amount: amount,
-        amountTransferedFrom: userAddress,
-        receivePaymentAddress: receivePaymentAddress,
-        startDate: date,
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    referral: "",
-  });
-
-  useEffect(() => {
-    if (appState?.userData) {
-      setFormData({
-        fullName: appState?.userData?.meta?.name ?? "",
-        email: appState?.userData?.meta?.email ?? "",
-        referral: appState?.userData?.referral?.[0]?.referral ?? "",
-      });
-    }
-  }, [appState?.userData]);
-
-  async function resendEmail() {
-    axios
-      .post("/api/accounts/resend-email", {
-        address: account,
-      })
-      .then((res) => {
-        console.log(res.response);
-      })
-      .catch((e) => {
-        console.log(e.response);
-      });
-  }
+  // }, [account, web3Obj, metaAcc, triedReconnect]);
 
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     setAnimate(true);
   }, []);
-
-  async function handleCoindbasePayment(amount) {
-    axios
-      .post("api/transactions/coinbase_deposit_transaction", {
-        from: account,
-        amount,
-      })
-      .then((res) => {
-        setHostedUrl(res?.data?.responseData?.hosted_url);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-  async function handlePurchaseEvent(method, amount) {
-    if (method === "Coinbase") {
-      handleCoindbasePayment(amount);
-    }
-  }
-
-  const [currentObject, setCurrentObject] = useState({
-    amount: "",
-  });
-
-  const { durationOptions } = useTableParameters("staking");
-
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
-  const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
-    useStake({
-      Router,
-      tokenAddress,
-    });
-
-  const { depositAmount, timeperiod, isAllowance, timeperiodDate, loading } = useSelector(
-    (state) => state.stake,
-  );
-
-  const inputs = [
-    {
-      title: "Amount",
-      name: "amount",
-      type: "default",
-      placeholder: "0",
-      onChange: (e) => {
-        console.log(e, "sdddd");
-        setCurrentObject((prev) => ({
-          ...prev,
-          [e.target.name]: e.target.value,
-        }));
-      },
-    },
-  ];
-
-  const handleDepositSubmit = async () => {
-    if (depositAmount < 1 && currentObject?.amount === "0") {
-    }
-
-    if (account && isAllowance) {
-      approve(() => {});
-    }
-    if (account && !isAllowance) {
-      stake(async () => {
-        await axios
-          .post("/api/accounts/activate-account", {
-            address: account,
-          })
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-              setTimeout(() => {
-                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-                handleDepositAmount(0);
-              }, 3000);
-            }
-          })
-          .catch((e) => {});
-      });
-    }
-  };
 
   return (
     <>
@@ -544,47 +226,6 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
         whyComplendData={defaultCardsData}
         overviewProjectsData={aboutProjectsData}
       />
-      {initialRegister && step < 5 && (
-        <LandingSteps
-          account={account}
-          receivePaymentAddress={receivePaymentAddress}
-          handleMetamaskConnect={async () => {
-            await connect("metaMask", injected);
-          }}
-          handleWalletConnect={async () => {
-            await connect("walletConnect", walletConnect);
-          }}
-          connectionLoading={connectionLoading}
-          step={step}
-          setStep={setStep}
-          initialLoading={false}
-          methods={methods}
-          paymentTypes={paymentTypes}
-          handleRegistration={handleRegistration}
-          registrationState={registrationState}
-          setRegistrationState={setRegistrationState}
-          handlePaymentConfirm={handlePaymentConfirm}
-          handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
-          formData={formData}
-          setFormData={setFormData}
-          resendEmail={resendEmail}
-          disconnect={disconnect}
-          closeLandingSteps={() => setInitialRegister(false)}
-          qrcode={qrCodeUrl}
-          handlePurchaseEvent={handlePurchaseEvent}
-          exchangeRate={2}
-          tranasctionFee={1}
-          timeperiod={timeperiod}
-          timeperiodDate={timeperiodDate}
-          handleTimePeriod={handleTimePeriod}
-          handleTimeperiodDate={handleTimeperiodDate}
-          durationOptions={durationOptions}
-          buttonLabel={loading ? "Loading..." : "Top Up"}
-          handleSubmit={() => handleDepositSubmit()}
-          inputs={inputs}
-          currentObject={currentObject}
-        />
-      )}
     </>
   );
 };

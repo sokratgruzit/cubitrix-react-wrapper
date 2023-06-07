@@ -1,20 +1,27 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useSelector } from "react-redux";
-import axios from "../api/axios";
-import QRCode from "qrcode";
 
+import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
 import { injected, walletConnect } from "../connector";
 
-const LandingRegistration = ({ step, setStep }) => {
+import { useSelector, useDispatch } from "react-redux";
+
+import { useTableParameters } from "../hooks/useTableParameters";
+
+import axios from "../api/axios";
+import QRCode from "qrcode";
+import WBNB from "../abi/WBNB.json";
+
+const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
+  const dispatch = useDispatch();
 
-  const { connect, disconnect, error, setError, connectionLoading } = useConnect();
+  const { connect, disconnect, error, setError, connectionLoading, library } =
+    useConnect();
 
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [hostedUrl, setHostedUrl] = useState("");
@@ -57,26 +64,6 @@ const LandingRegistration = ({ step, setStep }) => {
         console.error(err);
       });
   }
-
-  async function handleCoindbasePayment(amount) {
-    axios
-      .post("api/transactions/coinbase_deposit_transaction", {
-        from: account,
-        amount,
-      })
-      .then((res) => {
-        setHostedUrl(res?.data?.responseData?.hosted_url);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
-  }, []);
 
   const methods = [
     {
@@ -213,6 +200,17 @@ const LandingRegistration = ({ step, setStep }) => {
     }
   }
 
+  async function getBalance() {
+    var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
+    var decimals = await tokenContract.methods.decimals().call();
+    var getBalance = await tokenContract.methods.balanceOf(account).call();
+
+    var pow = 10 ** decimals;
+    var balanceInEth = getBalance / pow;
+
+    return balanceInEth;
+  }
+
   const metaAcc = appState?.userData?.meta;
   // useEffect(() => {
   //   if (account && triedReconnect) {
@@ -255,10 +253,94 @@ const LandingRegistration = ({ step, setStep }) => {
       });
   }
 
+  async function handleCoindbasePayment(amount) {
+    axios
+      .post("api/transactions/coinbase_deposit_transaction", {
+        from: account,
+        amount,
+      })
+      .then((res) => {
+        setHostedUrl(res?.data?.responseData?.hosted_url);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+
+  async function handlePurchaseEvent(method, amount) {
+    if (method === "Coinbase") {
+      handleCoindbasePayment(amount);
+    }
+  }
+
+  const [currentObject, setCurrentObject] = useState({
+    amount: "",
+  });
+
+  const { durationOptions } = useTableParameters("staking");
+
+  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
+  const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
+    useStake({
+      Router,
+      tokenAddress,
+    });
+
+  const { depositAmount, timeperiod, isAllowance, timeperiodDate, loading } = useSelector(
+    (state) => state.stake,
+  );
+
+  const inputs = [
+    {
+      title: "Amount",
+      name: "amount",
+      type: "default",
+      placeholder: "0",
+      onChange: (e) => {
+        console.log(e, "sdddd");
+        setCurrentObject((prev) => ({
+          ...prev,
+          [e.target.name]: e.target.value,
+        }));
+      },
+    },
+  ];
+
+  const handleDepositSubmit = async () => {
+    if (depositAmount < 1 && currentObject?.amount === "0") {
+    }
+
+    if (account && isAllowance) {
+      approve(() => {});
+    }
+    if (account && !isAllowance) {
+      stake(async () => {
+        await axios
+          .post("/api/accounts/activate-account", {
+            address: account,
+          })
+          .then((res) => {
+            if (res.data?.account) {
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.account,
+              });
+              setTimeout(() => {
+                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+                handleDepositAmount(0);
+              }, 3000);
+            }
+          })
+          .catch((e) => {});
+      });
+    }
+  };
+
   return (
     <LandingSteps
       account={account}
-      receivePaymentAddress={"0x43f59F41518903A274c7897dfFB24DB86a0dd23a"}
+      receivePaymentAddress={receivePaymentAddress}
       handleMetamaskConnect={async () => {
         await connect("metaMask", injected);
       }}
@@ -268,19 +350,32 @@ const LandingRegistration = ({ step, setStep }) => {
       connectionLoading={connectionLoading}
       step={step}
       setStep={setStep}
-      initialLoading={loading}
+      initialLoading={false}
       methods={methods}
       paymentTypes={paymentTypes}
       handleRegistration={handleRegistration}
       registrationState={registrationState}
       setRegistrationState={setRegistrationState}
+      handlePaymentConfirm={handlePaymentConfirm}
+      handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
       formData={formData}
       setFormData={setFormData}
       resendEmail={resendEmail}
       disconnect={disconnect}
+      closeLandingSteps={() => setInitialRegister(false)}
       qrcode={qrCodeUrl}
-      handlePaymentConfirm={handlePaymentConfirm}
-      handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
+      handlePurchaseEvent={handlePurchaseEvent}
+      exchangeRate={2}
+      tranasctionFee={1}
+      timeperiod={timeperiod}
+      timeperiodDate={timeperiodDate}
+      handleTimePeriod={handleTimePeriod}
+      handleTimeperiodDate={handleTimeperiodDate}
+      durationOptions={durationOptions}
+      buttonLabel={loading ? "Loading..." : "Top Up"}
+      handleSubmit={() => handleDepositSubmit()}
+      inputs={inputs}
+      currentObject={currentObject}
     />
   );
 };
