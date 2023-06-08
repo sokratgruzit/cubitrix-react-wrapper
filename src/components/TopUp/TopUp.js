@@ -100,7 +100,6 @@ const TopUp = () => {
       style={{
         display: "flex",
         gap: "30px",
-        paddingTop: "40px",
         height: "calc(100vh)",
       }}
     >
