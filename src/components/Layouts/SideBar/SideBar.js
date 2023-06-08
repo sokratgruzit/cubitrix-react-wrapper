@@ -518,10 +518,6 @@ const SideBarRight = () => {
       type: 'lable-input-select',
       options: [
         {
-          name: 'Main',
-          value: 'system',
-        },
-        {
           name: 'Loan',
           value: 'loan',
         },
