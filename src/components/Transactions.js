@@ -70,7 +70,7 @@ const Transactions = () => {
 
   useEffect(() => {
     generateTransactionsData()
-  }, [filterObject?.type, filterObject?.time, filterObject?.account, transactionsCurrentPage])
+  }, [filterObject?.type, filterObject?.time, filterObject?.account, transactionsCurrentPage, account])
 
   const transactionHeader = [
     {
