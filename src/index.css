@@ -10,7 +10,7 @@
   font-style: normal;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'UberMove-Regular';
   src: url('./assets/fonts/UberMove/UberMove-Regular.eot');
   src: url('./assets/fonts/UberMove/UberMove-Regular.eot?#iefix') format('embedded-opentype'),
@@ -20,7 +20,7 @@
     url('./assets/fonts/UberMove/UberMove-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
-}
+} */
 
 * {
   scrollbar-width: thin;
