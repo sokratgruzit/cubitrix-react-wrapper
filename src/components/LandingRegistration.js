@@ -1,7 +1,9 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "../hooks/use-connect";
 import { injected, walletConnect } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -223,6 +225,19 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   //     setStep(1);
   //   }
   // }, [account, triedReconnect, appState?.userData?.meta]);
+
+  // useEffect(() => {
+  //   if (account) {
+  //     if (metaAcc?.email) {
+  //       setStep(3);
+  //       return;
+  //     }
+  //     setStep(2);
+  //   } else {
+  //     setStep(1);
+  //     // setInitialRegister(false);
+  //   }
+  // }, [account]);
 
   const [formData, setFormData] = useState({
     fullName: "",

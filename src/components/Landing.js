@@ -1,24 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 import { Landing as LandingMain } from "@cubitrix/cubitrix-react-ui-module";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { useSelector, useDispatch } from "react-redux";
-
-import WBNB from "../abi/WBNB.json";
+import { useSelector } from "react-redux";
 
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
-  const appState = useSelector((state) => state.appState);
-  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
-
-  const metaAcc = useSelector((state) => state.appState?.userData?.meta);
-  const { library } = useConnect();
-  const dispatch = useDispatch();
-
-  var web3Obj = library;
-
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
 
   const defaultCardsData = [
     {
@@ -114,38 +101,6 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
       bottom: "/img/landing/whyComplend-bottom.svg",
     },
   };
-
-  // useEffect(() => {
-  //   if (triedReconnect) {
-  //     if (account) {
-  //       if (web3Obj && metaAcc) {
-  //         if (
-  //           metaAcc?.address === account?.toLowerCase() &&
-  //           metaAcc.email &&
-  //           metaAcc.name
-  //         ) {
-  //           getBalance().then((balance) => {
-  //             if (balance >= 100) {
-  // if (appState?.userData?.staked.length < 1) {
-  //   setStep(4);
-  // } else {
-  //   setStep(5);
-  // }
-
-  //             } else {
-  //               setStep(3);
-  //             }
-  //           });
-  //         } else {
-  //           setStep(2);
-  //         }
-  //       }
-  //     } else {
-  //       setStep(1);
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [account, web3Obj, metaAcc, triedReconnect]);
 
   const [animate, setAnimate] = useState(false);
 

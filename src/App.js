@@ -17,7 +17,8 @@ import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
 import { DashboardSharedLayout, Header } from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "./hooks/use-connect";
 
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -245,20 +246,25 @@ function App() {
   const navigate = useNavigate();
 
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
+
   useEffect(() => {
-    setInitialRegister(true);
     if (triedReconnect) {
-      if (account) {
-        if (library && metaAcc) {
-          if (
-            metaAcc?.address === account?.toLowerCase() &&
-            metaAcc.email &&
-            metaAcc.name
-          ) {
-            getBalance().then((balance) => {
+      if (!account) {
+        setStep(1);
+        return;
+      }
+      if (account && library) {
+        if (systemAcc) {
+          if (!metaAcc?.email) {
+            setStep(2);
+            return;
+          }
+          getBalance()
+            .then((balance) => {
               if (balance >= 100) {
-                if (appState?.userData?.staked.length < 1) {
+                if (systemAcc?.staked.length < 1) {
                   setStep(4);
                 } else {
                   setStep(5);
@@ -270,17 +276,37 @@ function App() {
               } else {
                 setStep(3);
               }
-            });
-          } else {
-            setStep(2);
+            })
+            .catch((e) => console.log(e));
+          if (systemAcc) {
+            setStep(5);
           }
         }
-      } else {
-        setStep(1);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, library, metaAcc]);
+  }, [account, library, metaAcc, triedReconnect]);
+
+  // getBalance().then((balance) => {
+  //   if (balance >= 100) {
+  //     if (appState?.userData?.staked.length < 1) {
+  //       setStep(4);
+  //     } else {
+  //       setStep(5);
+  //       dispatch({
+  //         type: "UPDATE_ACTIVE_EXTENSIONS",
+  //         payload: { dashboard: "true" },
+  //       });
+  //     }
+  //   } else {
+  //     setStep(3);
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   if (!account && triedReconnect) {
+  //     setStep(1);
+  //   }
+  // }, [account, triedReconnect]);
 
   async function getBalance() {
     var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
