@@ -176,11 +176,26 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             }));
           }
           if (res?.data === "account updated") {
-            setRegistrationState((prev) => ({
-              ...prev,
-              loading: false,
-            }));
-            setStep(3);
+            getBalance().then((balance) => {
+              let step = 3;
+              axios
+                .post("/api/accounts/handle-step", { step, address: account })
+                .then((e) => {
+                  setStep(e?.data?.account?.step ?? 3);
+                  setRegistrationState({
+                    ...registrationState,
+                    referralError: "something went wrong!",
+                    loading: false,
+                  });
+                })
+                .catch((e) => {
+                  setRegistrationState({
+                    ...registrationState,
+                    referralError: "something went wrong!",
+                    loading: false,
+                  });
+                });
+            });
           }
         })
         .catch((err) => {
@@ -313,7 +328,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       type: "default",
       placeholder: "0",
       onChange: (e) => {
-        console.log(e, "sdddd");
+        handleDepositAmount(e.target.value);
         setCurrentObject((prev) => ({
           ...prev,
           [e.target.name]: e.target.value,
@@ -331,6 +346,22 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
     if (account && !isAllowance) {
       stake(async () => {
+        setStep(5);
+        axios
+          .post("/api/accounts/handle-step", {
+            registered: true,
+            address: account,
+            step: 5,
+          })
+          .then((res) => {
+            dispatch({
+              type: "UPDATE_ACTIVE_EXTENSIONS",
+              payload: { dashboard: "true" },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         await axios
           .post("/api/accounts/activate-account", {
             address: account,
@@ -387,7 +418,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       handleTimePeriod={handleTimePeriod}
       handleTimeperiodDate={handleTimeperiodDate}
       durationOptions={durationOptions}
-      buttonLabel={loading ? "Loading..." : "Top Up"}
+      buttonLabel={loading ? "Loading..." : "Stake"}
       handleSubmit={() => handleDepositSubmit()}
       inputs={inputs}
       currentObject={currentObject}

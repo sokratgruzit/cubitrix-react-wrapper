@@ -29,8 +29,8 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 import { injected } from "./connector";
 import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
-import Success from "./components/Coinbase/Success";
-import Cancel from "./components/Coinbase/Cancel";
+import Success from "./components/Deposit/Success";
+import Cancel from "./components/Deposit/Cancel";
 import WBNB from "./abi/WBNB.json";
 
 import Landing from "./components/Landing";
@@ -253,60 +253,37 @@ function App() {
     if (triedReconnect) {
       if (!account) {
         setStep(1);
-        return;
-      }
-      if (account && library) {
-        if (systemAcc) {
-          if (!metaAcc?.email) {
-            setStep(2);
-            return;
-          }
-          getBalance()
-            .then((balance) => {
-              if (balance >= 100) {
-                if (systemAcc?.staked.length < 1) {
-                  setStep(4);
-                } else {
-                  setStep(5);
-                  dispatch({
-                    type: "UPDATE_ACTIVE_EXTENSIONS",
-                    payload: { dashboard: "true" },
-                  });
-                }
-              } else {
-                setStep(3);
-              }
-            })
-            .catch((e) => console.log(e));
-          if (systemAcc) {
-            setStep(5);
-          }
+      } else {
+        if (
+          systemAcc &&
+          systemAcc.registered &&
+          systemAcc?.account_owner === account?.toLowerCase()
+        ) {
+          setStep(5);
+          dispatch({
+            type: "UPDATE_ACTIVE_EXTENSIONS",
+            payload: { dashboard: "true" },
+          });
+        } else if (
+          systemAcc?.step > 2 &&
+          library &&
+          systemAcc?.account_owner === account?.toLowerCase()
+        ) {
+          getBalance().then((balance) => {
+            if (balance > 100) {
+              setStep(4);
+            } else {
+              setStep(systemAcc.step);
+            }
+          });
+        } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
+          setStep(systemAcc?.step || 2);
+        } else {
+          setStep(2);
         }
       }
     }
-  }, [account, library, metaAcc, triedReconnect]);
-
-  // getBalance().then((balance) => {
-  //   if (balance >= 100) {
-  //     if (appState?.userData?.staked.length < 1) {
-  //       setStep(4);
-  //     } else {
-  //       setStep(5);
-  //       dispatch({
-  //         type: "UPDATE_ACTIVE_EXTENSIONS",
-  //         payload: { dashboard: "true" },
-  //       });
-  //     }
-  //   } else {
-  //     setStep(3);
-  //   }
-  // });
-
-  // useEffect(() => {
-  //   if (!account && triedReconnect) {
-  //     setStep(1);
-  //   }
-  // }, [account, triedReconnect]);
+  }, [account, triedReconnect, metaAcc, library]);
 
   async function getBalance() {
     var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
@@ -417,7 +394,7 @@ function App() {
             element={<DashboardSharedLayout links={links} children={<CreateAccount />} />}
           />
           <Route path="/test" element={<Test />} />
-          <Route path="/coinbase/success" element={<Success />} />
+          <Route path="/deposit/:hash" element={<Success />} />
           <Route path="/coinbase/cancel" element={<Cancel />} />
         </Routes>
       </div>
