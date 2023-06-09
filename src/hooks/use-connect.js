@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useWeb3React } from "@web3-react/core";
+import { walletConnect } from "../connector";
 
 export const useConnect = (props) => {
   let { activate, account, library, deactivate, chainId } = useWeb3React();
@@ -38,8 +39,9 @@ export const useConnect = (props) => {
   useEffect(() => {
     if (providerType === "walletConnect") {
       if (isConnected) {
+        console.log("walletConnect early reconnect runs");
         setTimeout(() => {
-          connect(providerType);
+          connect(providerType, walletConnect);
         }, 0);
       } else {
         dispatch({
@@ -54,8 +56,8 @@ export const useConnect = (props) => {
   useEffect(() => {
     dispatch({
       type: "UPDATE_STATE",
-      account: account ? account : "",
-      chainId: chainId ? chainId : "",
+      account: account ?? "",
+      chainId: chainId ?? "",
     });
   }, [account, chainId, dispatch]);
 
@@ -125,8 +127,10 @@ export const useConnect = (props) => {
             providerType,
           });
           setTried(true);
+          console.log("connect success");
         })
         .catch((e) => {
+          console.log(e, "connect failed");
           dispatch({ type: "UPDATE_STATE", account: "", isConnected: false });
           if (e.toString().startsWith("UnsupportedChainIdError")) {
             dispatch({
@@ -134,8 +138,11 @@ export const useConnect = (props) => {
               payload: "Please switch your network in wallet",
             });
           }
+        })
+        .finally(() => {
+          dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+          setConnectionLoading(false);
         });
-      setConnectionLoading(false);
     } catch (error) {
       console.log("Error on connecting: ", error);
     }

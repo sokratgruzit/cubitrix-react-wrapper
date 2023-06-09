@@ -160,6 +160,8 @@ function App() {
     // eslint-disable-next-line
   }, [account]);
 
+  console.log(triedReconnect);
+
   const links = [
     {
       to: "/dashboard",
