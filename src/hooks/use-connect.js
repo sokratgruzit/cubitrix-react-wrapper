@@ -5,15 +5,13 @@ import { useWeb3React } from "@web3-react/core";
 export const useConnect = (props) => {
   let { activate, account, library, deactivate, chainId } = useWeb3React();
 
-  const [connectionLoading, setConnectionLoading] = useState(false); // Should disable connect button while connecting to MetaMask
-  const [error, setError] = useState("");
+  const [connectionLoading, setConnectionLoading] = useState(false);
   const [tried, setTried] = useState(false);
 
   const dispatch = useDispatch();
   const isConnected = useSelector((state) => state.connect.isConnected);
   const providerType = useSelector((state) => state.connect.providerType);
 
-  // function for metamask eagerly connect. needs access to injected
   const MetaMaskEagerlyConnect = (injected, callback) => {
     if (providerType === "metaMask") {
       injected
@@ -37,11 +35,9 @@ export const useConnect = (props) => {
     }
   };
 
-  // try eagerly connect after refresh for wallet connect
   useEffect(() => {
     if (providerType === "walletConnect") {
       if (isConnected) {
-        // brute force solution
         setTimeout(() => {
           connect(providerType);
         }, 0);
@@ -53,10 +49,8 @@ export const useConnect = (props) => {
         });
       }
     }
-    // eslint-disable-next-line
   }, []);
 
-  // mirror account data values in redux
   useEffect(() => {
     dispatch({
       type: "UPDATE_STATE",
@@ -65,7 +59,6 @@ export const useConnect = (props) => {
     });
   }, [account, chainId, dispatch]);
 
-  //handle wallet connect eagerly popup
   const firstUpdate = useRef(true);
   useEffect(() => {
     if (firstUpdate.current) {
@@ -79,14 +72,16 @@ export const useConnect = (props) => {
         isConnected: false,
       });
     }
-    // eslint-disable-next-line
   }, [tried, account]);
 
-  // Connect to wallet
   const connect = async (providerType, injected) => {
     setConnectionLoading(true);
     if (typeof window.ethereum === "undefined" && providerType === "metaMask") {
-      return setError("no metamask");
+      dispatch({
+        type: "CONNECTION_ERROR",
+        payload: "No MetaMask detected",
+      });
+      return;
     }
     try {
       await activate(injected, undefined, true)
@@ -101,9 +96,11 @@ export const useConnect = (props) => {
         .catch((e) => {
           dispatch({ type: "UPDATE_STATE", account: "", isConnected: false });
           if (e.toString().startsWith("UnsupportedChainIdError"))
-            setError("Please switch your network in wallet");
+            dispatch({
+              type: "CONNECTION_ERROR",
+              payload: "Please switch your network in wallet",
+            });
         });
-
       setConnectionLoading(false);
     } catch (error) {
       console.log("Error on connecting: ", error);
@@ -119,7 +116,7 @@ export const useConnect = (props) => {
         providerType: "",
       });
     } catch (error) {
-      console.log("Error on disconnnect: ", error);
+      console.log("Error on disconnect: ", error);
     }
   };
 
@@ -132,12 +129,9 @@ export const useConnect = (props) => {
       connectionLoading,
       providerType,
       chainId,
-      error,
-      setError,
       MetaMaskEagerlyConnect,
     }),
-    // eslint-disable-next-line
-    [account, connectionLoading, providerType, chainId, error, setError],
+    [account, connectionLoading, providerType, chainId],
   );
   return values;
 };

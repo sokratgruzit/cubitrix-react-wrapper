@@ -5,6 +5,7 @@ const INIT_STATE = {
   triedReconnect: false,
   isExtensionsLoaded: false,
   coinbaseLoading: false,
+  connectionError: "",
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -55,6 +56,11 @@ const appStateReducer = (state = INIT_STATE, action) => {
         coinbaseLoading: action.payload.value,
       };
 
+    case "CONNECTION_ERROR":
+      return {
+        ...state,
+        connectionError: action.payload,
+      };
     default:
       return state;
   }

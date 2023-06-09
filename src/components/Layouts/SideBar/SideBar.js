@@ -37,7 +37,9 @@ const SideBarRight = () => {
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect, error, setError } = useConnect();
+  const { connect, disconnect, setError } = useConnect();
+
+  // console.log(, "err");
 
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -921,30 +923,10 @@ const SideBarRight = () => {
     }, 3000);
   };
 
+  console.log(appState?.connectionError);
+
   return (
     <>
-      {error === "no metamask" && (
-        <Popup
-          popUpElement={<NoMetaMask />}
-          label={"Metamask is not installed"}
-          handlePopUpClose={() => setError("")}
-        />
-      )}
-      {error === "Please switch your network in wallet" && (
-        <Popup
-          popUpElement={
-            <ChangeNetwork
-              disconnect={() => {
-                disconnect();
-                setError("");
-              }}
-              handleNetworkChange={() => console.log("handle network change")}
-            />
-          }
-          handlePopUpClose={() => setError("")}
-          label={"Check Your Network"}
-        />
-      )}
       {twoFactorAuth && activated && (
         <Popup
           popUpElement={

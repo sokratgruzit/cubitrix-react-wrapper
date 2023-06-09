@@ -14,7 +14,13 @@ import Transactions from "./components/Transactions";
 import { useSelector, useDispatch } from "react-redux";
 import SideBar from "./components/Layouts/SideBar/SideBar";
 import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
-import { DashboardSharedLayout, Header } from "@cubitrix/cubitrix-react-ui-module";
+import {
+  ChangeNetwork,
+  DashboardSharedLayout,
+  Header,
+  NoMetaMask,
+  Popup,
+} from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 // import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
@@ -53,11 +59,7 @@ function App() {
   const isExtensionsLoaded = appState.isExtensionsLoaded;
   const { activeExtensions } = useSelector((state) => state.extensions);
 
-  const { library, MetaMaskEagerlyConnect, error } = useConnect();
-
-  useEffect(() => {
-    console.log(error, "err");
-  }, [error]);
+  const { library, MetaMaskEagerlyConnect, disconnect } = useConnect();
 
   useEffect(() => {
     if (account && chainId) {
@@ -418,6 +420,43 @@ function App() {
         </Routes>
       </div>
       <SideBar />
+      {appState?.connectionError === "No MetaMask detected" && (
+        <Popup
+          popUpElement={<NoMetaMask />}
+          label={"Metamask is not installed"}
+          handlePopUpClose={() => {
+            dispatch({
+              type: "CONNECTION_ERROR",
+              payload: "",
+            });
+          }}
+          customStyles={{ zIndex: "1002 !important" }}
+        />
+      )}
+      {appState?.connectionError === "Please switch your network in wallet" && (
+        <Popup
+          popUpElement={
+            <ChangeNetwork
+              disconnect={() => {
+                disconnect();
+                dispatch({
+                  type: "CONNECTION_ERROR",
+                  payload: "",
+                });
+              }}
+              handleNetworkChange={() => console.log("handle network change")}
+            />
+          }
+          handlePopUpClose={() => {
+            dispatch({
+              type: "CONNECTION_ERROR",
+              payload: "",
+            });
+          }}
+          label={"Check Your Network"}
+          customStyles={{ zIndex: "1002 !important", backgroundColor: "red !important" }}
+        />
+      )}
     </main>
   );
 }
