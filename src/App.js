@@ -258,7 +258,7 @@ function App() {
   const [initialRegister, setInitialRegister] = useState(true);
   const navigate = useNavigate();
 
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  let tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
   const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 
@@ -288,6 +288,7 @@ function App() {
             } else {
               setStep(systemAcc.step);
             }
+            console.log(balance);
           });
         } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
           setStep(systemAcc?.step || 2);
