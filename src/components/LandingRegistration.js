@@ -184,21 +184,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               // don't forget
 
               axios
-                .post("/api/accounts/manage_extensions", {
-                  address: account,
-                  extensions: { staking: "true", referral: "true" },
-                })
-                .then((res) => {
-                  if (res?.data?.account) {
-                    console.log("res", res?.data);
-                    dispatch({
-                      type: "UPDATE_ACTIVE_EXTENSIONS",
-                      payload: res.data.account.extensions,
-                    });
-                  }
-                })
-                .catch((e) => console.log(e.response));
-              axios
                 .post("/api/accounts/handle-step", { step, address: account })
                 .then((e) => {
                   setStep(e?.data?.account?.step ?? 3);
@@ -395,6 +380,21 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             console.log(err);
           });
         navigate("/dashboard");
+        axios
+          .post("/api/accounts/manage_extensions", {
+            address: account,
+            extensions: { staking: "true", referral: "true" },
+          })
+          .then((res) => {
+            if (res?.data?.account) {
+              console.log("res", res?.data);
+              dispatch({
+                type: "UPDATE_ACTIVE_EXTENSIONS",
+                payload: res.data.account.extensions,
+              });
+            }
+          })
+          .catch((e) => console.log(e.response));
         await axios
           .post("/api/accounts/activate-account", {
             address: account,
