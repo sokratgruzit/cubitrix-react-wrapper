@@ -11,7 +11,6 @@ import { NoHistoryIcon } from '../assets/svg'
 import axios from '../api/axios'
 
 const Dashboard = () => {
-  const sideBarOpen = useSelector(state => state.appState?.sideBarOpen)
   const [codesTableData, setCodesTableData] = useState([])
   const [rebatesTableData, setRebatesTableData] = useState([])
   const [transactionsData, setTransactionsData] = useState({})
@@ -33,8 +32,6 @@ const Dashboard = () => {
   const account = useSelector(state => state.connect.account)
 
   const { width } = useMobileWidth()
-
-  const navigate = useNavigate()
 
   const dispatch = useDispatch()
 
@@ -152,7 +149,7 @@ const Dashboard = () => {
     generateTotalReferralData()
     generateTableData('codes')
     generateTableData('rebates')
-  }, [])
+  }, [account])
 
   const transactionHeader = [
     {
@@ -344,24 +341,10 @@ const Dashboard = () => {
     platinium: '/img/dashboard/platinium.png',
   }
 
-  const handleWithdraw = () => [
+  const handleSidebarOpen = sideBar => [
     dispatch({
       type: 'SET_SIDE_BAR',
-      payload: { sideBarOpen: true, sideBar: 'withdraw' },
-    }),
-  ]
-
-  const handleDeposit = () => [
-    dispatch({
-      type: 'SET_SIDE_BAR',
-      payload: { sideBarOpen: true, sideBar: 'deposit' },
-    }),
-  ]
-
-  const handleExchange = () => [
-    dispatch({
-      type: 'SET_SIDE_BAR',
-      payload: { sideBarOpen: true, sideBar: 'exchange' },
+      payload: { sideBarOpen: true, sideBar },
     }),
   ]
 
@@ -383,9 +366,10 @@ const Dashboard = () => {
       transactionsTableLoading={transactionsTableLoading}
       accountsData={accountsData}
       cardImgs={cardImgs}
-      handleDeposit={handleDeposit}
-      handleExchange={handleExchange}
-      handleWithdraw={handleWithdraw}
+      handleDeposit={() => handleSidebarOpen('deposit')}
+      handleExchange={() => handleSidebarOpen('exchange')}
+      handleWithdraw={() => handleSidebarOpen('withdraw')}
+      handleTransfer={() => handleSidebarOpen('transfer')}
     />
   )
 }

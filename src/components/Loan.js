@@ -4,7 +4,6 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 
 import { Loan as LoanTest } from "@cubitrix/cubitrix-react-ui-module";
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 // import { injected } from "../connector";
 
 const Loan = () => {

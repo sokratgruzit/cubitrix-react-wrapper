@@ -79,6 +79,7 @@ const Transactions = () => {
     filterObject?.time,
     filterObject?.account,
     transactionsCurrentPage,
+    account,
   ]);
 
   const transactionHeader = [
