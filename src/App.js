@@ -146,6 +146,7 @@ function App() {
           staking: "false",
           referral: "false",
           connect: "false",
+          dashboard: "false",
         },
       });
       dispatch({
@@ -430,7 +431,7 @@ function App() {
               payload: "",
             });
           }}
-          customStyles={{ zIndex: "1002 !important" }}
+          popupBGclass={"cover-most-bg"}
         />
       )}
       {appState?.connectionError === "Please switch your network in wallet" && (
@@ -455,6 +456,7 @@ function App() {
           }}
           label={"Check Your Network"}
           customStyles={{ zIndex: "1002 !important", backgroundColor: "red !important" }}
+          popupBGclass={"cover-most-bg"}
         />
       )}
     </main>
