@@ -9,7 +9,12 @@ const Success = () => {
   const { hash } = useParams();
 
   useEffect(() => {
-    console.log(hash);
+    axios
+      .post("/api/transactions/get_transaction_by_hash", { hash })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((e) => console.log(e.response));
   }, []);
 
   return (

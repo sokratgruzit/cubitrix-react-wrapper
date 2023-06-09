@@ -68,11 +68,11 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }
 
   const methods = [
-    {
-      id: "Manual",
-      title: "Manual",
-      logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-    },
+    // {
+    //   id: "Manual",
+    //   title: "Manual",
+    //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
+    // },
     {
       id: "Coinbase",
       title: "Coinbase",
@@ -357,6 +357,18 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     },
   ];
 
+  const [stakeButtonText, setStakeButtonText] = useState("Approve");
+
+  useEffect(() => {
+    if (loading) {
+      setStakeButtonText("Loading...");
+    } else if (account && isAllowance) {
+      setStakeButtonText("Approve");
+    } else {
+      setStakeButtonText("Stake");
+    }
+  }, [account, isAllowance, loading]);
+
   const handleDepositSubmit = async () => {
     if (depositAmount < 1 && currentObject?.amount === "0") {
     }
@@ -439,7 +451,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       handleTimePeriod={handleTimePeriod}
       handleTimeperiodDate={handleTimeperiodDate}
       durationOptions={durationOptions}
-      buttonLabel={loading ? "Loading..." : "Stake"}
+      buttonLabel={stakeButtonText}
       handleSubmit={() => handleDepositSubmit()}
       inputs={inputs}
       currentObject={currentObject}
