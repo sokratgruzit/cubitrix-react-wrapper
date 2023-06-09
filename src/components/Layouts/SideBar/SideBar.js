@@ -39,8 +39,6 @@ const SideBarRight = () => {
   const [personalData, setPersonalData] = useState(null);
   const { connect, disconnect, setError } = useConnect();
 
-  // console.log(, "err");
-
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
   const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
@@ -922,8 +920,6 @@ const SideBarRight = () => {
       setCurrentObject((prev) => ({ ...prev, type: "", account: "", amount: "0" }));
     }, 3000);
   };
-
-  console.log(appState?.connectionError);
 
   return (
     <>

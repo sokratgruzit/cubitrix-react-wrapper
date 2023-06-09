@@ -59,7 +59,8 @@ function App() {
   const isExtensionsLoaded = appState.isExtensionsLoaded;
   const { activeExtensions } = useSelector((state) => state.extensions);
 
-  const { library, MetaMaskEagerlyConnect, disconnect } = useConnect();
+  const { library, MetaMaskEagerlyConnect, disconnect, switchToBscTestnet } =
+    useConnect();
 
   useEffect(() => {
     if (account && chainId) {
@@ -158,8 +159,6 @@ function App() {
     }
     // eslint-disable-next-line
   }, [account]);
-
-  // console.log(exts);
 
   const links = [
     {
@@ -296,7 +295,6 @@ function App() {
             } else {
               setStep(systemAcc.step);
             }
-            console.log(balance);
           });
         } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
           setStep(systemAcc?.step || 2);
@@ -317,6 +315,7 @@ function App() {
 
     return balanceInEth;
   }
+
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
@@ -445,7 +444,9 @@ function App() {
                   payload: "",
                 });
               }}
-              handleNetworkChange={() => console.log("handle network change")}
+              handleNetworkChange={() => {
+                switchToBscTestnet();
+              }}
             />
           }
           handlePopUpClose={() => {

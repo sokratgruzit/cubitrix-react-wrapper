@@ -74,14 +74,47 @@ export const useConnect = (props) => {
     }
   }, [tried, account]);
 
+  const switchToBscTestnet = async () => {
+    try {
+      if (window.ethereum) {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61", // ChainID for the Binance Smart Chain Testnet
+              chainName: "BSC Testnet",
+              nativeCurrency: {
+                name: "BNB",
+                symbol: "bnb",
+                decimals: 18,
+              },
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+              blockExplorerUrls: ["https://testnet.bscscan.com"],
+            },
+          ],
+        });
+        dispatch({
+          type: "CONNECTION_ERROR",
+          payload: "",
+        });
+      } else {
+        console.log("Can't setup the BSC Testnet on BSC network");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const connect = async (providerType, injected) => {
-    setConnectionLoading(true);
     if (typeof window.ethereum === "undefined" && providerType === "metaMask") {
       dispatch({
         type: "CONNECTION_ERROR",
         payload: "No MetaMask detected",
       });
       return;
+    }
+    if (providerType === "metaMask") {
+      setConnectionLoading(true);
     }
     try {
       await activate(injected, undefined, true)
@@ -95,11 +128,12 @@ export const useConnect = (props) => {
         })
         .catch((e) => {
           dispatch({ type: "UPDATE_STATE", account: "", isConnected: false });
-          if (e.toString().startsWith("UnsupportedChainIdError"))
+          if (e.toString().startsWith("UnsupportedChainIdError")) {
             dispatch({
               type: "CONNECTION_ERROR",
               payload: "Please switch your network in wallet",
             });
+          }
         });
       setConnectionLoading(false);
     } catch (error) {
@@ -130,8 +164,9 @@ export const useConnect = (props) => {
       providerType,
       chainId,
       MetaMaskEagerlyConnect,
+      switchToBscTestnet,
     }),
-    [account, connectionLoading, providerType, chainId],
+    [account, connectionLoading, providerType, chainId, switchToBscTestnet],
   );
   return values;
 };
