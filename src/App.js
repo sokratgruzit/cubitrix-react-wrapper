@@ -17,7 +17,8 @@ import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
 import { DashboardSharedLayout, Header } from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "./hooks/use-connect";
 
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -52,7 +53,11 @@ function App() {
   const isExtensionsLoaded = appState.isExtensionsLoaded;
   const { activeExtensions } = useSelector((state) => state.extensions);
 
-  const { library, MetaMaskEagerlyConnect } = useConnect();
+  const { library, MetaMaskEagerlyConnect, error } = useConnect();
+
+  useEffect(() => {
+    console.log(error, "err");
+  }, [error]);
 
   useEffect(() => {
     if (account && chainId) {
@@ -258,7 +263,7 @@ function App() {
   const [initialRegister, setInitialRegister] = useState(true);
   const navigate = useNavigate();
 
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  let tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
   const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 
@@ -288,6 +293,7 @@ function App() {
             } else {
               setStep(systemAcc.step);
             }
+            console.log(balance);
           });
         } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
           setStep(systemAcc?.step || 2);

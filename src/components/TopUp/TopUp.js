@@ -6,8 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 const methods = [
   {
-    id: "USDT",
-    title: "USDT",
+    id: "Manual",
+    title: "Manual",
     logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
   },
   {
@@ -18,11 +18,11 @@ const methods = [
 ];
 
 const paymentTypes = [
-  {
-    id: 1,
-    title: "Pay via Crypto",
-    logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-  },
+  // {
+  //   id: 1,
+  //   title: "Pay via Crypto",
+  //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
+  // },
   {
     id: 2,
     title: "Pay with CoinBase",

@@ -4,7 +4,8 @@ import STACK_ABI from "../abi/stack.json";
 import WBNB from "../abi/WBNB.json";
 import moment from "moment";
 
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "./use-connect";
 
 import { INIT_STATE } from "../store/stakeReducer";
 

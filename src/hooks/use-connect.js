@@ -110,7 +110,6 @@ export const useConnect = (props) => {
     }
   };
 
-  // Disconnect from Metamask wallet
   const disconnect = async () => {
     try {
       deactivate();
@@ -138,8 +137,7 @@ export const useConnect = (props) => {
       MetaMaskEagerlyConnect,
     }),
     // eslint-disable-next-line
-    [account, connectionLoading, providerType, chainId, error],
+    [account, connectionLoading, providerType, chainId, error, setError],
   );
-
   return values;
 };

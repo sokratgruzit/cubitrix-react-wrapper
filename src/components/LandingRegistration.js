@@ -1,10 +1,14 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "../hooks/use-connect";
+// don't forget
 import { injected, walletConnect } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { useTableParameters } from "../hooks/useTableParameters";
 
@@ -17,6 +21,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { connect, disconnect, error, setError, connectionLoading, library } =
     useConnect();
@@ -66,11 +71,11 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }
 
   const methods = [
-    {
-      id: "Manual",
-      title: "Manual",
-      logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-    },
+    // {
+    //   id: "Manual",
+    //   title: "Manual",
+    //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
+    // },
     {
       id: "Coinbase",
       title: "Coinbase",
@@ -79,11 +84,11 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   ];
 
   const paymentTypes = [
-    {
-      id: 1,
-      title: "Pay via Crypto",
-      logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-    },
+    // {
+    //   id: 1,
+    //   title: "Pay via Crypto",
+    //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
+    // },
     {
       id: 2,
       title: "Pay with CoinBase",
@@ -176,6 +181,11 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (res?.data === "account updated") {
             getBalance().then((balance) => {
               let step = 3;
+              if (balance > 100) {
+                step = 4;
+              }
+              // don't forget
+
               axios
                 .post("/api/accounts/handle-step", { step, address: account })
                 .then((e) => {
@@ -335,6 +345,18 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     },
   ];
 
+  const [stakeButtonText, setStakeButtonText] = useState("Approve");
+
+  useEffect(() => {
+    if (loading) {
+      setStakeButtonText("Loading...");
+    } else if (account && isAllowance) {
+      setStakeButtonText("Approve");
+    } else {
+      setStakeButtonText("Stake");
+    }
+  }, [account, isAllowance, loading]);
+
   const handleDepositSubmit = async () => {
     if (depositAmount < 1 && currentObject?.amount === "0") {
     }
@@ -360,6 +382,22 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           .catch((err) => {
             console.log(err);
           });
+        navigate("/dashboard");
+        axios
+          .post("/api/accounts/manage_extensions", {
+            address: account,
+            extensions: { staking: "true", referral: "true" },
+          })
+          .then((res) => {
+            if (res?.data?.account) {
+              console.log("res", res?.data);
+              dispatch({
+                type: "UPDATE_ACTIVE_EXTENSIONS",
+                payload: res.data.account.extensions,
+              });
+            }
+          })
+          .catch((e) => console.log(e.response));
         await axios
           .post("/api/accounts/activate-account", {
             address: account,
@@ -416,7 +454,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       handleTimePeriod={handleTimePeriod}
       handleTimeperiodDate={handleTimeperiodDate}
       durationOptions={durationOptions}
-      buttonLabel={loading ? "Loading..." : "Stake"}
+      buttonLabel={stakeButtonText}
       handleSubmit={() => handleDepositSubmit()}
       inputs={inputs}
       currentObject={currentObject}
