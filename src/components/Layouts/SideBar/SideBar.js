@@ -921,8 +921,6 @@ const SideBarRight = () => {
     }, 3000);
   };
 
-  console.log(account)
-
   return (
     <>
       {error === "no metamask" && (
