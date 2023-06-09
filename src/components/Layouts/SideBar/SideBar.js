@@ -20,7 +20,9 @@ import {
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "../../../hooks/use-connect";
 
 import { injected, walletConnect } from "../../../connector";
 
@@ -1005,7 +1007,7 @@ const SideBarRight = () => {
             securityDataState={securityDataState}
             resendEmail={(e) => resendEmail(e)}
             hasPasswordSet={appState.hasPasswordSet}
-            imgValue={`https://cubitrix.onrender.com/images/${account}.png`}
+            imgValue={`https://complend.shopgeorgia.ge/images/${account}.png`}
             twoFactorAuth={twoFactorAuth}
             handleTwoFactorAuth={(val) => {
               setTwoFactorAuth(val);

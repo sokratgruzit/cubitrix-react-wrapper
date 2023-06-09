@@ -1,7 +1,10 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "../hooks/use-connect";
+// don't forget
 import { injected, walletConnect } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
