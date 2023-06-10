@@ -5,11 +5,11 @@ import axios from "../../api/axios";
 import { useSelector, useDispatch } from "react-redux";
 
 const methods = [
-  {
-    id: "Manual",
-    title: "Manual",
-    logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
-  },
+  // {
+  //   id: "Manual",
+  //   title: "Manual",
+  //   logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
+  // },
   {
     id: "Coinbase",
     title: "Coinbase",

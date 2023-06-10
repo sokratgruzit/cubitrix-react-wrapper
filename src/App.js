@@ -144,6 +144,7 @@ function App() {
           staking: "false",
           referral: "false",
           connect: "false",
+          dashboard: "false",
         },
       });
       dispatch({
