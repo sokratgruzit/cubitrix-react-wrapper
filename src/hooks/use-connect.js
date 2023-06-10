@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useWeb3React } from "@web3-react/core";
-import { walletConnect } from "../connector";
 
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
@@ -44,7 +43,7 @@ export const useConnect = (props) => {
     }
   }
 
-  async function WalletConnectEagerly(walelt, callback) {
+  async function WalletConnectEagerly(walletConnect, callback) {
     if (providerType === "walletConnect") {
       try {
         if (isConnected) {
@@ -133,8 +132,8 @@ export const useConnect = (props) => {
               type: "CONNECTION_ERROR",
               payload: "Please switch your network in wallet",
             });
-            if (walletConnect instanceof WalletConnectConnector) {
-              walletConnect.walletConnectProvider = undefined;
+            if (injected instanceof WalletConnectConnector) {
+              injected.walletConnectProvider = undefined;
             }
           }
         })

@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { useMobileWidth } from "../hooks/useMobileWidth";
 import { NoHistoryIcon } from "../assets/svg";
-import { useConnect } from "../hooks/use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import axios from "../api/axios";
 

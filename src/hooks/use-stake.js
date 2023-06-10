@@ -4,8 +4,7 @@ import STACK_ABI from "../abi/stack.json";
 import WBNB from "../abi/WBNB.json";
 import moment from "moment";
 
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "./use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { INIT_STATE } from "../store/stakeReducer";
 
@@ -85,7 +84,6 @@ export const useStake = ({ Router, tokenAddress }) => {
   };
 
   const approve = async (callback) => {
-    console.log("goes to approve");
     dispatch({
       type: "UPDATE_STAKE_STATE",
       payload: {

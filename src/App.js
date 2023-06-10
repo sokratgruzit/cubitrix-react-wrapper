@@ -23,8 +23,7 @@ import {
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "./hooks/use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -302,7 +301,6 @@ function App() {
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
         getBalance().then((balance) => {
-          console.log(balance);
           if (balance > 100) {
             setStep(4);
           } else {

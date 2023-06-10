@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Transactions as TransactionsUI } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector } from "react-redux";
 
-import { useConnect } from "../hooks/use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+
 import { useMobileWidth } from "../hooks/useMobileWidth";
 import { NoHistoryIcon } from "../assets/svg";
 

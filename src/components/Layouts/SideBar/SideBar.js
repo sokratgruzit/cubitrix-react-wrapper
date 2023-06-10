@@ -11,8 +11,6 @@ import {
   TwoFactorAuthentication,
   ResetPassword,
   Popup,
-  ChangeNetwork,
-  NoMetaMask,
   TransferFromAcc,
   Exchange,
   Deposit,
@@ -20,10 +18,7 @@ import {
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
-// import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
-// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { useStake } from "../../../hooks/use-stake";
-import { useConnect } from "../../../hooks/use-connect";
+import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
 
 import { injected, walletConnect } from "../../../connector";
 
