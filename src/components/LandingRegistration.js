@@ -2,7 +2,8 @@ import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
 // import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "../hooks/use-stake";
 import { useConnect } from "../hooks/use-connect";
 // don't forget
 import { injected, walletConnect } from "../connector";
@@ -184,7 +185,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               if (balance > 100) {
                 step = 4;
               }
-              // don't forget
 
               axios
                 .post("/api/accounts/handle-step", { step, address: account })
@@ -235,32 +235,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
     return balanceInEth;
   }
-
-  const metaAcc = appState?.userData?.meta;
-  // useEffect(() => {
-  //   if (account && triedReconnect) {
-  //     if (metaAcc && metaAcc.email && metaAcc.name) {
-  //       setStep(3);
-  //     } else {
-  //       setStep(2);
-  //     }
-  //   } else if (!account || !triedReconnect) {
-  //     setStep(1);
-  //   }
-  // }, [account, triedReconnect, appState?.userData?.meta]);
-
-  // useEffect(() => {
-  //   if (account) {
-  //     if (metaAcc?.email) {
-  //       setStep(3);
-  //       return;
-  //     }
-  //     setStep(2);
-  //   } else {
-  //     setStep(1);
-  //     // setInitialRegister(false);
-  //   }
-  // }, [account]);
 
   const [formData, setFormData] = useState({
     fullName: "",

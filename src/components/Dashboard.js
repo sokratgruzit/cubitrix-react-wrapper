@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
-import { Dashboard as DashboardUI } from '@cubitrix/cubitrix-react-ui-module'
-import { useSelector, useDispatch } from 'react-redux'
+import { Dashboard as DashboardUI } from "@cubitrix/cubitrix-react-ui-module";
+import { useSelector, useDispatch } from "react-redux";
 
-import { useMobileWidth } from '../hooks/useMobileWidth'
-import { NoHistoryIcon } from '../assets/svg'
+import { useMobileWidth } from "../hooks/useMobileWidth";
+import { NoHistoryIcon } from "../assets/svg";
+import { useConnect } from "../hooks/use-connect";
 
-import axios from '../api/axios'
+import axios from "../api/axios";
 
 const Dashboard = () => {
-  const [codesTableData, setCodesTableData] = useState([])
-  const [rebatesTableData, setRebatesTableData] = useState([])
-  const [transactionsData, setTransactionsData] = useState({})
-  const [totalTransactions, setTotalTransactions] = useState({})
+  const [codesTableData, setCodesTableData] = useState([]);
+  const [rebatesTableData, setRebatesTableData] = useState([]);
+  const [transactionsData, setTransactionsData] = useState({});
+  const [totalTransactions, setTotalTransactions] = useState({});
   const [totalReferralData, setTotalReferralData] = useState({
     uni: {
       levelUser: 0,
@@ -24,93 +25,97 @@ const Dashboard = () => {
       levelUser: 0,
       totalComission: 0,
     },
-  })
-  const [accountsData, setAccountsData] = useState([])
-  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false)
-  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false)
-  const [transactionsTableLoading, setTransactionsTableLoading] = useState(false)
-  const account = useSelector(state => state.connect.account)
+  });
+  const [accountsData, setAccountsData] = useState([]);
+  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
+  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
+  const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
 
-  const { width } = useMobileWidth()
+  const { account, active } = useConnect();
 
-  const dispatch = useDispatch()
+  const { width } = useMobileWidth();
+
+  const dispatch = useDispatch();
 
   const generateTableData = async (table, page) => {
-    if (table === 'codes') {
-      setReferralCodeTableLoading(true)
+    if (table === "codes") {
+      setReferralCodeTableLoading(true);
     } else {
-      setReferralHistoryTableLoading(true)
+      setReferralHistoryTableLoading(true);
     }
 
     try {
       const apiUrl = `/api/referral/${
-        table === 'codes' ? 'get_referral_code_of_user' : 'get_referral_rebates_history_of_user'
-      }`
+        table === "codes"
+          ? "get_referral_code_of_user"
+          : "get_referral_rebates_history_of_user"
+      }`;
 
       const requestBody = {
-        address: account,
+        address: account?.toLowerCase(),
         limit: 3,
         page: 1,
-      }
+      };
 
-      const response = await axios.post(apiUrl, requestBody)
+      const response = await axios.post(apiUrl, requestBody);
 
-      const data = response.data
+      const data = response.data;
 
-      if (table === 'codes') {
-        setCodesTableData(data.referral_code)
-        setReferralCodeTableLoading(false)
+      if (table === "codes") {
+        setCodesTableData(data.referral_code);
+        setReferralCodeTableLoading(false);
       } else {
-        setRebatesTableData(data.referral_rebates_history)
-        setReferralHistoryTableLoading(false)
+        setRebatesTableData(data.referral_rebates_history);
+        setReferralHistoryTableLoading(false);
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
     }
-  }
+  };
 
   const generateTransactionsData = async () => {
-    setTransactionsTableLoading(true)
+    setTransactionsTableLoading(true);
 
     try {
-      const apiUrl = '/api/transactions/get_transactions_of_user'
+      const apiUrl = "/api/transactions/get_transactions_of_user";
 
       const requestBody = {
-        address: account,
+        address: account?.toLowerCase(),
         limit: 3,
         page: 1,
-      }
+      };
 
-      const response = await axios.post(apiUrl, requestBody)
+      const response = await axios.post(apiUrl, requestBody);
 
-      const data = response.data
+      const data = response.data;
 
-      const amountsToFrom = data?.amounts_to_from || {}
-      setTransactionsData(data)
+      const amountsToFrom = data?.amounts_to_from || {};
+      setTransactionsData(data);
 
       setTotalTransactions({
         total_transaction: data?.total_transaction || 0,
         received: amountsToFrom.toCount || 0,
         spent: amountsToFrom.fromSum || 0,
-      })
-      setTransactionsTableLoading(false)
+      });
+      setTransactionsTableLoading(false);
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
     }
-  }
+  };
 
   const generateTotalReferralData = async () => {
     try {
-      const apiUrl = '/api/referral/get_referral_code_of_user_dashboard'
+      const apiUrl = "/api/referral/get_referral_code_of_user_dashboard";
       const requestBody = {
-        address: account,
-      }
+        address: account?.toLowerCase(),
+      };
 
-      const response = await axios.post(apiUrl, requestBody)
+      const response = await axios.post(apiUrl, requestBody);
 
-      const data = response.data
+      const data = response.data;
 
-      setTotalReferralData(prev => ({
+      setTotalReferralData((prev) => ({
         ...prev,
         uni: {
           levelUser: data?.referral_count_binary || 0,
@@ -120,233 +125,237 @@ const Dashboard = () => {
           levelUser: data?.referral_count_uni || 0,
           totalComission: data?.referral_sum_binary[0]?.amount || 0,
         },
-      }))
+      }));
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
     }
-  }
+  };
 
   const generateAccountsData = async () => {
     try {
-      const apiUrl = '/api/accounts/get_account_balances'
+      const apiUrl = "/api/accounts/get_account_balances";
       const requestBody = {
-        address: account,
-      }
+        address: account?.toLowerCase(),
+      };
 
-      const response = await axios.post(apiUrl, requestBody)
+      const response = await axios.post(apiUrl, requestBody);
 
-      const data = response.data
+      const data = response.data;
 
-      setAccountsData(data?.data)
+      setAccountsData(data?.data);
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    generateAccountsData()
-    generateTransactionsData()
-    generateTotalReferralData()
-    generateTableData('codes')
-    generateTableData('rebates')
-  }, [account])
+    if (account && triedReconnect && active) {
+      generateAccountsData();
+      generateTransactionsData();
+      generateTotalReferralData();
+      generateTableData("codes");
+      generateTableData("rebates");
+    }
+  }, [account, triedReconnect, active]);
 
   const transactionHeader = [
     {
-      name: 'From',
+      name: "From",
       mobileWidth: width >= 500 ? 45 : 100,
       width: 20,
       id: 0,
-      height: '40px',
+      height: "40px",
     },
     {
-      name: 'To',
+      name: "To",
       width: 20,
       // mobileWidth: 45,
       id: 1,
-      height: '40px',
+      height: "40px",
     },
     {
-      name: 'Type',
+      name: "Type",
       width: 20,
       id: 2,
-      height: '40px',
+      height: "40px",
     },
     {
-      name: 'Time',
+      name: "Time",
       width: 20,
       id: 3,
-      height: '40px',
+      height: "40px",
       icon: (
         <svg
-          width='10'
-          height='10'
-          viewBox='0 0 10 10'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-          style={{ marginLeft: '2px' }}>
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ marginLeft: "2px" }}
+        >
           <path
-            d='M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z'
-            fill='white'
+            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
+            fill="white"
           />
           <path
-            d='M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z'
-            fill='white'
+            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
+            fill="white"
           />
         </svg>
       ),
     },
     {
-      name: 'Amount',
+      name: "Amount",
       width: 20,
       mobileWidth: width >= 500 ? 45 : false,
       id: 4,
-      height: '40px',
+      height: "40px",
       icon: (
         <svg
-          width='10'
-          height='10'
-          viewBox='0 0 10 10'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-          style={{ marginLeft: '2px' }}>
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ marginLeft: "2px" }}
+        >
           <path
-            d='M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z'
-            fill='white'
+            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
+            fill="white"
           />
           <path
-            d='M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z'
-            fill='white'
+            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
+            fill="white"
           />
         </svg>
       ),
     },
-  ]
+  ];
 
   const referralCodeHeader = [
     {
       id: 0,
-      name: 'My Referral Code',
+      name: "My Referral Code",
       width: 15,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 1,
-      name: 'User Address',
+      name: "User Address",
       width: 15,
       mobileWidth: width >= 500 ? 45 : 100,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 2,
-      name: 'User Level',
+      name: "User Level",
       width: 15,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 3,
-      name: 'Rate',
+      name: "Rate",
       width: 15,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 4,
-      name: 'Total Earned',
+      name: "Total Earned",
       width: 15,
       mobileWidth: width >= 500 ? 45 : false,
-      height: '40px',
+      height: "40px",
     },
-  ]
+  ];
 
   const referralHistoryHeader = [
     {
       id: 0,
-      name: 'From',
+      name: "From",
       width: 15,
       mobileWidth: width >= 500 ? 45 : 100,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 1,
-      name: 'Referral Code',
+      name: "Referral Code",
       width: 15,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 2,
-      name: 'Referral Level',
+      name: "Referral Level",
       width: 15,
-      height: '40px',
+      height: "40px",
     },
     {
       id: 3,
-      name: 'Amount',
+      name: "Amount",
       width: 15,
       mobileWidth: width >= 500 ? 45 : false,
-      height: '40px',
+      height: "40px",
     },
-  ]
+  ];
 
   const referralCardsData = [
     {
-      title: 'Uni',
+      title: "Uni",
       data: [
         {
-          title: 'Level User',
+          title: "Level User",
           value: totalReferralData?.uni?.levelUser,
         },
         {
-          title: 'Total Comission',
+          title: "Total Comission",
           value: totalReferralData?.uni?.totalComission,
         },
       ],
     },
     {
-      title: 'Binary',
+      title: "Binary",
       active: true,
       data: [
         {
-          title: 'Level User',
+          title: "Level User",
           value: totalReferralData?.binary?.levelUser,
         },
         {
-          title: 'Total Comission',
+          title: "Total Comission",
           value: totalReferralData?.binary?.totalComission,
         },
       ],
     },
-  ]
+  ];
 
   const referralCodeTableEmpty = {
-    label: 'No Referral Code History',
+    label: "No Referral Code History",
     icon: <NoHistoryIcon />,
-  }
+  };
 
   const referralRebatesTableEmpty = {
-    label: 'No Referral Rebates History',
+    label: "No Referral Rebates History",
     icon: <NoHistoryIcon />,
-  }
+  };
 
   const transactionsTableEmpty = {
-    label: 'No Transaction History',
+    label: "No Transaction History",
     icon: <NoHistoryIcon />,
-  }
+  };
 
   const cardImgs = {
-    cpl: '/img/dashboard/cpl.png',
-    btc: '/img/dashboard/btc.png',
-    eth: '/img/dashboard/eth.png',
-    usdt: '/img/dashboard/usdt.png',
-    gold: '/img/dashboard/gold.png',
-    platinium: '/img/dashboard/platinium.png',
-  }
+    cpl: "/img/dashboard/cpl.png",
+    btc: "/img/dashboard/btc.png",
+    eth: "/img/dashboard/eth.png",
+    usdt: "/img/dashboard/usdt.png",
+    gold: "/img/dashboard/gold.png",
+    platinium: "/img/dashboard/platinium.png",
+  };
 
-  const handleSidebarOpen = sideBar => [
+  const handleSidebarOpen = (sideBar) => [
     dispatch({
-      type: 'SET_SIDE_BAR',
+      type: "SET_SIDE_BAR",
       payload: { sideBarOpen: true, sideBar },
     }),
-  ]
+  ];
 
   return (
     <DashboardUI
@@ -366,12 +375,12 @@ const Dashboard = () => {
       transactionsTableLoading={transactionsTableLoading}
       accountsData={accountsData}
       cardImgs={cardImgs}
-      handleDeposit={() => handleSidebarOpen('deposit')}
-      handleExchange={() => handleSidebarOpen('exchange')}
-      handleWithdraw={() => handleSidebarOpen('withdraw')}
-      handleTransfer={() => handleSidebarOpen('transfer')}
+      handleDeposit={() => handleSidebarOpen("deposit")}
+      handleExchange={() => handleSidebarOpen("exchange")}
+      handleWithdraw={() => handleSidebarOpen("withdraw")}
+      handleTransfer={() => handleSidebarOpen("transfer")}
     />
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

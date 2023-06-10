@@ -11,7 +11,8 @@ import {
   AddSquareIcon,
 } from "../assets/svg";
 
-import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "../hooks/use-stake";
 
 // hooks
 import { useTableParameters } from "../hooks/useTableParameters";

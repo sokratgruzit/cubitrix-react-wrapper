@@ -2,7 +2,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [4, 97, 2122, 56, 31],
+  supportedChainIds: [97],
 });
 
 export const walletConnect = new WalletConnectConnector({
@@ -12,6 +12,7 @@ export const walletConnect = new WalletConnectConnector({
     97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
     // 2122: "https://testnet-rpc.coremultichain.net",
   },
+  chainId: 97,
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   pollingInterval: 12000,

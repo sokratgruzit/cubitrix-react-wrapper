@@ -100,8 +100,7 @@ export const useStake = ({ Router, tokenAddress }) => {
         .approve(Router, amountIn.toString())
         .send({ from: account })
         .then(() => {
-          console.log(callback, "shiit this runs wtf");
-          // if (callback) callback();
+          if (callback) callback();
           dispatch({
             type: "UPDATE_STAKE_STATE",
             payload: {

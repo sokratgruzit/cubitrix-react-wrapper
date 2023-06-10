@@ -21,7 +21,8 @@ import {
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
 // import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "../../../hooks/use-stake";
 import { useConnect } from "../../../hooks/use-connect";
 
 import { injected, walletConnect } from "../../../connector";
@@ -34,10 +35,10 @@ const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
   const userMetaData = useSelector((state) => state.appState.userData?.meta);
   const sideBar = useSelector((state) => state.appState.sideBar);
-  const account = useSelector((state) => state.connect.account);
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect, setError } = useConnect();
+  const { account, connect, disconnect, setError, active } = useConnect();
 
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -136,6 +137,7 @@ const SideBarRight = () => {
   };
 
   useEffect(() => {
+    // if (account && triedReconnect && active)
     updateState();
     // eslint-disable-next-line
   }, [account]);

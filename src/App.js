@@ -32,7 +32,7 @@ import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 
-import { injected } from "./connector";
+import { injected, walletConnect } from "./connector";
 import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
 import Success from "./components/Deposit/Success";
@@ -48,7 +48,6 @@ function App() {
   const sideBar = useSelector((state) => state.appState?.sideBar);
   const emailVerified = useSelector((state) => state.appState?.emailVerified);
   const exts = useSelector((state) => state.extensions?.activeExtensions);
-  const account = useSelector((state) => state.connect.account);
   const chainId = useSelector((state) => state.connect.chainId);
   const providerType = useSelector((state) => state.connect.providerType);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
@@ -59,11 +58,27 @@ function App() {
   const isExtensionsLoaded = appState.isExtensionsLoaded;
   const { activeExtensions } = useSelector((state) => state.extensions);
 
-  const { library, MetaMaskEagerlyConnect, disconnect, switchToBscTestnet } =
-    useConnect();
+  const {
+    library,
+    disconnect,
+    switchToBscTestnet,
+    active,
+    account,
+    MetaMaskEagerlyConnect,
+    WalletConnectEagerly,
+  } = useConnect();
 
   useEffect(() => {
-    if (account && chainId) {
+    MetaMaskEagerlyConnect(injected);
+    WalletConnectEagerly(walletConnect);
+    if (!providerType) {
+      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
       const fetchData = async () => {
         await axios
           .post("/api/accounts/login", {
@@ -74,7 +89,15 @@ function App() {
       };
       fetchData();
     }
-  }, [dispatch, account, chainId]);
+  }, [account, triedReconnect, active]);
+
+  useEffect(() => {
+    dispatch({
+      type: "UPDATE_STATE",
+      account: account,
+      chainId: chainId,
+    });
+  }, [account, chainId, dispatch]);
 
   const handleConnect = () => {
     if (sideBarOpen) {
@@ -105,17 +128,7 @@ function App() {
   };
 
   useEffect(() => {
-    MetaMaskEagerlyConnect(injected, (e) => {
-      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
-    });
-    if (!providerType) {
-      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
-    }
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    if (account && triedReconnect) {
+    if (account && triedReconnect && active) {
       async function init() {
         await axios
           .post("/api/accounts/activate-account", {
@@ -134,10 +147,10 @@ function App() {
       init();
     }
     // eslint-disable-next-line
-  }, [account]);
+  }, [account, triedReconnect, active]);
 
   useEffect(() => {
-    if (!account && triedReconnect) {
+    if (!account && triedReconnect && !active) {
       dispatch({
         type: "UPDATE_ACTIVE_EXTENSIONS",
         payload: {
@@ -158,9 +171,7 @@ function App() {
       });
     }
     // eslint-disable-next-line
-  }, [account]);
-
-  console.log(triedReconnect);
+  }, [account, triedReconnect, active]);
 
   const links = [
     {
@@ -272,40 +283,39 @@ function App() {
   const metaAcc = appState?.userData?.meta;
 
   useEffect(() => {
-    if (triedReconnect) {
-      if (!account) {
-        setStep(1);
+    if (!account && triedReconnect && !active) {
+      setStep(1);
+    } else if (account && triedReconnect && active) {
+      if (
+        systemAcc &&
+        systemAcc.registered &&
+        systemAcc?.account_owner === account?.toLowerCase()
+      ) {
+        setStep(5);
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "true" },
+        });
+      } else if (
+        systemAcc?.step > 2 &&
+        library &&
+        systemAcc?.account_owner === account?.toLowerCase()
+      ) {
+        getBalance().then((balance) => {
+          console.log(balance);
+          if (balance > 100) {
+            setStep(4);
+          } else {
+            setStep(systemAcc.step);
+          }
+        });
+      } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
+        setStep(systemAcc?.step || 2);
       } else {
-        if (
-          systemAcc &&
-          systemAcc.registered &&
-          systemAcc?.account_owner === account?.toLowerCase()
-        ) {
-          setStep(5);
-          dispatch({
-            type: "UPDATE_ACTIVE_EXTENSIONS",
-            payload: { dashboard: "true" },
-          });
-        } else if (
-          systemAcc?.step > 2 &&
-          library &&
-          systemAcc?.account_owner === account?.toLowerCase()
-        ) {
-          getBalance().then((balance) => {
-            if (balance > 100) {
-              setStep(4);
-            } else {
-              setStep(systemAcc.step);
-            }
-          });
-        } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
-          setStep(systemAcc?.step || 2);
-        } else {
-          setStep(2);
-        }
+        setStep(2);
       }
     }
-  }, [account, triedReconnect, metaAcc, library]);
+  }, [account, triedReconnect, active, library, metaAcc]);
 
   async function getBalance() {
     var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
