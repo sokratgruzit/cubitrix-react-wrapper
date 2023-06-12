@@ -1,8 +1,7 @@
 import { useSelector } from "react-redux";
 import LandingRegistration from "./LandingRegistration";
 import { useState, useEffect } from "react";
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "../hooks/use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import WBNB from "../abi/WBNB.json";
 import { LoadingScreen } from "@cubitrix/cubitrix-react-ui-module";
