@@ -178,7 +178,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (res?.data === "account updated") {
             getBalance().then((balance) => {
               let step = 3;
-              if (balance > 100) {
+              if (balance > 200) {
                 step = 4;
               }
 

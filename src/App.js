@@ -301,7 +301,7 @@ function App() {
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
         getBalance().then((balance) => {
-          if (balance > 100) {
+          if (balance > 200) {
             setStep(4);
           } else {
             setStep(systemAcc.step);
