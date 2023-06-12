@@ -76,6 +76,32 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  const updateState = () => {
+    dispatch({
+      type: "SET_USER_DATA",
+      payload: {},
+    });
+    axios
+      .post("/api/accounts/get_account", {
+        address: account,
+      })
+      .then((res) => {
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.success.data.accounts[0],
+        });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: res.data.success.data.accounts[0].extensions,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
+      })
+      .catch((e) => {});
+  };
+
   useEffect(() => {
     if (account && triedReconnect && active) {
       const fetchData = async () => {
@@ -83,7 +109,11 @@ function App() {
           .post("/api/accounts/login", {
             address: account,
           })
-          .then((res) => {})
+          .then((res) => {
+            if (res?.data === "success") {
+              updateState();
+            }
+          })
           .catch((err) => {});
       };
       fetchData();
@@ -308,7 +338,7 @@ function App() {
           }
         });
       } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
-        setStep(systemAcc?.step || 2);
+        // setStep(systemAcc?.step || 2);
       } else {
         setStep(2);
       }

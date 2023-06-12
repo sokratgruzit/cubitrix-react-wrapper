@@ -89,8 +89,7 @@ const Dashboard = () => {
       const response = await axios.post(apiUrl, requestBody);
 
       const data = response.data;
-
-      const amountsToFrom = data?.amounts_to_from || {};
+      const amountsToFrom = data?.amounts_to_from?.[0] || {};
       setTransactionsData(data);
 
       setTotalTransactions({
@@ -356,7 +355,6 @@ const Dashboard = () => {
       payload: { sideBarOpen: true, sideBar },
     }),
   ];
-
   return (
     <DashboardUI
       transactionsData={transactionsData}

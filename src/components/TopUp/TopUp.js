@@ -86,13 +86,8 @@ const TopUp = () => {
   }
 
   async function handlePurchase(method, tokenAmount) {
-    console.log(method, tokenAmount);
     if (method === "Coinbase") {
-      console.log("her");
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: true, sideBar: "Notify" },
-      });
+      handleCoindbasePayment(tokenAmount - 1);
     }
   }
   return (

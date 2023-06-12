@@ -10,6 +10,8 @@ import {
   Button,
 } from "@cubitrix/cubitrix-react-ui-module";
 
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+
 // svgs
 import { StickyNoteIcon, AddSquareIcon, NoHistoryIcon } from "../assets/svg";
 
@@ -33,8 +35,9 @@ const Referral = () => {
   const [createCodeError, setCreateCodeError] = useState("");
   const [createCodeSuccess, setCreateCodeSuccess] = useState("");
 
-  const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
+
+  const { account, active } = useConnect();
 
   const [referralTotal, setReferralTotal] = useState({
     rebatesUniLevel: 0,
@@ -234,20 +237,15 @@ const Referral = () => {
   };
 
   useEffect(() => {
-    if (account && triedReconnect) {
-      async function handleRefferalStart() {
-        await Promise.allSettled([
-          generateTableData("codes"),
-          generateTableData("rebates"),
-          getReferralTotal(),
-          generateCode(),
-        ]);
-      }
-      handleRefferalStart();
+    if (account && triedReconnect && active) {
+      generateTableData("codes");
+      generateTableData("rebates");
+      getReferralTotal();
+      generateCode();
     }
     getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, [account, active, triedReconnect]);
 
   let referralCodeTh = [
     {

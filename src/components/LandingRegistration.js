@@ -14,14 +14,21 @@ import QRCode from "qrcode";
 import WBNB from "../abi/WBNB.json";
 
 const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
-  const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { connect, disconnect, error, setError, connectionLoading, library } =
-    useConnect();
+  const {
+    account,
+    connect,
+    disconnect,
+    error,
+    setError,
+    connectionLoading,
+    library,
+    active,
+  } = useConnect();
 
   // const [loading, setLoading] = useState(true);
 
@@ -100,6 +107,18 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     referralError: "",
     emailSent: false,
   });
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      setRegistrationState({
+        loading: false,
+        fullnameError: "",
+        emailError: "",
+        referralError: "",
+        emailSent: false,
+      });
+    }
+  }, [account, triedReconnect, active]);
 
   async function handleRegistration({ fullName, email, referral }) {
     const errors = {};
@@ -277,7 +296,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   async function handlePurchaseEvent(method, amount) {
     if (method === "Coinbase") {
-      handleCoindbasePayment(amount);
+      handleCoindbasePayment(amount - 1);
     }
   }
 
