@@ -61,7 +61,7 @@ const Staking = () => {
 
   useEffect(() => {
     if (account && triedReconnect && active) {
-      getStackerInfo()
+      getStackerInfo(0, 10)
       checkAllowance()
     }
     // eslint-disable-next-line
@@ -78,8 +78,6 @@ const Staking = () => {
     }
     // eslint-disable-next-line
   }, [account, triedReconnect, active, depositAmount])
-
-  console.log(stakersRecord)
 
   const handleConnect = () => {
     if (sideBarOpen) {
