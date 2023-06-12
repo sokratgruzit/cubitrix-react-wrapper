@@ -13,7 +13,7 @@ export const useExtensionsData = () => {
   const { activeExtensions } = useSelector((state) => state.extensions);
   const appState = useSelector((state) => state.appState);
   const emailVerified = appState.emailVerified;
-  const isActive = appState.userData?.system?.[0]?.active;
+  const isActive = appState.userData?.active;
   const [extsActive, setExtsActive] = useState({});
 
   const handleChangeExtension = (title, value) => {

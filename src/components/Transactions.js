@@ -59,7 +59,7 @@ const Transactions = () => {
 
       const data = response.data;
 
-      const amountsToFrom = data?.amounts_to_from || {};
+      const amountsToFrom = data?.amounts_to_from?.[0] || {};
       setTransactionsPaginationTotal(data?.total_pages);
       setTransactionsData(data);
       setTotalTransactions({

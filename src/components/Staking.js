@@ -61,8 +61,8 @@ const Staking = () => {
 
   useEffect(() => {
     if (account && triedReconnect && active) {
-      checkAllowance()
       getStackerInfo()
+      checkAllowance()
     }
     // eslint-disable-next-line
   }, [account, triedReconnect, active, depositAmount])
