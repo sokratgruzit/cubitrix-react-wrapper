@@ -11,10 +11,10 @@ import {
   AddSquareIcon,
 } from '../assets/svg'
 
-import { useStake, STAKE_INIT_STATE, useConnect } from '@cubitrix/cubitrix-react-connect-module'
-
 // hooks
+import { useStake, STAKE_INIT_STATE, useConnect } from '@cubitrix/cubitrix-react-connect-module'
 import { useTableParameters } from '../hooks/useTableParameters'
+import { useMobileWidth } from '../hooks/useMobileWidth'
 
 // UI
 import { Staking as StakingUI, Button, Popup, Calculator } from '@cubitrix/cubitrix-react-ui-module'
@@ -26,8 +26,11 @@ import { useEffect } from 'react'
 const Staking = () => {
   const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false)
   const [approveResonse, setApproveResonse] = useState(null)
+  // const [loading, setLoading] = useState(false)
   const triedReconnect = useSelector(state => state.appState?.triedReconnect)
   const { active, account } = useConnect()
+
+  const { width } = useMobileWidth()
 
   const sideBarOpen = useSelector(state => state.appState.sideBarOpen)
   var Router = '0xd472C9aFa90046d42c00586265A3F62745c927c0' // Staking contract Address
@@ -59,9 +62,29 @@ const Staking = () => {
     timeperiodDate,
   } = useSelector(state => state.stake)
 
+  // const handleScroll = () => {
+  //   const container = document.getElementById('table-version')
+  //   const { scrollTop, scrollHeight, clientHeight } = container
+  //   if (scrollTop + clientHeight >= scrollHeight - 10) {
+  //     getStackerInfo(10, 5, true)
+  //   }
+  // }
+
   useEffect(() => {
     if (account && triedReconnect && active) {
-      getStackerInfo(0, 10)
+      getStackerInfo(0, 10, true)
+    }
+
+    // const container = document.getElementById('table-version')
+    // container.addEventListener('scroll', handleScroll)
+    // return () => {
+    //   container.removeEventListener('scroll', handleScroll)
+    // }
+    // // eslint-disable-next-line
+  }, [account, triedReconnect, active])
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
       checkAllowance()
     }
     // eslint-disable-next-line
@@ -77,7 +100,21 @@ const Staking = () => {
       })
     }
     // eslint-disable-next-line
-  }, [account, triedReconnect, active, depositAmount])
+  }, [account, triedReconnect, active])
+
+  // useEffect(() => {
+  //   if (account && triedReconnect && active) {
+  //     getStackerInfo(0, 10)
+  //     const container = document.getElementById('table-version')
+  //     container.addEventListener('scroll', handleScroll)
+  //     return () => {
+  //       container.removeEventListener('scroll', handleScroll)
+  //     }
+  //   }
+
+  // }, [])
+
+  console.log('stakersRecord', stakersRecord)
 
   const handleConnect = () => {
     if (sideBarOpen) {
@@ -100,29 +137,24 @@ const Staking = () => {
   const th = [
     {
       name: 'Staked Amount',
-      width: 15,
-      mobileWidth: 45,
+      width: 25,
+      mobileWidth: width > 400 ? 45 : 100,
       id: 0,
     },
     {
-      name: 'Stake Date ',
-      width: 15,
+      name: 'Stake Date',
+      width: 25,
       id: 1,
     },
     {
       name: 'Unstake Date',
-      width: 15,
+      width: 25,
       id: 2,
     },
     {
-      name: 'Earn Reward',
-      width: 15,
-      id: 3,
-    },
-    {
       name: 'Harvest',
-      width: 15,
-      mobileWidth: 45,
+      width: 25,
+      mobileWidth: width > 400 ? 45 : false,
       id: 4,
     },
     {
@@ -130,8 +162,7 @@ const Staking = () => {
       width: 10,
       id: 5,
       mobileWidth: 35,
-      position: 'right',
-      className: 'buttons-th',
+      className: 'table-button-none',
       onClick: index => unstake(index),
     },
     {
@@ -139,8 +170,7 @@ const Staking = () => {
       width: 7,
       id: 6,
       mobileWidth: 20,
-      position: 'right',
-      className: 'buttons-th',
+      className: 'table-button-none',
       onClick: index => harvest(index),
     },
   ]
@@ -213,6 +243,8 @@ const Staking = () => {
             }
           })
           .catch(e => {})
+        handleTimePeriod(0)
+        handleDepositAmount('')
         setCreateStakingPopUpActive(false)
       })
     }
@@ -229,6 +261,14 @@ const Staking = () => {
       />
     ),
   }
+
+  const handleClose = () => {
+    handleTimePeriod(0)
+    handleDepositAmount('')
+    setCreateStakingPopUpActive(false)
+  }
+
+  console.log(loading, 'loading')
 
   return (
     <>
@@ -264,7 +304,7 @@ const Staking = () => {
             />
           }
           label={'Staking Calculator'}
-          handlePopUpClose={() => setCreateStakingPopUpActive(false)}
+          handlePopUpClose={handleClose}
           description={'Stake Complend to earn Complend reward'}
           headerCustomStyles={{ background: '#272C57' }}
         />
