@@ -296,7 +296,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   async function handlePurchaseEvent(method, amount) {
     if (method === "Coinbase") {
-      handleCoindbasePayment(amount - 1);
+      handleCoindbasePayment(amount);
     }
   }
 
@@ -371,7 +371,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           .catch((err) => {
             console.log(err);
           });
-        navigate("/dashboard");
         axios
           .post("/api/accounts/manage_extensions", {
             address: account,
@@ -387,7 +386,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             }
           })
           .catch((e) => console.log(e.response));
-        await axios
+        axios
           .post("/api/accounts/activate-account", {
             address: account,
           })
@@ -404,6 +403,20 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             }
           })
           .catch((e) => {});
+        axios
+          .post("/api/accounts/get_account_balances", {
+            address: account?.toLowerCase(),
+          })
+          .then((res) => {
+            dispatch({
+              type: "SET_ACCOUNTS_DATA",
+              payload: res?.data?.data,
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        navigate("/dashboard");
       });
     }
   };

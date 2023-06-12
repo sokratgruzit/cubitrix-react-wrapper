@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [rebatesTableData, setRebatesTableData] = useState([]);
   const [transactionsData, setTransactionsData] = useState({});
   const [totalTransactions, setTotalTransactions] = useState({});
+
   const [totalReferralData, setTotalReferralData] = useState({
     uni: {
       levelUser: 0,
@@ -26,11 +27,11 @@ const Dashboard = () => {
       totalComission: 0,
     },
   });
-  const [accountsData, setAccountsData] = useState([]);
   const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
   const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const accountsData = useSelector((state) => state.appState?.accountsData);
 
   const { account, active } = useConnect();
 
@@ -138,10 +139,11 @@ const Dashboard = () => {
       };
 
       const response = await axios.post(apiUrl, requestBody);
-
       const data = response.data;
-
-      setAccountsData(data?.data);
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -155,6 +157,7 @@ const Dashboard = () => {
       generateTableData("codes");
       generateTableData("rebates");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, triedReconnect, active]);
 
   const transactionHeader = [
