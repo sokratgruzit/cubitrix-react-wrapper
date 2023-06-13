@@ -15,6 +15,7 @@ import {
 import { useStake, STAKE_INIT_STATE, useConnect } from '@cubitrix/cubitrix-react-connect-module'
 import { useTableParameters } from '../hooks/useTableParameters'
 import { useMobileWidth } from '../hooks/useMobileWidth'
+import { useOnScreen } from '../hooks/useOnScreen'
 
 // UI
 import { Staking as StakingUI, Button, Popup, Calculator } from '@cubitrix/cubitrix-react-ui-module'
@@ -22,13 +23,16 @@ import { Staking as StakingUI, Button, Popup, Calculator } from '@cubitrix/cubit
 // api
 import axios from '../api/axios'
 import { useEffect } from 'react'
+import { createRef } from 'react'
 
 const Staking = () => {
   const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false)
   const [approveResonse, setApproveResonse] = useState(null)
-  // const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [fetchCount, setFetchCount] = useState(10)
   const triedReconnect = useSelector(state => state.appState?.triedReconnect)
   const { active, account } = useConnect()
+  const hasMoreData = useSelector(state => state.stake.hasMoreData)
 
   const { width } = useMobileWidth()
 
@@ -58,30 +62,22 @@ const Staking = () => {
     timeperiod,
     stakersRecord,
     isAllowance,
-    loading,
     timeperiodDate,
   } = useSelector(state => state.stake)
 
-  // const handleScroll = () => {
-  //   const container = document.getElementById('table-version')
-  //   const { scrollTop, scrollHeight, clientHeight } = container
-  //   if (scrollTop + clientHeight >= scrollHeight - 10) {
-  //     getStackerInfo(10, 5, true)
-  //   }
-  // }
-
   useEffect(() => {
     if (account && triedReconnect && active) {
-      getStackerInfo(0, 10, true)
+      getStackerInfo(0, fetchCount)
+        .then(() => {
+          setIsFetching(false)
+          setLoading(false)
+        })
+        .catch(error => {
+          setIsFetching(false)
+          setLoading(false)
+        })
     }
-
-    // const container = document.getElementById('table-version')
-    // container.addEventListener('scroll', handleScroll)
-    // return () => {
-    //   container.removeEventListener('scroll', handleScroll)
-    // }
-    // // eslint-disable-next-line
-  }, [account, triedReconnect, active])
+  }, [account, triedReconnect, active, fetchCount])
 
   useEffect(() => {
     if (account && triedReconnect && active) {
@@ -101,20 +97,6 @@ const Staking = () => {
     }
     // eslint-disable-next-line
   }, [account, triedReconnect, active])
-
-  // useEffect(() => {
-  //   if (account && triedReconnect && active) {
-  //     getStackerInfo(0, 10)
-  //     const container = document.getElementById('table-version')
-  //     container.addEventListener('scroll', handleScroll)
-  //     return () => {
-  //       container.removeEventListener('scroll', handleScroll)
-  //     }
-  //   }
-
-  // }, [])
-
-  console.log('stakersRecord', stakersRecord)
 
   const handleConnect = () => {
     if (sideBarOpen) {
@@ -268,7 +250,17 @@ const Staking = () => {
     setCreateStakingPopUpActive(false)
   }
 
-  console.log(loading, 'loading')
+  const infiniteScrollRef = createRef()
+  const isLoadMoreButtonOnScreen = useOnScreen(infiniteScrollRef)
+
+  const [isFetching, setIsFetching] = useState(false)
+
+  useEffect(() => {
+    if (isLoadMoreButtonOnScreen) {
+      setIsFetching(true)
+      setFetchCount(prevCount => prevCount + 5)
+    }
+  }, [isLoadMoreButtonOnScreen])
 
   return (
     <>
@@ -281,6 +273,9 @@ const Staking = () => {
         stakersRecord={stakersRecord}
         tableEmptyData={tableEmptyData}
         handlePopUpOpen={handlePopUpOpen}
+        hasMoreData={hasMoreData}
+        infiniteScrollRef={infiniteScrollRef}
+        isFetching={isFetching}
       />
       {createStakingPopUpActive && (
         <Popup
