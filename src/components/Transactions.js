@@ -202,6 +202,7 @@ const Transactions = () => {
       type: "lable-input-select",
       options: [
         { name: "All", value: "all" },
+        { name: "Payment", value: "payment" },
         { name: "Deposit", value: "deposit" },
         { name: "Transfer", value: "transfer" },
         { name: "Internal Transaction", value: "internal_transaction" },

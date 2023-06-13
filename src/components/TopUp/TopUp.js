@@ -87,7 +87,7 @@ const TopUp = () => {
 
   async function handlePurchase(method, tokenAmount) {
     if (method === "Coinbase") {
-      handleCoindbasePayment(tokenAmount - 1);
+      handleCoindbasePayment(tokenAmount);
     }
   }
   return (

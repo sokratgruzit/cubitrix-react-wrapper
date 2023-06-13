@@ -6,6 +6,7 @@ const INIT_STATE = {
   isExtensionsLoaded: false,
   coinbaseLoading: false,
   connectionError: "",
+  accountsData: [],
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -60,6 +61,12 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         connectionError: action.payload,
+      };
+
+    case "SET_ACCOUNTS_DATA":
+      return {
+        ...state,
+        accountsData: action.payload,
       };
     default:
       return state;
