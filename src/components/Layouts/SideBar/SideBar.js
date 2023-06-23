@@ -826,6 +826,24 @@ const SideBarRight = () => {
     },
   ];
 
+  const generateAccountsData = async () => {
+    try {
+      const apiUrl = "/api/accounts/get_account_balances";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+      const data = response.data;
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const handleDepositSubmit = async () => {
     setSuccess(null);
     setHelpText("");
@@ -851,29 +869,19 @@ const SideBarRight = () => {
     }
     if (account && !isAllowance) {
       stake(async () => {
-        await axios
-          .post("/api/accounts/activate-account", {
-            address: account,
-          })
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-              setSuccess(true);
-              setHelpText("Staking was successful.");
-              setShowHelpText(true);
-              setTimeout(() => {
-                setSuccess(null);
-                setHelpText("");
-                setShowHelpText(false);
-                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-                handleDepositAmount(0);
-              }, 3000);
-            }
-          })
-          .catch((e) => {});
+        updateState();
+        generateAccountsData();
+
+        setSuccess(true);
+        setHelpText("Staking was successful.");
+        setShowHelpText(true);
+        setTimeout(() => {
+          setSuccess(null);
+          setHelpText("");
+          setShowHelpText(false);
+          setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+          handleDepositAmount(0);
+        }, 3000);
       });
     }
   };
