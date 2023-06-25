@@ -236,7 +236,7 @@ const Transactions = () => {
   return (
     <TransactionsUI
       header={"Transactions"}
-      description={`Total number of operations: ${totalTransactions?.total_transaction}`}
+      description={<p className='font-14'>Total number of operations: <span className='dashboard-transactions-span'>{totalTransactions?.total_transaction}</span></p>}
       rightPanelData={rightPanelData}
       footer={footer}
       tableHead={transactionHeader}
