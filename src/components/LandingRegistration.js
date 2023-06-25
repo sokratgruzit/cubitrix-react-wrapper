@@ -387,9 +387,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           })
           .catch((e) => console.log(e.response));
         axios
-          .post("/api/accounts/activate-account", {
-            address: account,
-          })
+          .post(
+            "/api/accounts/activate-account",
+            {
+              address: account,
+            },
+            {
+              timeout: 60000,
+            },
+          )
           .then((res) => {
             if (res.data?.account) {
               dispatch({

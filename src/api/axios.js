@@ -9,6 +9,6 @@ axios.defaults.headers = {
   "Content-Type": "application/json",
   credentials: true,
 };
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 30000;
 
 export default axios;
