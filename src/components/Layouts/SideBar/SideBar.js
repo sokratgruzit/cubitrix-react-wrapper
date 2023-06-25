@@ -1053,7 +1053,7 @@ const SideBarRight = () => {
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={"1,400.00"}
             accountBalanceSecond={"$2,034.04"}
           />
@@ -1071,7 +1071,7 @@ const SideBarRight = () => {
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={"1,400.00"}
             accountBalanceSecond={"$2,034.04"}
           />
@@ -1088,7 +1088,7 @@ const SideBarRight = () => {
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={balance}
             accountBalanceSecond={`$${balance * 2}`}
             durationOptions={durationOptions}
@@ -1110,7 +1110,7 @@ const SideBarRight = () => {
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={"1,400.00"}
             accountBalanceSecond={"$2,034.04"}
           />
