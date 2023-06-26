@@ -46,7 +46,7 @@ const Transactions = () => {
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
-        account: filterObject?.account === "main" ? "system" : filterObject?.account,
+        account: filterObject?.account === "main" ? "main" : filterObject?.account,
         time:
           time instanceof Date
             ? `${year}-${(month + 1).toString().padStart(2, "0")}-${day
@@ -121,8 +121,7 @@ const Transactions = () => {
           viewBox="0 0 10 10"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ marginLeft: "2px" }}
-        >
+          style={{ marginLeft: "2px" }}>
           <path
             d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
             fill="white"
@@ -147,8 +146,7 @@ const Transactions = () => {
           viewBox="0 0 10 10"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ marginLeft: "2px" }}
-        >
+          style={{ marginLeft: "2px" }}>
           <path
             d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
             fill="white"
@@ -236,7 +234,14 @@ const Transactions = () => {
   return (
     <TransactionsUI
       header={"Transactions"}
-      description={<p className='font-14'>Total number of operations: <span className='dashboard-transactions-span'>{totalTransactions?.total_transaction}</span></p>}
+      description={
+        <p className="font-14">
+          Total number of operations:{" "}
+          <span className="dashboard-transactions-span">
+            {totalTransactions?.total_transaction}
+          </span>
+        </p>
+      }
       rightPanelData={rightPanelData}
       footer={footer}
       tableHead={transactionHeader}

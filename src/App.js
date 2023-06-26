@@ -50,7 +50,7 @@ function App() {
   const chainId = useSelector((state) => state.connect.chainId);
   const providerType = useSelector((state) => state.connect.providerType);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
-  const balance = useSelector((state) => state.appState.userData?.system?.[0]?.balance);
+  const balance = useSelector((state) => state.appState.userData?.balance);
   const location = useLocation();
   const dispatch = useDispatch();
   const appState = useSelector((state) => state.appState);

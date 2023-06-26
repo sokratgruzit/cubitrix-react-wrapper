@@ -115,6 +115,8 @@ const SideBarRight = () => {
         address: account,
       })
       .then((res) => {
+        console.log(res.data?.success?.data);
+
         dispatch({
           type: "SET_USER_DATA",
           payload: res.data.success.data.accounts[0],
@@ -483,8 +485,7 @@ const SideBarRight = () => {
               height="24"
               viewBox="0 0 24 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              xmlns="http://www.w3.org/2000/svg">
               <g clipPath="url(#clip0_3207_10785)">
                 <path
                   d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
@@ -568,8 +569,7 @@ const SideBarRight = () => {
           height="32"
           viewBox="0 0 32 32"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+          xmlns="http://www.w3.org/2000/svg">
           <g opacity="0.1" filter="url(#filter0_b_3211_11395)">
             <rect width="32" height="32" rx="16" fill="white" />
           </g>
@@ -585,8 +585,7 @@ const SideBarRight = () => {
               width="112"
               height="112"
               filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
+              colorInterpolationFilters="sRGB">
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
               <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
               <feComposite
@@ -615,8 +614,7 @@ const SideBarRight = () => {
           height="32"
           viewBox="0 0 32 32"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+          xmlns="http://www.w3.org/2000/svg">
           <g opacity="0.1" filter="url(#filter0_b_3211_11461)">
             <path
               d="M16 0C7.1639 0 7.62939e-05 7.16382 7.62939e-05 16C7.62939e-05 24.8361 7.16422 31.9999 16 31.9999C24.8359 31.9999 32 24.838 32 16C32 7.1619 24.8371 0 16 0Z"
@@ -635,8 +633,7 @@ const SideBarRight = () => {
               width="112"
               height="112"
               filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
+              colorInterpolationFilters="sRGB">
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
               <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
               <feComposite
@@ -665,8 +662,7 @@ const SideBarRight = () => {
           height="32"
           viewBox="0 0 32 32"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+          xmlns="http://www.w3.org/2000/svg">
           <g opacity="0.1" filter="url(#filter0_b_3211_11422)">
             <rect width="32" height="32" rx="16" fill="white" />
           </g>
@@ -706,8 +702,7 @@ const SideBarRight = () => {
               width="112"
               height="112"
               filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
+              colorInterpolationFilters="sRGB">
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
               <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
               <feComposite
@@ -737,8 +732,7 @@ const SideBarRight = () => {
           height="32"
           viewBox="0 0 32 32"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+          xmlns="http://www.w3.org/2000/svg">
           <g opacity="0.1" filter="url(#filter0_b_3211_11435)">
             <rect width="32" height="32" rx="16" fill="white" />
           </g>
@@ -754,8 +748,7 @@ const SideBarRight = () => {
               width="112"
               height="112"
               filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
+              colorInterpolationFilters="sRGB">
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
               <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
               <feComposite
@@ -784,8 +777,7 @@ const SideBarRight = () => {
           height="32"
           viewBox="0 0 32 32"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+          xmlns="http://www.w3.org/2000/svg">
           <g opacity="0.1" filter="url(#filter0_b_3211_11448)">
             <rect width="32" height="32" rx="16" fill="white" />
           </g>
@@ -801,8 +793,7 @@ const SideBarRight = () => {
               width="112"
               height="112"
               filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
+              colorInterpolationFilters="sRGB">
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
               <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
               <feComposite

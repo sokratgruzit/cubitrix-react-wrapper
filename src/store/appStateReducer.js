@@ -27,7 +27,7 @@ const appStateReducer = (state = INIT_STATE, action) => {
     case "SET_SYSTEM_ACCOUNT_DATA":
       return {
         ...state,
-        userData: { ...state?.userData, system: [action.payload] },
+        ...action.payload,
       };
 
     case "UPDATE_ACTIVE_EXTENSIONS":
