@@ -344,7 +344,7 @@ const Dashboard = () => {
   };
 
   const cardImgs = {
-    cpl: "/img/dashboard/cpl.png",
+    cpl: "/img/dashboard/atar.png",
     btc: "/img/dashboard/btc.png",
     eth: "/img/dashboard/eth.png",
     usdt: "/img/dashboard/usdt.png",

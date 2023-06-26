@@ -1047,13 +1047,13 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={withdrawInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/cpl.png"}
+            cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleWithdrawSubmit}
             buttonLabel={"Continue"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={"1,400.00"}
             accountBalanceSecond={"$2,034.04"}
           />
@@ -1064,14 +1064,14 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={exchangeInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/cpl.png"}
+            cardImg={"/img/dashboard/atar.png"}
             accounts={exchangeAccounts}
             handleSubmit={handleExchangeSubmit}
             buttonLabel={"Continue"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={"1,400.00"}
             accountBalanceSecond={"$2,034.04"}
           />
@@ -1082,13 +1082,13 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={depositInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/cpl.png"}
+            cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleDepositSubmit}
             buttonLabel={loading ? "Loading" : "Stake"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={balance}
             accountBalanceSecond={`$${balance * 2}`}
             durationOptions={durationOptions}
@@ -1104,13 +1104,13 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={transferInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/cpl.png"}
+            cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleTransferSubmit}
             buttonLabel={"Continue"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"CPL"}
+            accountType={"Atar"}
             accountBalance={"1,400.00"}
             accountBalanceSecond={"$2,034.04"}
           />
