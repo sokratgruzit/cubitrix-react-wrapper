@@ -171,6 +171,7 @@ function App() {
           )
           .then((res) => {
             if (res.data?.account) {
+              console.log(res.data?.account);
               dispatch({
                 type: "SET_SYSTEM_ACCOUNT_DATA",
                 payload: res.data.account,

