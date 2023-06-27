@@ -27,7 +27,15 @@ const appStateReducer = (state = INIT_STATE, action) => {
     case "SET_SYSTEM_ACCOUNT_DATA":
       return {
         ...state,
-        ...action.payload,
+        userData: {
+          ...state?.userData,
+          ...action.payload,
+        },
+        accountsData: state.accountsData.map((account) =>
+          account.account_category === "main"
+            ? { ...account, balance: action.payload.balance }
+            : account,
+        ),
       };
 
     case "UPDATE_ACTIVE_EXTENSIONS":

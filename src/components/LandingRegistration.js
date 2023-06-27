@@ -149,35 +149,37 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       loading: true,
     });
 
-    axios
-      .post("api/referral/assign_refferal_to_user", {
-        referral,
-        address: account,
-      })
-      .then((res) => {
-        update_profile();
-      })
-      .catch((err) => {
-        let error = "Referral code could not be assigned";
-        if (err?.response?.data === "Referral code doesnot exist") {
-          error = "Referral code does not exist";
-        }
-        let errorsMessages = [
-          "User already activated both referral code",
-          "User already activated uni level referral code",
-          "User already activated binary level referral code",
-        ];
-        if (errorsMessages.includes(err?.response?.data)) {
-          update_profile();
-          return;
-        }
+    // axios
+    //   .post("api/referral/assign_refferal_to_user", {
+    //     referral,
+    //     address: account,
+    //   })
+    //   .then((res) => {
+    //     update_profile();
+    //   })
+    //   .catch((err) => {
+    //     let error = "Referral code could not be assigned";
+    //     if (err?.response?.data === "Referral code doesnot exist") {
+    //       error = "Referral code does not exist";
+    //     }
+    //     let errorsMessages = [
+    //       "User already activated both referral code",
+    //       "User already activated uni level referral code",
+    //       "User already activated binary level referral code",
+    //     ];
+    //     if (errorsMessages.includes(err?.response?.data)) {
+    //       update_profile();
+    //       return;
+    //     }
 
-        setRegistrationState({
-          ...registrationState,
-          referralError: error,
-          loading: false,
-        });
-      });
+    //     setRegistrationState({
+    //       ...registrationState,
+    //       referralError: error,
+    //       loading: false,
+    //     });
+    //   });
+
+    update_profile();
 
     async function update_profile() {
       axios
@@ -378,7 +380,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           })
           .then((res) => {
             if (res?.data?.account) {
-              console.log("res", res?.data);
               dispatch({
                 type: "UPDATE_ACTIVE_EXTENSIONS",
                 payload: res.data.account.extensions,
