@@ -144,6 +144,7 @@ const Dashboard = () => {
         type: "SET_ACCOUNTS_DATA",
         payload: data?.data,
       });
+      console.log("data", data?.data)
     } catch (error) {
       console.error("Error:", error);
     }
