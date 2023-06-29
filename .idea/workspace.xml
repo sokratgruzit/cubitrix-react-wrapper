@@ -2,9 +2,43 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="97a1d861-c6f8-47e7-9af4-569f4e760c51" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/build.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/abi/WBNB.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/abi/stack.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/CreateAccount.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ExtensionItem.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Referral.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hooks/use-stake.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/store/stakeReducer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/svg/DashboardIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/svg/DashboardIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/svg/ExtensionsIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/svg/ExtensionsIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/svg/LoansIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/svg/LoansIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/svg/Logo.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/svg/Logo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/svg/StakingIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/svg/StakingIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/svg/TradeIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/svg/TradeIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Extensions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Extensions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layouts/Footer/Footer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layouts/Footer/Footer.module.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Loan.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Loan.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Referal.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ResetPassword/ResetPassword.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ResetPassword/ResetPassword.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Staking.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Staking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.module.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.module.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/connector.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/connector.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/appStateReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/appStateReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/extensionsReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/extensionsReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +53,6 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/App.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/components/Referal.js" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/components/Staking.js" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -69,6 +102,12 @@
       <workItem from="1680166746014" duration="33000" />
       <workItem from="1680166800582" duration="1857000" />
       <workItem from="1680177513609" duration="104000" />
+      <workItem from="1681138995377" duration="351000" />
+      <workItem from="1681150841545" duration="179000" />
+      <workItem from="1681907071801" duration="695000" />
+      <workItem from="1683711197317" duration="1895000" />
+      <workItem from="1683808534555" duration="963000" />
+      <workItem from="1688053136412" duration="596000" />
     </task>
     <servers />
   </component>

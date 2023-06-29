@@ -1,7 +1,15 @@
 import React from "react";
 
+// hooks
+import { useExtensionsData } from "../hooks/useExtensionsData";
+
+// UI
+import { Extensions as ExtensionsUI } from "@cubitrix/cubitrix-react-ui-module";
+
 const Extensions = () => {
-    return <div style={{color: "black", position: "absolute", top: "50%"}}>Extensions</div>;
+  const { extensionsCardsData } = useExtensionsData();
+
+  return <ExtensionsUI extensionsCardsData={extensionsCardsData} />;
 };
 
 export default Extensions;

@@ -17,7 +17,7 @@ const VerifyEmail = (props) => {
 
   const updateState = () => {
     axios
-      .post("/accounts/get_account", {
+      .post("/api/accounts/get_account", {
         address: account,
       })
       .then((res) => {
@@ -31,7 +31,7 @@ const VerifyEmail = (props) => {
 
   const verify = () => {
     axios
-      .post("/accounts/verify", { code: params.id })
+      .post("/api/accounts/verify", { code: params.id })
       .then((res) => {
         updateState();
         setData(JSON.parse(res.data.success));
@@ -93,6 +93,7 @@ const VerifyEmail = (props) => {
               onClick={handleClick}
               type="btn-primary"
               size="btn-sm"
+              customStyles={{ background: '#00C6FF'}}
             />
           </div>
         </div>

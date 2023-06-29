@@ -26,12 +26,13 @@ import QRCode from "qrcode";
 
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
-  const userMetaData = useSelector((state) => state.appState.userData?.meta[0]);
+  const userMetaData = useSelector((state) => state.appState.userData?.meta?.[0]);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const account = useSelector((state) => state.connect.account);
 
   const [personalData, setPersonalData] = useState(null);
-  const { connect, disconnect, error, setError, MetaMaskEagerlyConnect } = useConnect();
+  const { connect, disconnect, error, setError } = useConnect();
+
   const dispatch = useDispatch();
 
   const [personalDataState, setPersonalDataState] = useState({
@@ -58,9 +59,14 @@ const SideBarRight = () => {
   const [base32, setBase32] = useState("");
   const [qrcodeUrl, setqrCodeUrl] = useState("");
 
-  const [signInState, setSignInState] = useState({ loading: false, error: false });
+  const [signInState, setSignInState] = useState({
+    loading: false,
+    error: false,
+  });
   const [otpState, setOtpState] = useState({ loading: false, error: false });
-  const [resetPasswordState, setResetPasswordState] = useState({ loading: false });
+  const [resetPasswordState, setResetPasswordState] = useState({
+    loading: false,
+  });
   const [resetPasswordStatus, setresetPasswordStatus] = useState({
     loading: false,
     error: "",
@@ -69,14 +75,9 @@ const SideBarRight = () => {
   const [signInAddress, setSignInAddress] = useState("");
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
 
-  useEffect(() => {
-    MetaMaskEagerlyConnect(injected);
-    // eslint-disable-next-line
-  }, []);
-
   const updateState = () => {
     axios
-      .post("/accounts/get_account", {
+      .post("/api/accounts/get_account", {
         address: account,
       })
       .then((res) => {
@@ -84,9 +85,22 @@ const SideBarRight = () => {
           type: "SET_USER_DATA",
           payload: res.data.success.data.accounts[0],
         });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: res.data.success.data.accounts[0].extensions,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
       })
       .catch((e) => {});
   };
+
+  useEffect(() => {
+    updateState();
+    // eslint-disable-next-line
+  }, [account]);
 
   const handleClose = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
@@ -104,9 +118,16 @@ const SideBarRight = () => {
     setSecurityDataState((prev) => ({ ...prev, loading: true, error: "" }));
 
     axios
-      .post("/accounts/update_profile_auth", { ...formData, address: account })
+      .post("/api/accounts/update_profile_auth", {
+        ...formData,
+        address: account,
+      })
       .then((res) => {
-        setSecurityDataState((prev) => ({ ...prev, loading: false, saved: true }));
+        setSecurityDataState((prev) => ({
+          ...prev,
+          loading: false,
+          saved: true,
+        }));
         updateState();
         setTimeout(() => {
           setSecurityDataState((prev) => ({ ...prev, saved: false }));
@@ -126,13 +147,20 @@ const SideBarRight = () => {
     personalData.avatar = account;
     setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
     axios
-      .post("/accounts/update_profile", { ...personalData, address: account })
+      .post("/api/accounts/update_profile", {
+        ...personalData,
+        address: account,
+      })
       .then((res) => {
         if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
         updateState();
-        setPersonalDataState((prev) => ({ ...prev, loading: false, saved: true }));
+        setPersonalDataState((prev) => ({
+          ...prev,
+          loading: false,
+          saved: true,
+        }));
         setTimeout(() => {
           setPersonalDataState((prev) => ({ ...prev, saved: false }));
         }, 3000);
@@ -165,7 +193,7 @@ const SideBarRight = () => {
 
   const resendEmail = (e) => {
     axios
-      .post("/accounts/resend-email", {
+      .post("/api/accounts/resend-email", {
         address: account ? account : signInAddress,
       })
       .then((res) => {
@@ -179,11 +207,15 @@ const SideBarRight = () => {
   const resetPassword = (email) => {
     setResetPasswordState({ loading: true, success: "", error: "" });
     axios
-      .post("/accounts/get-reset-password-email", {
+      .post("/api/accounts/get-reset-password-email", {
         email,
       })
       .then((res) => {
-        setResetPasswordState((prev) => ({ ...prev, loading: false, success: res.data }));
+        setResetPasswordState((prev) => ({
+          ...prev,
+          loading: false,
+          success: res.data,
+        }));
       })
       .catch((e) => {
         setResetPasswordState((prev) => ({
@@ -199,7 +231,7 @@ const SideBarRight = () => {
       setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
 
       axios
-        .post("/accounts/recovery/login", {
+        .post("/api/accounts/recovery/login", {
           account,
           email,
           password,
@@ -210,10 +242,17 @@ const SideBarRight = () => {
           if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
           updateState();
           setProcceed2fa(false);
-          dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+          dispatch({
+            type: "SET_SIDE_BAR",
+            payload: { sideBar: "UserAccount" },
+          });
         })
         .catch((e) => {
-          setSignInState((prev) => ({ ...prev, loading: false, error: e.response.data }));
+          setSignInState((prev) => ({
+            ...prev,
+            loading: false,
+            error: e.response.data,
+          }));
         });
     }
   };
@@ -243,7 +282,9 @@ const SideBarRight = () => {
 
   const disableOTP = () => {
     axios
-      .post("/accounts/otp/disable", { address: account ? account : signInAddress })
+      .post("/api/accounts/otp/disable", {
+        address: account ? account : signInAddress,
+      })
       .then((res) => {})
       .catch((e) => {});
   };
@@ -251,7 +292,7 @@ const SideBarRight = () => {
   const verifyOTP = (code) => {
     setTwoFactorSetUpState({ loading: false, error: "" });
     axios
-      .post("/accounts/otp/verify", {
+      .post("/api/accounts/otp/verify", {
         address: account ? account : signInAddress,
         token: code,
       })
@@ -268,7 +309,9 @@ const SideBarRight = () => {
   async function generateOtp() {
     try {
       await axios
-        .post("/accounts/otp/generate", { address: account ? account : signInAddress })
+        .post("/api/accounts/otp/generate", {
+          address: account ? account : signInAddress,
+        })
         .then((res) => {
           const { base32, otpauth_url } = res.data;
           setBase32(base32);
@@ -283,7 +326,7 @@ const SideBarRight = () => {
     setOtpState({ loading: true, error: "" });
 
     await axios
-      .post("/accounts/otp/validate", {
+      .post("/api/accounts/otp/validate", {
         token,
         address: signInAddress,
       })
@@ -302,7 +345,7 @@ const SideBarRight = () => {
     setresetPasswordStatus({ loading: true, error: "", success: "" });
     if (opt === "email") {
       axios
-        .post("/accounts/get-reset-password-email", {
+        .post("/api/accounts/get-reset-password-email", {
           email: userMetaData?.email,
         })
         .then((res) => {
@@ -394,7 +437,10 @@ const SideBarRight = () => {
           <UserAccount
             sideBarClose={handleClose}
             goBack={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "connect" },
+              })
             }
             personalData={personalData}
             handlePersonalData={handlePersonalData}
@@ -415,7 +461,10 @@ const SideBarRight = () => {
               }
             }}
             handleForgetPassword={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "resetPassword" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "resetPassword" },
+              })
             }
           />
         )}
@@ -424,7 +473,10 @@ const SideBarRight = () => {
             onClick={handleLogin}
             sideBarClose={handleClose}
             goBack={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "connect" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "connect" },
+              })
             }
             signInState={signInState}
             otpEnabled={procceed2fa}
@@ -438,7 +490,10 @@ const SideBarRight = () => {
           <ResetPassword
             sideBarClose={handleClose}
             goBack={() =>
-              dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } })
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBar: "UserAccount" },
+              })
             }
             resetPasswordState={resetPasswordStatus}
             handleResetPassword={handleSetUpPassword}

@@ -8,18 +8,26 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Web3 from "web3";
+import { Web3ReactProvider } from "@web3-react/core";
 import store, { persistor } from "./store/index";
+
+function getLibrary(provider) {
+  return new Web3(provider);
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Routes>
-          <Route path="/*" element={<App />} />
-        </Routes>
-      </PersistGate>
-    </Provider>
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <Routes>
+            <Route path="/*" element={<App />} />
+          </Routes>
+        </PersistGate>
+      </Provider>
+    </Web3ReactProvider>
   </BrowserRouter>,
 );
 
