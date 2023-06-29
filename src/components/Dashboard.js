@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +32,9 @@ const Dashboard = () => {
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const accountsData = useSelector((state) => state.appState?.accountsData);
+  const dashboardTransactionsDataReload = useSelector(
+    (state) => state.appState?.dashboardTransactionsDataReload,
+  );
 
   const { account, active } = useConnect();
 
@@ -92,12 +95,12 @@ const Dashboard = () => {
       const data = response.data;
       const amountsToFrom = data?.amounts_to_from?.[0] || {};
       setTransactionsData(data);
-
       setTotalTransactions({
         total_transaction: data?.total_transaction || 0,
         received: amountsToFrom.toCount || 0,
         spent: amountsToFrom.fromSum || 0,
       });
+
       setTransactionsTableLoading(false);
     } catch (error) {
       console.error("Error:", error);
@@ -131,6 +134,15 @@ const Dashboard = () => {
     }
   };
 
+  const prevDashboardTransactionsDataReload = useRef(dashboardTransactionsDataReload);
+
+  useEffect(() => {
+    if (prevDashboardTransactionsDataReload.current !== dashboardTransactionsDataReload) {
+      generateTransactionsData();
+      prevDashboardTransactionsDataReload.current = dashboardTransactionsDataReload;
+    }
+  }, [dashboardTransactionsDataReload]);
+
   const generateAccountsData = async () => {
     try {
       const apiUrl = "/api/accounts/get_account_balances";
@@ -144,6 +156,7 @@ const Dashboard = () => {
         type: "SET_ACCOUNTS_DATA",
         payload: data?.data,
       });
+      console.log("data", data?.data);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -193,8 +206,7 @@ const Dashboard = () => {
           viewBox="0 0 10 10"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ marginLeft: "2px" }}
-        >
+          style={{ marginLeft: "2px" }}>
           <path
             d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
             fill="white"
@@ -219,8 +231,7 @@ const Dashboard = () => {
           viewBox="0 0 10 10"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ marginLeft: "2px" }}
-        >
+          style={{ marginLeft: "2px" }}>
           <path
             d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
             fill="white"

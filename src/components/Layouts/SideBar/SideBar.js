@@ -120,8 +120,6 @@ const SideBarRight = () => {
         address: account,
       })
       .then((res) => {
-        console.log(res.data?.success?.data);
-
         dispatch({
           type: "SET_USER_DATA",
           payload: res.data.success.data.accounts[0],
@@ -566,7 +564,6 @@ const SideBarRight = () => {
           value: "trade",
         },
       ],
-      // defaultAny: "Select",
       defaultAny: currentObject.transferType === "external" ? undefined : "Select",
       placeholder: currentObject.transferType === "external" ? "Enter" : undefined,
       onChange: (e) =>
@@ -1004,8 +1001,10 @@ const SideBarRight = () => {
     }, 3000);
   };
 
+  const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
   const handleTransferSubmit = async () => {
     if (currentObject.transferType === "external") {
+      setTransferSubmitLoading(true);
       if (Number(currentObject.amount) <= 0) {
         setSuccess(false);
         setHelpText("Incorrect amount");
@@ -1030,8 +1029,13 @@ const SideBarRight = () => {
               type: "SET_SYSTEM_ACCOUNT_DATA",
               payload: res.data.data.updatedAcc,
             });
+            dispatch({
+              type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+              payload: {},
+            });
           }
 
+          setTransferSubmitLoading(false);
           setShowHelpText(true);
           setSuccess(true);
           setHelpText("Transfer was successful.");
@@ -1043,8 +1047,6 @@ const SideBarRight = () => {
               ...prev,
               type: "",
               account: "",
-              amount: "0",
-              transferAddress: " ",
             }));
           }, 3000);
         })
@@ -1055,6 +1057,7 @@ const SideBarRight = () => {
           ) {
             errorMsg = "Incorrect to address";
           }
+          setTransferSubmitLoading(false);
           setSuccess(false);
           setHelpText(errorMsg ?? "Transaction failed.");
           setShowHelpText(true);
@@ -1242,7 +1245,7 @@ const SideBarRight = () => {
             currentObject={currentObject}
             cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleTransferSubmit}
-            buttonLabel={"Continue"}
+            buttonLabel={transferSubmitLoading ? "Loading..." : "Transfer"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}

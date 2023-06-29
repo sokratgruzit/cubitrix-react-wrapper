@@ -7,6 +7,7 @@ const INIT_STATE = {
   coinbaseLoading: false,
   connectionError: "",
   accountsData: [],
+  dashboardTransactionsDataReload: {},
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -75,6 +76,11 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         accountsData: action.payload,
+      };
+    case "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD":
+      return {
+        ...state,
+        dashboardTransactionsDataReload: { ...action.payload },
       };
     default:
       return state;

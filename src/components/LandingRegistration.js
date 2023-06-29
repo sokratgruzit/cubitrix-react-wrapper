@@ -360,7 +360,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         setStep(5);
         axios
           .post("/api/accounts/handle-step", {
-            registered: true,
+            active: true,
             address: account,
             step: 5,
           })
