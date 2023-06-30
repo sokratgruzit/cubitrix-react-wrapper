@@ -4,55 +4,87 @@ const INIT_STATE = {
   userData: null,
   triedReconnect: false,
   isExtensionsLoaded: false,
+  coinbaseLoading: false,
+  connectionError: "",
+  accountsData: [],
+  dashboardTransactionsDataReload: {},
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
-  if (action.type === "SET_SIDE_BAR") {
-    return { ...state, ...action.payload };
-  }
-  if (action.type === "SET_USER_DATA") {
-    return {
-      ...state,
-      userData: action.payload,
-      emailVerified: action.payload?.meta[0]?.email ? true : false,
-      hasPasswordSet: action.payload.hasPasswordSet,
-      otp_enabled: action.payload.otp_enabled,
-      otp_verified: action.payload.otp_verified,
-    };
-  }
+  switch (action.type) {
+    case "SET_SIDE_BAR":
+      return { ...state, ...action.payload };
 
-  if (action.type === "SET_SYSTEM_ACCOUNT_DATA") {
-    return {
-      ...state,
-      userData: { ...state?.userData, system: [action.payload] },
-    };
-  }
+    case "SET_USER_DATA":
+      return {
+        ...state,
+        userData: action.payload,
+        emailVerified: action.payload?.meta?.email ? true : false,
+        hasPasswordSet: action.payload.hasPasswordSet,
+        otp_enabled: action.payload.otp_enabled,
+        otp_verified: action.payload.otp_verified,
+      };
 
-  if (action.type === "UPDATE_ACTIVE_EXTENSIONS") {
-    return {
-      ...state,
-      userData: {
-        ...state?.userData,
-        extensions: { ...state?.userData?.extensions, ...action.payload },
-      },
-    };
-  }
+    case "SET_SYSTEM_ACCOUNT_DATA":
+      return {
+        ...state,
+        userData: {
+          ...state?.userData,
+          ...action.payload,
+        },
+        accountsData: state.accountsData.map((account) =>
+          account.account_category === "main"
+            ? { ...account, balance: action.payload.balance }
+            : account,
+        ),
+      };
 
-  if (action.type === "SET_TRIED_RECONNECT") {
-    return {
-      ...state,
-      triedReconnect: action.payload,
-    };
-  }
+    case "UPDATE_ACTIVE_EXTENSIONS":
+      return {
+        ...state,
+        userData: {
+          ...state?.userData,
+          extensions: { ...state?.userData?.extensions, ...action.payload },
+        },
+      };
 
-  if (action.type === "SET_EXTENSIONS_LOADED") {
-    return {
-      ...state,
-      isExtensionsLoaded: action.payload,
-    };
-  }
+    case "SET_TRIED_RECONNECT":
+      return {
+        ...state,
+        triedReconnect: action.payload,
+      };
 
-  return state;
+    case "SET_EXTENSIONS_LOADED":
+      return {
+        ...state,
+        isExtensionsLoaded: action.payload,
+      };
+
+    case "UPDATE_COINBASE_LOADING": // add this case
+      return {
+        ...state,
+        coinbaseLoading: action.payload.value,
+      };
+
+    case "CONNECTION_ERROR":
+      return {
+        ...state,
+        connectionError: action.payload,
+      };
+
+    case "SET_ACCOUNTS_DATA":
+      return {
+        ...state,
+        accountsData: action.payload,
+      };
+    case "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD":
+      return {
+        ...state,
+        dashboardTransactionsDataReload: { ...action.payload },
+      };
+    default:
+      return state;
+  }
 };
 
 export default appStateReducer;

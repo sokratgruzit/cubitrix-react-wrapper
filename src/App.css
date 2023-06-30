@@ -23,3 +23,7 @@ a {
 .sideOpen .header {
   border-right: 2px solid #070b1a;
 }
+
+.cover-most-bg {
+  z-index: 1002 !important;
+}

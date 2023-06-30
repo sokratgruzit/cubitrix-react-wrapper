@@ -1,65 +1,396 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
 import { useNavigate } from "react-router-dom";
 
-import { Dashboard as DasboardMain } from "@cubitrix/cubitrix-react-ui-module";
+import { Dashboard as DashboardUI } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector, useDispatch } from "react-redux";
 
+import { useMobileWidth } from "../hooks/useMobileWidth";
+import { NoHistoryIcon } from "../assets/svg";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+
+import axios from "../api/axios";
+
 const Dashboard = () => {
-  const [topCoins, setTopCoins] = useState([]);
-  const [coinsList, setCoinsList] = useState([]);
-  const userData = useSelector((state) => state.appState?.userData);
-  const navigate = useNavigate();
+  const [codesTableData, setCodesTableData] = useState([]);
+  const [rebatesTableData, setRebatesTableData] = useState([]);
+  const [transactionsData, setTransactionsData] = useState({});
+  const [totalTransactions, setTotalTransactions] = useState({});
+
+  const [totalReferralData, setTotalReferralData] = useState({
+    uni: {
+      levelUser: 0,
+      totalComission: 0,
+    },
+    binary: {
+      levelUser: 0,
+      totalComission: 0,
+    },
+  });
+  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
+  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
+  const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const accountsData = useSelector((state) => state.appState?.accountsData);
+  const dashboardTransactionsDataReload = useSelector(
+    (state) => state.appState?.dashboardTransactionsDataReload,
+  );
+
+  const { account, active } = useConnect();
+
+  const { width } = useMobileWidth();
+
   const dispatch = useDispatch();
 
-  function loadCoinsList(page, startLoading, finishLoading) {
-    if (startLoading) startLoading();
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=${page}&sparkline=true&price_change_percentage=24h`,
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setTimeout(() => {
-          setCoinsList((prev) => [...prev, ...data]);
-        }, 200);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        if (finishLoading) finishLoading();
-      });
-  }
-  useEffect(() => {
-    fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=true&price_change_percentage=24h",
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setTopCoins(data);
-        setCoinsList(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
-  const handleGetStarted = () => {
-    if (userData?.meta?.[0]?.email && userData?.extensions.staking === "true") {
-      navigate("/staking");
-    } else if (userData?.meta?.[0]?.email) {
-      navigate("/extensions");
+  const generateTableData = async (table, page) => {
+    if (table === "codes") {
+      setReferralCodeTableLoading(true);
     } else {
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: true, sideBar: "connect" },
-      });
+      setReferralHistoryTableLoading(true);
+    }
+
+    try {
+      const apiUrl = `/api/referral/${
+        table === "codes"
+          ? "get_referral_code_of_user"
+          : "get_referral_rebates_history_of_user"
+      }`;
+
+      const requestBody = {
+        address: account?.toLowerCase(),
+        limit: 3,
+        page: 1,
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+
+      const data = response.data;
+
+      if (table === "codes") {
+        setCodesTableData(data.referral_code);
+        setReferralCodeTableLoading(false);
+      } else {
+        setRebatesTableData(data.referral_rebates_history);
+        setReferralHistoryTableLoading(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
+
+  const generateTransactionsData = async () => {
+    setTransactionsTableLoading(true);
+
+    try {
+      const apiUrl = "/api/transactions/get_transactions_of_user";
+
+      const requestBody = {
+        address: account?.toLowerCase(),
+        limit: 3,
+        page: 1,
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+
+      const data = response.data;
+      const amountsToFrom = data?.amounts_to_from?.[0] || {};
+      setTransactionsData(data);
+      setTotalTransactions({
+        total_transaction: data?.total_transaction || 0,
+        received: amountsToFrom.toCount || 0,
+        spent: amountsToFrom.fromSum || 0,
+      });
+
+      setTransactionsTableLoading(false);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const generateTotalReferralData = async () => {
+    try {
+      const apiUrl = "/api/referral/get_referral_code_of_user_dashboard";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+
+      const data = response.data;
+
+      setTotalReferralData((prev) => ({
+        ...prev,
+        uni: {
+          levelUser: data?.referral_count_binary || 0,
+          totalComission: data?.referral_sum_uni[0]?.amount || 0,
+        },
+        binary: {
+          levelUser: data?.referral_count_uni || 0,
+          totalComission: data?.referral_sum_binary[0]?.amount || 0,
+        },
+      }));
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const prevDashboardTransactionsDataReload = useRef(dashboardTransactionsDataReload);
+
+  useEffect(() => {
+    if (prevDashboardTransactionsDataReload.current !== dashboardTransactionsDataReload) {
+      generateTransactionsData();
+      prevDashboardTransactionsDataReload.current = dashboardTransactionsDataReload;
+    }
+  }, [dashboardTransactionsDataReload]);
+
+  const generateAccountsData = async () => {
+    try {
+      const apiUrl = "/api/accounts/get_account_balances";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+      const data = response.data;
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
+      console.log("data", data?.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      generateAccountsData();
+      generateTransactionsData();
+      generateTotalReferralData();
+      generateTableData("codes");
+      generateTableData("rebates");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, triedReconnect, active]);
+
+  const transactionHeader = [
+    {
+      name: "From",
+      mobileWidth: width >= 500 ? 45 : 100,
+      width: 20,
+      id: 0,
+      height: "40px",
+    },
+    {
+      name: "To",
+      width: 20,
+      // mobileWidth: 45,
+      id: 1,
+      height: "40px",
+    },
+    {
+      name: "Type",
+      width: 20,
+      id: 2,
+      height: "40px",
+    },
+    {
+      name: "Time",
+      width: 20,
+      id: 3,
+      height: "40px",
+      icon: (
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ marginLeft: "2px" }}>
+          <path
+            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
+            fill="white"
+          />
+          <path
+            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
+            fill="white"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: "Amount",
+      width: 20,
+      mobileWidth: width >= 500 ? 45 : false,
+      id: 4,
+      height: "40px",
+      icon: (
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ marginLeft: "2px" }}>
+          <path
+            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
+            fill="white"
+          />
+          <path
+            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
+            fill="white"
+          />
+        </svg>
+      ),
+    },
+  ];
+
+  const referralCodeHeader = [
+    {
+      id: 0,
+      name: "My Referral Code",
+      width: 15,
+      height: "40px",
+    },
+    {
+      id: 1,
+      name: "User Address",
+      width: 15,
+      mobileWidth: width >= 500 ? 45 : 100,
+      height: "40px",
+    },
+    {
+      id: 2,
+      name: "User Level",
+      width: 15,
+      height: "40px",
+    },
+    {
+      id: 3,
+      name: "Rate",
+      width: 15,
+      height: "40px",
+    },
+    {
+      id: 4,
+      name: "Total Earned",
+      width: 15,
+      mobileWidth: width >= 500 ? 45 : false,
+      height: "40px",
+    },
+  ];
+
+  const referralHistoryHeader = [
+    {
+      id: 0,
+      name: "From",
+      width: 15,
+      mobileWidth: width >= 500 ? 45 : 100,
+      height: "40px",
+    },
+    {
+      id: 1,
+      name: "Referral Code",
+      width: 15,
+      height: "40px",
+    },
+    {
+      id: 2,
+      name: "Referral Level",
+      width: 15,
+      height: "40px",
+    },
+    {
+      id: 3,
+      name: "Amount",
+      width: 15,
+      mobileWidth: width >= 500 ? 45 : false,
+      height: "40px",
+    },
+  ];
+
+  const referralCardsData = [
+    {
+      title: "Uni",
+      data: [
+        {
+          title: "Level User",
+          value: totalReferralData?.uni?.levelUser,
+        },
+        {
+          title: "Total Comission",
+          value: totalReferralData?.uni?.totalComission,
+        },
+      ],
+    },
+    {
+      title: "Binary",
+      active: true,
+      data: [
+        {
+          title: "Level User",
+          value: totalReferralData?.binary?.levelUser,
+        },
+        {
+          title: "Total Comission",
+          value: totalReferralData?.binary?.totalComission,
+        },
+      ],
+    },
+  ];
+
+  const referralCodeTableEmpty = {
+    label: "No Referral Code History",
+    icon: <NoHistoryIcon />,
+  };
+
+  const referralRebatesTableEmpty = {
+    label: "No Referral Rebates History",
+    icon: <NoHistoryIcon />,
+  };
+
+  const transactionsTableEmpty = {
+    label: "No Transaction History",
+    icon: <NoHistoryIcon />,
+  };
+
+  const cardImgs = {
+    cpl: "/img/dashboard/atar.png",
+    btc: "/img/dashboard/btc.png",
+    eth: "/img/dashboard/eth.png",
+    usdt: "/img/dashboard/usdt.png",
+    gold: "/img/dashboard/gold.png",
+    platinium: "/img/dashboard/platinium.png",
+  };
+
+  const handleSidebarOpen = (sideBar) => [
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: true, sideBar },
+    }),
+  ];
   return (
-    // {balance ?? "0"} tokens
-    <DasboardMain
-      topCoins={topCoins}
-      coinsList={coinsList}
-      loadCoinsList={loadCoinsList}
-      handleGetStarted={handleGetStarted}
+    <DashboardUI
+      transactionsData={transactionsData}
+      transactionHeader={transactionHeader}
+      referralCodeHeader={referralCodeHeader}
+      referralHistoryHeader={referralHistoryHeader}
+      referralCardsData={referralCardsData}
+      codesTableData={codesTableData}
+      rebatesTableData={rebatesTableData}
+      totalTransactions={totalTransactions}
+      referralCodeTableEmpty={referralCodeTableEmpty}
+      referralHistoryTableEmpty={referralRebatesTableEmpty}
+      transactionsTableEmpty={transactionsTableEmpty}
+      referralCodeTableLoading={referralCodeTableLoading}
+      referralHistoryTableLoading={referralHistoryTableLoading}
+      transactionsTableLoading={transactionsTableLoading}
+      accountsData={accountsData}
+      cardImgs={cardImgs}
+      handleDeposit={() => handleSidebarOpen("deposit")}
+      handleExchange={() => handleSidebarOpen("exchange")}
+      handleWithdraw={() => handleSidebarOpen("withdraw")}
+      handleTransfer={() => handleSidebarOpen("transfer")}
     />
   );
 };

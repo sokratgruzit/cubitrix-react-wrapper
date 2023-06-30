@@ -10,6 +10,8 @@ import {
   Button,
 } from "@cubitrix/cubitrix-react-ui-module";
 
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+
 // svgs
 import { StickyNoteIcon, AddSquareIcon, NoHistoryIcon } from "../assets/svg";
 
@@ -33,8 +35,9 @@ const Referral = () => {
   const [createCodeError, setCreateCodeError] = useState("");
   const [createCodeSuccess, setCreateCodeSuccess] = useState("");
 
-  const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
+
+  const { account, active } = useConnect();
 
   const [referralTotal, setReferralTotal] = useState({
     rebatesUniLevel: 0,
@@ -92,8 +95,12 @@ const Referral = () => {
             : (codesData = { ...codesData, referral: item.referral });
         });
 
+      if (data.length > 0) {
+        setReferralCodes(codesData);
+      }
+
       if (data.length === 0) {
-        const { data: generateCodeData } = axios.post(
+        const { data: generateCodeData } = await axios.post(
           "/api/referral/bind_referral_to_user",
           {
             address: account,
@@ -109,8 +116,6 @@ const Referral = () => {
 
         setReferralCodes(codesData);
       }
-
-      setReferralCodes(codesData);
     } catch (err) {
       console.log(err);
     }
@@ -122,7 +127,7 @@ const Referral = () => {
       : setReferralHistoryTableLoading(true);
     try {
       const { data } = await axios.post(
-        `http://localhost:4000/api/referral/${
+        `/api/referral/${
           table === "codes"
             ? "get_referral_code_of_user"
             : "get_referral_rebates_history_of_user"
@@ -232,25 +237,15 @@ const Referral = () => {
   };
 
   useEffect(() => {
-    if (account && triedReconnect) {
-      Promise.allSettled([
-        // axios.post("/api/referral/assign_refferal_to_user", {
-        //   referral: createCodeObject.referral,
-        //   address: account,
-        // }),
-        generateCode(),
-        generateTableData("codes"),
-        generateTableData("rebates"),
-        getReferralTotal(),
-      ]);
-      // generateCode();
-      // generateTableData("codes");
-      // generateTableData("rebates");
-      // getReferralTotal();
+    if (account && triedReconnect && active) {
+      generateTableData("codes");
+      generateTableData("rebates");
+      getReferralTotal();
+      generateCode();
     }
     getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
+  }, [account, active, triedReconnect]);
 
   let referralCodeTh = [
     {

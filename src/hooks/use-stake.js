@@ -84,7 +84,6 @@ export const useStake = ({ Router, tokenAddress }) => {
   };
 
   const approve = async (callback) => {
-    console.log("goes to approve");
     dispatch({
       type: "UPDATE_STAKE_STATE",
       payload: {
@@ -99,8 +98,7 @@ export const useStake = ({ Router, tokenAddress }) => {
         .approve(Router, amountIn.toString())
         .send({ from: account })
         .then(() => {
-          console.log(callback, "shiit this runs wtf");
-          // if (callback) callback();
+          if (callback) callback();
           dispatch({
             type: "UPDATE_STAKE_STATE",
             payload: {
@@ -339,6 +337,7 @@ export const useStake = ({ Router, tokenAddress }) => {
     var getBalance = await tokenContract.methods.balanceOf(account.toString()).call();
     var pow = 10 ** decimals;
     var balanceInEth = getBalance / pow;
+
     dispatch({
       type: "UPDATE_STAKE_STATE",
       payload: {
