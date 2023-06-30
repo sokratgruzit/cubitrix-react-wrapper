@@ -30,7 +30,7 @@ import WBNB from "../../../abi/WBNB.json";
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
   const userMetaData = useSelector((state) => state.appState.userData?.meta);
-  const userBalances = useSelector((state) => state.appState);
+  const userBalances = useSelector((state) => state.appState.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
 
@@ -867,7 +867,9 @@ const SideBarRight = () => {
 
     const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
 
-    const toAddress = "0xE72C1054C1900FC6c266feC9bedc178e72793A35";
+    const toAddress = userBalances?.find(
+      (item) => item?.account_category === "system",
+    )?.address;
 
     const amount = web3.utils.toBN(
       web3.utils.toWei(currentObject.amount.toString(), "ether"),
@@ -1032,6 +1034,8 @@ const SideBarRight = () => {
             e?.response?.data === "we dont have such address registered in our system."
           ) {
             errorMsg = "Incorrect to address";
+          } else if (e?.response?.data === "Cannot transfer to this account") {
+            errorMsg = "Recipient has not activated account";
           }
           setTransferSubmitLoading(false);
           setSuccess(false);
@@ -1045,8 +1049,6 @@ const SideBarRight = () => {
         });
     }
   };
-
-  console.log("currentObject", currentObject);
 
   return (
     <>
