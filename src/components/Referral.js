@@ -200,6 +200,16 @@ const Referral = () => {
       console.log(err);
     }
   };
+  //
+  // const getReferralTree = async () => {
+  //   try {
+  //     const { data } = await axios.get("/api/referral/get_referral_tree");
+  //
+  //     console.log(data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const handleCreateCodeSubmit = async () => {
     setCreateCodeError("");
