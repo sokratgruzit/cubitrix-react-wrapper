@@ -18,37 +18,26 @@ import {
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { injected, walletConnect } from "../../../connector";
 
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { useTableParameters } from "../../../hooks/useTableParameters";
 
 import WBNB from "../../../abi/WBNB.json";
 
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
   const userMetaData = useSelector((state) => state.appState.userData?.meta);
-  const userBalances = useSelector((state) => state.appState);
+  const userBalances = useSelector((state) => state.appState.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
 
   const [personalData, setPersonalData] = useState(null);
   const { account, connect, disconnect, library } = useConnect();
 
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
-  const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
-    useStake({
-      Router,
-      tokenAddress,
-    });
-
-  const { depositAmount, timeperiod, isAllowance, loading, timeperiodDate } = useSelector(
-    (state) => state.stake,
-  );
 
   const balance = useSelector((state) => state.appState?.userData?.balance);
 
@@ -462,7 +451,6 @@ const SideBarRight = () => {
       type: "default",
       placeholder: "0",
       onChange: (e) => {
-        handleDepositAmount(e.target.value);
         setCurrentObject((prev) => ({
           ...prev,
           [e.target.name]: e.target.value,
@@ -860,11 +848,11 @@ const SideBarRight = () => {
     }
   };
 
+  const [depositLoading, setDepositLoading] = useState(false);
   const handleDepositSubmit = async () => {
     setSuccess(null);
     setHelpText("");
     setShowHelpText(false);
-
     if (!account) {
       setHelpText("Please connect your wallet.");
       setShowHelpText(true);
@@ -872,16 +860,22 @@ const SideBarRight = () => {
       return;
     }
 
+    setDepositLoading(true);
+
     const web3 = library;
     const fromAddress = account;
 
     const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
 
-    const toAddress = "0xE72C1054C1900FC6c266feC9bedc178e72793A35";
-    // console.log(depositAmount);
-    // console.log(userBalances)
+    const toAddress = userBalances?.find(
+      (item) => item?.account_category === "system",
+    )?.address;
 
-    const amount = web3.utils.toBN(web3.utils.toWei(depositAmount.toString(), "ether"));
+    const amount = web3.utils.toBN(
+      web3.utils.toWei(currentObject.amount.toString(), "ether"),
+    );
+
+    const gasPrice = await web3.eth.getGasPrice();
 
     const transferData = tokenContract.methods
       .transfer(toAddress, amount.toString())
@@ -891,6 +885,7 @@ const SideBarRight = () => {
       from: fromAddress,
       to: tokenAddress,
       data: transferData,
+      gasPrice,
     };
 
     web3.eth
@@ -907,13 +902,28 @@ const SideBarRight = () => {
                 type: "SET_SYSTEM_ACCOUNT_DATA",
                 payload: res.data.updatedAccount,
               });
+              dispatch({
+                type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+                payload: {},
+              });
+              setShowHelpText(true);
+              setSuccess(true);
+              setHelpText("Amount deposited successfully.");
+              setTimeout(() => {
+                setSuccess(null);
+                setHelpText("");
+                setShowHelpText(false);
+              }, 3000);
             }
+            setDepositLoading(false);
           })
           .catch((e) => {
             console.log(e);
+            setDepositLoading(false);
           });
       })
       .catch((error) => {
+        setDepositLoading(false);
         if (error.message.includes("User denied transaction signature")) {
           setHelpText("Transaction rejected.");
           setShowHelpText(true);
@@ -935,42 +945,6 @@ const SideBarRight = () => {
           setShowHelpText(false);
         }, 3000);
       });
-
-    // if (depositAmount < 1 && currentObject?.amount === "0") {
-    //   setHelpText("Please enter valid amount to stake.");
-    //   setShowHelpText(true);
-    //   setSuccess(false);
-    //   setTimeout(() => {
-    // setSuccess(null);
-    // setHelpText("");
-    // setShowHelpText(false);
-    //   }, 3000);
-    // }
-
-    // if (account && isAllowance) {
-    //   approve(() => {
-    //     setSuccess(true);
-    //     setHelpText("Approved successfully, please stake desired amount.");
-    //     setShowHelpText(true);
-    //   });
-    // }
-    // if (account && !isAllowance) {
-    //   stake(async () => {
-    //     updateState();
-    //     generateAccountsData();
-
-    //     setSuccess(true);
-    //     setHelpText("Staking was successful.");
-    //     setShowHelpText(true);
-    //     setTimeout(() => {
-    //       setSuccess(null);
-    //       setHelpText("");
-    //       setShowHelpText(false);
-    //       setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-    //       handleDepositAmount(0);
-    //     }, 3000);
-    //   });
-    // }
   };
 
   const handleExchangeSubmit = async () => {
@@ -1022,6 +996,8 @@ const SideBarRight = () => {
           to: currentObject.transferAddress,
           amount: currentObject.amount,
           tx_currency: "ether",
+          account_category_from: "main",
+          account_category_to: "main",
         })
         .then((res) => {
           if (res.data?.data?.updatedAcc) {
@@ -1047,6 +1023,8 @@ const SideBarRight = () => {
               ...prev,
               type: "",
               account: "",
+              amount: "0",
+              transferAddress: "",
             }));
           }, 3000);
         })
@@ -1056,6 +1034,8 @@ const SideBarRight = () => {
             e?.response?.data === "we dont have such address registered in our system."
           ) {
             errorMsg = "Incorrect to address";
+          } else if (e?.response?.data === "Cannot transfer to this account") {
+            errorMsg = "Recipient has not activated account";
           }
           setTransferSubmitLoading(false);
           setSuccess(false);
@@ -1228,7 +1208,7 @@ const SideBarRight = () => {
             currentObject={currentObject}
             cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleDepositSubmit}
-            buttonLabel={loading ? "Loading" : "Deposit"}
+            buttonLabel={depositLoading ? "Loading..." : "Deposit"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
