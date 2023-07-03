@@ -340,6 +340,8 @@ function App() {
     return balanceInEth;
   }
 
+  console.log(appState?.connectionError);
+
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
