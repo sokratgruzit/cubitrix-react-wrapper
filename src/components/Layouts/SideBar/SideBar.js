@@ -1178,8 +1178,8 @@ const SideBarRight = () => {
             helpText={helpText}
             showHelpText={showHelpText}
             accountType={"Atar"}
-            accountBalance={"1,400.00"}
-            accountBalanceSecond={"$2,034.04"}
+            accountBalance={balance?.toFixed(2)}
+            accountBalanceSecond={`$${(balance * 2)?.toFixed(2)}`}
           />
         )}
         {sideBar === "exchange" && (
@@ -1196,8 +1196,8 @@ const SideBarRight = () => {
             helpText={helpText}
             showHelpText={showHelpText}
             accountType={"Atar"}
-            accountBalance={"1,400.00"}
-            accountBalanceSecond={"$2,034.04"}
+            accountBalance={balance?.toFixed(2)}
+            accountBalanceSecond={`$${(balance * 2)?.toFixed(2)}`}
           />
         )}
         {sideBar === "deposit" && (
