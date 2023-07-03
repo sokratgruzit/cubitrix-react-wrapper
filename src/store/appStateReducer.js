@@ -8,6 +8,7 @@ const INIT_STATE = {
   connectionError: "",
   accountsData: [],
   dashboardTransactionsDataReload: {},
+  dashboardAccountType: "main",
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -81,6 +82,11 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         dashboardTransactionsDataReload: { ...action.payload },
+      };
+    case "SET_DASHBOARD_ACCOUNT_TYPE":
+      return {
+        ...state,
+        dashboardAccountType: action.payload,
       };
     default:
       return state;

@@ -171,7 +171,6 @@ function App() {
           )
           .then((res) => {
             if (res.data?.account) {
-              console.log(res.data?.account);
               dispatch({
                 type: "SET_SYSTEM_ACCOUNT_DATA",
                 payload: res.data.account,
@@ -339,9 +338,6 @@ function App() {
 
     return balanceInEth;
   }
-
-  console.log(appState?.connectionError);
-
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>

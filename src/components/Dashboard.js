@@ -32,6 +32,7 @@ const Dashboard = () => {
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const accountsData = useSelector((state) => state.appState?.accountsData);
+  const accountType = useSelector((state) => state.appState?.dashboardAccountType);
   const dashboardTransactionsDataReload = useSelector(
     (state) => state.appState?.dashboardTransactionsDataReload,
   );
@@ -368,8 +369,17 @@ const Dashboard = () => {
       payload: { sideBarOpen: true, sideBar },
     }),
   ];
+
+  function setAccountType(type) {
+    dispatch({
+      type: "SET_DASHBOARD_ACCOUNT_TYPE",
+      payload: type,
+    });
+  }
   return (
     <DashboardUI
+      accountType={accountType}
+      setAccountType={setAccountType}
       transactionsData={transactionsData}
       transactionHeader={transactionHeader}
       referralCodeHeader={referralCodeHeader}

@@ -253,8 +253,9 @@ const Staking = () => {
       <Button
         element={"referral-button"}
         label={"Create Staking"}
-        icon={<AddSquareIcon color={`#00C6FF`} />}
+        icon={<AddSquareIcon />}
         onClick={handlePopUpOpen}
+        customStyles={{ height: "44px", flexDirection: "row" }}
       />
     ),
   };
@@ -316,7 +317,6 @@ const Staking = () => {
           label={"Staking Calculator"}
           handlePopUpClose={handleClose}
           description={"Stake Complend to earn Complend reward"}
-          headerCustomStyles={{ background: "#272C57" }}
         />
       )}
     </>

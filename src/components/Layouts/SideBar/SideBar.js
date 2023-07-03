@@ -33,9 +33,10 @@ const SideBarRight = () => {
   const userBalances = useSelector((state) => state.appState.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const accountType = useSelector((state) => state.appState?.dashboardAccountType);
 
   const [personalData, setPersonalData] = useState(null);
-  const { account, connect, disconnect, library } = useConnect();
+  const { account, connect, disconnect, library, active } = useConnect();
 
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
 
@@ -99,6 +100,21 @@ const SideBarRight = () => {
     transferType: "external",
   });
 
+  useEffect(() => {
+    if (accountType === "main") {
+      setCurrentObject((prev) => ({
+        ...prev,
+        transferType: "external",
+      }));
+    } else {
+      setCurrentObject((prev) => ({
+        ...prev,
+        transferType: "internal",
+      }));
+    }
+    // eslint-disable-next-line
+  }, [accountType]);
+
   const updateState = () => {
     dispatch({
       type: "SET_USER_DATA",
@@ -126,8 +142,9 @@ const SideBarRight = () => {
   };
 
   useEffect(() => {
-    // if (account && triedReconnect && active)
+    // if (account && triedReconnect && active) {
     updateState();
+    // }
     // eslint-disable-next-line
   }, [account]);
 
@@ -464,73 +481,112 @@ const SideBarRight = () => {
       title: "Select Transfer type",
       name: "transferType",
       type: "lable-input-select",
-      options: [
-        {
-          name: "Transfer to another user",
-          value: "external",
-          svg: (
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="#C38C5C"
-              xmlns="http://www.w3.org/2000/svg">
-              <g clip-path="url(#clip0_40_6461)">
-                <path
-                  d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
-                <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
-                <path d="M18.0842 8.00667H17.8951C17.1162 7.98315 16.3775 7.65571 15.837 7.09441C15.2965 6.53311 14.9971 5.78255 15.003 5.00334C15.003 3.34594 16.349 2 18.0064 2C18.792 2.00381 19.5449 2.3152 20.1037 2.86743C20.6625 3.41967 20.9827 4.16882 20.9958 4.95435C21.0089 5.73987 20.7138 6.49928 20.1737 7.06983C19.6336 7.64038 18.8915 7.97669 18.1065 8.00667H18.0842ZM18.0064 3.66852C17.2722 3.66852 16.6715 4.26919 16.6715 5.00334C16.6715 5.72636 17.2388 6.31591 17.9507 6.33815C17.9507 6.32703 18.0175 6.32703 18.0953 6.33815C18.7961 6.29366 19.3412 5.71524 19.3412 5.00334C19.3412 4.26919 18.7405 3.66852 18.0064 3.66852Z" />
-                <path d="M18.0056 15.7932C16.7375 15.7932 15.4694 15.4595 14.4794 14.8032C13.5451 14.1803 13 13.2793 13 12.3227C13 11.3661 13.5339 10.454 14.4794 9.83105C16.4594 8.51848 19.5517 8.51848 21.5206 9.83105C22.455 10.454 23 11.3661 23 12.3116C23 13.2682 22.4661 14.1692 21.5206 14.8032C20.5417 15.4706 19.2736 15.7932 18.0056 15.7932ZM15.4027 11.2215C14.9244 11.5441 14.6685 11.9334 14.6685 12.3227C14.6685 12.712 14.9355 13.1013 15.4027 13.4239C16.8154 14.3694 19.1846 14.3694 20.5973 13.4239C21.0756 13.1013 21.3426 12.712 21.3315 12.3227C21.3315 11.9334 21.0645 11.5441 20.5973 11.2215C19.1958 10.276 16.8154 10.276 15.4027 11.2215Z" />
-              </g>
-              <defs>
-                <clipPath id="clip0_40_6461">
-                  <rect width="24" height="24" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-          ),
-        },
-        // {
-        //   name: "Transfer to own account",
-        //   value: "internal",
-        //   svg: (
-        //     <svg
-        //       width="24"
-        //       height="24"
-        //       viewBox="0 0 24 24"
-        //       fill="none"
-        //       xmlns="http://www.w3.org/2000/svg">
-        //       <path
-        //         d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
-        //         stroke="#C38C5C"
-        //         stroke-width="1.5"
-        //         stroke-linecap="round"
-        //         stroke-linejoin="round"
-        //       />
-        //       <path
-        //         d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
-        //         fill="#C38C5C"
-        //       />
-        //       <path
-        //         d="M12.3548 18.0001C11.2516 18.0001 10.1484 17.7097 9.28709 17.1388C8.47419 16.5968 8 15.813 8 14.9807C8 14.1485 8.46451 13.3549 9.28709 12.813C11.0097 11.6711 13.7 11.6711 15.4129 12.813C16.2258 13.3549 16.7 14.1485 16.7 14.971C16.7 15.8033 16.2355 16.5872 15.4129 17.1388C14.5613 17.7194 13.458 18.0001 12.3548 18.0001ZM10.0903 14.0227C9.67419 14.3033 9.45161 14.642 9.45161 14.9807C9.45161 15.3194 9.68387 15.6581 10.0903 15.9388C11.3193 16.7614 13.3806 16.7614 14.6097 15.9388C15.0258 15.6581 15.258 15.3194 15.2484 14.9807C15.2484 14.642 15.0161 14.3033 14.6097 14.0227C13.3903 13.2001 11.3193 13.2001 10.0903 14.0227Z"
-        //         fill="#C38C5C"
-        //       />
-        //       <path
-        //         d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
-        //         stroke="#C38C5C"
-        //         stroke-width="1.5"
-        //         stroke-linecap="round"
-        //         stroke-linejoin="round"
-        //       />
-        //     </svg>
-        //   ),
-        // },
-      ],
+      options:
+        accountType === "main"
+          ? [
+              {
+                name: "Transfer to another user",
+                value: "external",
+                svg: (
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="#C38C5C"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_40_6461)">
+                      <path
+                        d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
+                      <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
+                      <path d="M18.0842 8.00667H17.8951C17.1162 7.98315 16.3775 7.65571 15.837 7.09441C15.2965 6.53311 14.9971 5.78255 15.003 5.00334C15.003 3.34594 16.349 2 18.0064 2C18.792 2.00381 19.5449 2.3152 20.1037 2.86743C20.6625 3.41967 20.9827 4.16882 20.9958 4.95435C21.0089 5.73987 20.7138 6.49928 20.1737 7.06983C19.6336 7.64038 18.8915 7.97669 18.1065 8.00667H18.0842ZM18.0064 3.66852C17.2722 3.66852 16.6715 4.26919 16.6715 5.00334C16.6715 5.72636 17.2388 6.31591 17.9507 6.33815C17.9507 6.32703 18.0175 6.32703 18.0953 6.33815C18.7961 6.29366 19.3412 5.71524 19.3412 5.00334C19.3412 4.26919 18.7405 3.66852 18.0064 3.66852Z" />
+                      <path d="M18.0056 15.7932C16.7375 15.7932 15.4694 15.4595 14.4794 14.8032C13.5451 14.1803 13 13.2793 13 12.3227C13 11.3661 13.5339 10.454 14.4794 9.83105C16.4594 8.51848 19.5517 8.51848 21.5206 9.83105C22.455 10.454 23 11.3661 23 12.3116C23 13.2682 22.4661 14.1692 21.5206 14.8032C20.5417 15.4706 19.2736 15.7932 18.0056 15.7932ZM15.4027 11.2215C14.9244 11.5441 14.6685 11.9334 14.6685 12.3227C14.6685 12.712 14.9355 13.1013 15.4027 13.4239C16.8154 14.3694 19.1846 14.3694 20.5973 13.4239C21.0756 13.1013 21.3426 12.712 21.3315 12.3227C21.3315 11.9334 21.0645 11.5441 20.5973 11.2215C19.1958 10.276 16.8154 10.276 15.4027 11.2215Z" />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_40_6461">
+                        <rect width="24" height="24" fill="white" />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                ),
+              },
+              {
+                name: "Transfer to own account",
+                value: "internal",
+                svg: (
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
+                      stroke="#C38C5C"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
+                      fill="#C38C5C"
+                    />
+                    <path
+                      d="M12.3548 18.0001C11.2516 18.0001 10.1484 17.7097 9.28709 17.1388C8.47419 16.5968 8 15.813 8 14.9807C8 14.1485 8.46451 13.3549 9.28709 12.813C11.0097 11.6711 13.7 11.6711 15.4129 12.813C16.2258 13.3549 16.7 14.1485 16.7 14.971C16.7 15.8033 16.2355 16.5872 15.4129 17.1388C14.5613 17.7194 13.458 18.0001 12.3548 18.0001ZM10.0903 14.0227C9.67419 14.3033 9.45161 14.642 9.45161 14.9807C9.45161 15.3194 9.68387 15.6581 10.0903 15.9388C11.3193 16.7614 13.3806 16.7614 14.6097 15.9388C15.0258 15.6581 15.258 15.3194 15.2484 14.9807C15.2484 14.642 15.0161 14.3033 14.6097 14.0227C13.3903 13.2001 11.3193 13.2001 10.0903 14.0227Z"
+                      fill="#C38C5C"
+                    />
+                    <path
+                      d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
+                      stroke="#C38C5C"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                ),
+              },
+            ]
+          : [
+              {
+                name: "Transfer to own account",
+                value: "internal",
+                svg: (
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
+                      stroke="#C38C5C"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
+                      fill="#C38C5C"
+                    />
+                    <path
+                      d="M12.3548 18.0001C11.2516 18.0001 10.1484 17.7097 9.28709 17.1388C8.47419 16.5968 8 15.813 8 14.9807C8 14.1485 8.46451 13.3549 9.28709 12.813C11.0097 11.6711 13.7 11.6711 15.4129 12.813C16.2258 13.3549 16.7 14.1485 16.7 14.971C16.7 15.8033 16.2355 16.5872 15.4129 17.1388C14.5613 17.7194 13.458 18.0001 12.3548 18.0001ZM10.0903 14.0227C9.67419 14.3033 9.45161 14.642 9.45161 14.9807C9.45161 15.3194 9.68387 15.6581 10.0903 15.9388C11.3193 16.7614 13.3806 16.7614 14.6097 15.9388C15.0258 15.6581 15.258 15.3194 15.2484 14.9807C15.2484 14.642 15.0161 14.3033 14.6097 14.0227C13.3903 13.2001 11.3193 13.2001 10.0903 14.0227Z"
+                      fill="#C38C5C"
+                    />
+                    <path
+                      d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
+                      stroke="#C38C5C"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                ),
+              },
+            ],
       defaultAny: "Select",
       onChange: (e) =>
         setCurrentObject((prev) => ({
@@ -542,16 +598,15 @@ const SideBarRight = () => {
       title: currentObject.transferType === "external" ? "address" : "Select Account",
       name: currentObject.transferType === "external" ? "transferAddress" : "account",
       type: currentObject.transferType === "external" ? "default" : "lable-input-select",
-      options: [
-        {
-          name: "Loan",
-          value: "loan",
-        },
-        {
-          name: "Trade",
-          value: "trade",
-        },
-      ],
+      options:
+        accountType === "main"
+          ? [
+              {
+                name: "Trade",
+                value: "trade",
+              },
+            ]
+          : [{ name: "Main", value: "main" }],
       defaultAny: currentObject.transferType === "external" ? undefined : "Select",
       placeholder: currentObject.transferType === "external" ? "Enter" : undefined,
       onChange: (e) =>
@@ -1048,7 +1103,91 @@ const SideBarRight = () => {
           }, 3000);
         });
     }
+    if (currentObject.transferType === "internal") {
+      setTransferSubmitLoading(true);
+      if (Number(currentObject.amount) <= 0) {
+        setSuccess(false);
+        setHelpText("Incorrect amount");
+        setShowHelpText(true);
+        setTimeout(() => {
+          setSuccess(null);
+          setHelpText("");
+          setShowHelpText(false);
+        }, 3000);
+        return;
+      }
+      axios
+        .post("/api/transactions/make_transfer", {
+          from: account,
+          to: account,
+          amount: currentObject.amount,
+          tx_currency: "ether",
+          account_category_from: accountType,
+          account_category_to: currentObject.account,
+          tx_type: "internal_transfer",
+        })
+        .then((res) => {
+          if (res.data?.data?.updatedAcc) {
+            // dispatch({
+            //   type: "SET_SYSTEM_ACCOUNT_DATA",
+            //   payload: res.data.data.updatedAcc,
+            // });
+            generateAccountsData();
+            dispatch({
+              type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+              payload: {},
+            });
+          }
+
+          setTransferSubmitLoading(false);
+          setShowHelpText(true);
+          setSuccess(true);
+          setHelpText("Transfer was successful.");
+          setTimeout(() => {
+            setSuccess(null);
+            setHelpText("");
+            setShowHelpText(false);
+            setCurrentObject((prev) => ({
+              ...prev,
+              type: "",
+              account: "",
+              amount: "0",
+              transferAddress: "",
+            }));
+          }, 3000);
+        })
+        .catch((e) => {
+          let errorMsg;
+          if (
+            e?.response?.data === "we dont have such address registered in our system."
+          ) {
+            errorMsg = "Incorrect to address";
+          } else if (e?.response?.data === "Cannot transfer to this account") {
+            errorMsg = "Recipient has not activated account";
+          }
+          setTransferSubmitLoading(false);
+          setSuccess(false);
+          setHelpText(errorMsg ?? "Transaction failed.");
+          setShowHelpText(true);
+          setTimeout(() => {
+            setSuccess(null);
+            setHelpText("");
+            setShowHelpText(false);
+          }, 3000);
+        });
+    }
   };
+
+  const [chosenAccount, setChosenAccount] = useState({});
+
+  useEffect(() => {
+    if (userBalances.length > 0) {
+      const chosenAcc = userBalances?.find(
+        (item) => item?.account_category === accountType,
+      );
+      setChosenAccount(chosenAcc);
+    }
+  }, [accountType, userBalances]);
 
   return (
     <>
@@ -1178,8 +1317,8 @@ const SideBarRight = () => {
             helpText={helpText}
             showHelpText={showHelpText}
             accountType={"Atar"}
-            accountBalance={balance?.toFixed(2)}
-            accountBalanceSecond={`$${(balance * 2)?.toFixed(2)}`}
+            accountBalance={chosenAccount?.balance?.toFixed(2)}
+            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
           />
         )}
         {sideBar === "exchange" && (
@@ -1196,8 +1335,8 @@ const SideBarRight = () => {
             helpText={helpText}
             showHelpText={showHelpText}
             accountType={"Atar"}
-            accountBalance={balance?.toFixed(2)}
-            accountBalanceSecond={`$${(balance * 2)?.toFixed(2)}`}
+            accountBalance={chosenAccount?.balance?.toFixed(2)}
+            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
           />
         )}
         {sideBar === "deposit" && (
@@ -1213,8 +1352,8 @@ const SideBarRight = () => {
             helpText={helpText}
             showHelpText={showHelpText}
             accountType={"Atar"}
-            accountBalance={balance?.toFixed(2)}
-            accountBalanceSecond={`$${(balance * 2)?.toFixed(2)}`}
+            accountBalance={chosenAccount?.balance?.toFixed(2)}
+            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
           />
         )}
         {sideBar === "transfer" && (
@@ -1230,8 +1369,8 @@ const SideBarRight = () => {
             helpText={helpText}
             showHelpText={showHelpText}
             accountType={"Atar"}
-            accountBalance={balance?.toFixed(2)}
-            accountBalanceSecond={`$${(balance * 2)?.toFixed(2)}`}
+            accountBalance={chosenAccount?.balance?.toFixed(2)}
+            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
           />
         )}
       </SideBar>
