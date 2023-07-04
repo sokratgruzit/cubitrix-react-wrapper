@@ -76,6 +76,9 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  const [step, setStep] = useState(5);
+  const [initialRegister, setInitialRegister] = useState(true);
+
   const updateState = () => {
     dispatch({
       type: "SET_USER_DATA",
@@ -86,6 +89,7 @@ function App() {
         address: account,
       })
       .then((res) => {
+        console.log(res.data.success.data.accounts[0].extensions);
         dispatch({
           type: "SET_USER_DATA",
           payload: res.data.success.data.accounts[0],
@@ -104,6 +108,7 @@ function App() {
 
   useEffect(() => {
     if (account && triedReconnect && active) {
+      setInitialRegister(true);
       const fetchData = async () => {
         await axios
           .post("/api/accounts/login", {
@@ -286,8 +291,6 @@ function App() {
     },
   ];
 
-  const [step, setStep] = useState(5);
-  const [initialRegister, setInitialRegister] = useState(true);
   const navigate = useNavigate();
 
   let tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -313,6 +316,10 @@ function App() {
         library &&
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "false" },
+        });
         getBalance().then((balance) => {
           if (balance > 200) {
             setStep(4);
@@ -321,8 +328,11 @@ function App() {
           }
         });
       } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
-        // setStep(systemAcc?.step || 2);
       } else {
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "false" },
+        });
         setStep(2);
       }
     }
@@ -422,13 +432,14 @@ function App() {
           />
           <Route
             path="/staking"
-            element={
-              isExtensionsLoaded && activeExtensions.staking === "false" ? (
-                <Navigate to="/" />
-              ) : (
-                <Staking />
-              )
-            }
+            // element={
+            //   isExtensionsLoaded && activeExtensions.staking === "false" ? (
+            //     <Navigate to="/" />
+            //   ) : (
+            //     <Staking />
+            //   )
+            // }
+            element={<Staking />}
           />
           <Route
             path="/referral"

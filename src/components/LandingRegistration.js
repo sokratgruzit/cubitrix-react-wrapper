@@ -335,95 +335,150 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     },
   ];
 
-  const [stakeButtonText, setStakeButtonText] = useState("Approve");
+  // useEffect(() => {
+  //   if (loading) {
+  //     setStakeButtonText("Loading...");
+  //   } else if (account && !isAllowance) {
+  //     setStakeButtonText("Approve");
+  //   } else {
+  //     setStakeButtonText("Stake");
+  //   }
+  // }, [account, isAllowance, loading]);
 
-  useEffect(() => {
-    if (loading) {
-      setStakeButtonText("Loading...");
-    } else if (account && isAllowance) {
-      setStakeButtonText("Approve");
-    } else {
-      setStakeButtonText("Stake");
-    }
-  }, [account, isAllowance, loading]);
+  const [stakingLoading, setStakingLoading] = useState(false);
+  const [approveResonse, setApproveResonse] = useState(null);
 
   const handleDepositSubmit = async () => {
-    if (depositAmount < 1 && currentObject?.amount === "0") {
+    setStakingLoading(true);
+
+    if (!depositAmount && !isAllowance) {
+      setApproveResonse({
+        status: "error",
+        message: "Please enter a valid amount",
+      });
+      setTimeout(() => {
+        setStakingLoading(false);
+        setApproveResonse(null);
+      }, 3000);
+      return;
     }
 
     if (account && isAllowance) {
-      approve(() => {});
+      approve(
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "success",
+            message: "Approved successfully, please stake desired amount.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 3000);
+        },
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "error",
+            message: "Approval failed, please try again.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 3000);
+        },
+      );
     }
     if (account && !isAllowance) {
-      stake(async () => {
-        setStep(5);
-        axios
-          .post("/api/accounts/handle-step", {
-            active: true,
-            address: account,
-            step: 5,
-          })
-          .then((res) => {
-            dispatch({
-              type: "UPDATE_ACTIVE_EXTENSIONS",
-              payload: { dashboard: "true" },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        axios
-          .post("/api/accounts/manage_extensions", {
-            address: account,
-            extensions: { staking: "true", referral: "true" },
-          })
-          .then((res) => {
-            if (res?.data?.account) {
+      stake(
+        async () => {
+          setStep(5);
+          axios
+            .post("/api/accounts/handle-step", {
+              active: true,
+              address: account,
+              step: 5,
+            })
+            .then((res) => {
               dispatch({
                 type: "UPDATE_ACTIVE_EXTENSIONS",
-                payload: res.data.account.extensions,
+                payload: { dashboard: "true" },
               });
-            }
-          })
-          .catch((e) => console.log(e.response));
-        axios
-          .post(
-            "/api/accounts/activate-account",
-            {
-              address: account,
-            },
-            {
-              timeout: 60000,
-            },
-          )
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-              setTimeout(() => {
-                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-                handleDepositAmount(0);
-              }, 3000);
-            }
-          })
-          .catch((e) => {});
-        axios
-          .post("/api/accounts/get_account_balances", {
-            address: account?.toLowerCase(),
-          })
-          .then((res) => {
-            dispatch({
-              type: "SET_ACCOUNTS_DATA",
-              payload: res?.data?.data,
+            })
+            .catch((err) => {
+              console.log(err);
             });
-          })
-          .catch((err) => {
-            console.error(err);
+          axios
+            .post("/api/accounts/manage_extensions", {
+              address: account,
+              extensions: { staking: "true", referral: "true" },
+            })
+            .then((res) => {
+              if (res?.data?.account) {
+                dispatch({
+                  type: "UPDATE_ACTIVE_EXTENSIONS",
+                  payload: res.data.account.extensions,
+                });
+              }
+            })
+            .catch((e) => console.log(e.response));
+          axios
+            .post(
+              "/api/accounts/activate-account",
+              {
+                address: account,
+              },
+              {
+                timeout: 60000,
+              },
+            )
+            .then((res) => {
+              if (res.data?.account) {
+                dispatch({
+                  type: "SET_SYSTEM_ACCOUNT_DATA",
+                  payload: res.data.account,
+                });
+                setTimeout(() => {
+                  setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+                  handleDepositAmount(0);
+                }, 3000);
+              }
+            })
+            .catch((e) => {});
+          axios
+            .post("/api/accounts/get_account_balances", {
+              address: account?.toLowerCase(),
+            })
+            .then((res) => {
+              dispatch({
+                type: "SET_ACCOUNTS_DATA",
+                payload: res?.data?.data,
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "success",
+            message: "Staked successfully",
           });
-        navigate("/dashboard");
-      });
+          handleDepositAmount("");
+          handleTimePeriod(0);
+          setTimeout(() => {
+            setApproveResonse(null);
+            navigate("/dashboard");
+          }, 3000);
+        },
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "error",
+            message: "Staking failed, please try again.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 3000);
+        },
+      );
     }
   };
 
@@ -462,10 +517,13 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       handleTimePeriod={handleTimePeriod}
       handleTimeperiodDate={handleTimeperiodDate}
       durationOptions={durationOptions}
-      buttonLabel={stakeButtonText}
+      buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
       handleSubmit={() => handleDepositSubmit()}
       inputs={inputs}
       currentObject={currentObject}
+      stakingLoading={stakingLoading}
+      approveResonse={approveResonse}
+      isAllowance={isAllowance}
     />
   );
 };

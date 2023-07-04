@@ -15,17 +15,11 @@ const connectPersistConfig = {
   stateReconciler: autoMergeLevel2,
 };
 
-const stakePersistConfig = {
-  key: "stake",
-  storage,
-  stateReconciler: autoMergeLevel2,
-};
-
 const rootReducer = combineReducers({
   extensions: extensionsReducer,
   appState: appStateReducer,
   connect: persistReducer(connectPersistConfig, connectReducer),
-  stake: persistReducer(stakePersistConfig, stakeReducer),
+  stake: stakeReducer,
 });
 
 const store = configureStore({
