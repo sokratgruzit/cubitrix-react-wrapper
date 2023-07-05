@@ -1,7 +1,12 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import {
+  useConnect,
+  //  useStake
+} from "@cubitrix/cubitrix-react-connect-module";
+
+import { useStake } from "../hooks/use-stake";
 import { injected, walletConnect } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -38,6 +43,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [receivePaymentAddress, setReceivePaymentAddress] = useState(
     "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
   );
+
+  const [tokenBalance, setTokenBalance] = useState(0);
 
   useEffect(() => {
     if (receivePaymentAddress) {
@@ -198,6 +205,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (res?.data === "account updated") {
             getBalance().then((balance) => {
               let step = 3;
+              setTokenBalance(balance);
               if (balance > 100) {
                 step = 4;
               }
@@ -345,6 +353,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
     const myFunction = () => {
       getBalance().then((balance) => {
+        setTokenBalance(balance);
         if (balance > 100) {
           clearInterval(timer);
           axios
@@ -409,9 +418,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             status: "success",
             message: "Approved successfully, please stake desired amount.",
           });
-          setTimeout(() => {
-            setApproveResonse(null);
-          }, 3000);
         },
         () => {
           setStakingLoading(false);
@@ -421,7 +427,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           });
           setTimeout(() => {
             setApproveResonse(null);
-          }, 3000);
+          }, 5000);
         },
       );
     }
@@ -520,6 +526,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   };
 
+  console.log(isAllowance, "isAllowance registration");
+
   return (
     <LandingSteps
       account={account}
@@ -562,6 +570,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       stakingLoading={stakingLoading}
       approveResonse={approveResonse}
       isAllowance={isAllowance}
+      tokenBalance={tokenBalance}
     />
   );
 };

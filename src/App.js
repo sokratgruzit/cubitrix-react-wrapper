@@ -41,6 +41,9 @@ import WBNB from "./abi/WBNB.json";
 import Landing from "./components/Landing";
 import LandingRegistration from "./components/LandingRegistration";
 
+// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "./hooks/use-stake";
+
 window.Buffer = window.Buffer || Buffer;
 function App() {
   const sideBarOpen = useSelector((state) => state.appState?.sideBarOpen);
@@ -75,6 +78,19 @@ function App() {
     }
     // eslint-disable-next-line
   }, []);
+
+  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
+  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";
+  const { checkAllowance } = useStake({ Router, tokenAddress });
+
+  const { depositAmount } = useSelector((state) => state.stake);
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      checkAllowance();
+    }
+    // eslint-disable-next-line
+  }, [account, triedReconnect, active, depositAmount]);
 
   const [step, setStep] = useState(5);
   const [initialRegister, setInitialRegister] = useState(true);
@@ -292,7 +308,6 @@ function App() {
 
   const navigate = useNavigate();
 
-  let tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
   const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 

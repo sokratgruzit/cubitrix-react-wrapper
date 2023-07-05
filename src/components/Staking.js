@@ -13,10 +13,12 @@ import {
 
 // hooks
 import {
-  useStake,
+  // useStake,
   STAKE_INIT_STATE,
   useConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "../hooks/use-stake";
+
 import { useTableParameters } from "../hooks/useTableParameters";
 import { useMobileWidth } from "../hooks/useMobileWidth";
 import { useOnScreen } from "../hooks/useOnScreen";
@@ -74,8 +76,6 @@ const Staking = () => {
     timeperiodDate,
   } = useSelector((state) => state.stake);
 
-  const [triggerFetchRecors, setTriggerFetchRecors] = useState(false);
-
   useEffect(() => {
     if (account && triedReconnect && active) {
       getStackerInfo(0 + 5 * fetchCount, 10 + 5 * fetchCount)
@@ -88,7 +88,24 @@ const Staking = () => {
           setLoading(false);
         });
     }
-  }, [account, triedReconnect, active, fetchCount, triggerFetchRecors]);
+  }, [account, triedReconnect, active, fetchCount]);
+
+  async function refetchStakersRecord() {
+    try {
+      dispatch({
+        type: "UPDATE_STAKE_STATE",
+        payload: {
+          stakersRecord: [],
+        },
+      });
+      setLoading(true);
+      setIsFetching(false);
+      await getStackerInfo(0, 10 + 5 * fetchCount);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   useEffect(() => {
     if (account && triedReconnect && active) {
@@ -126,26 +143,6 @@ const Staking = () => {
   const handlePopUpOpen = () => {
     setCreateStakingPopUpActive(true);
   };
-
-  async function updateStakersRecord() {
-    dispatch({
-      type: "UPDATE_STAKE_STATE",
-      payload: {
-        stakersRecord: [],
-      },
-    });
-    setIsFetching(false);
-    setLoading(false);
-    getStackerInfo(0, 10 + 5 * fetchCount)
-      .then(() => {
-        setIsFetching(false);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setIsFetching(false);
-        setLoading(false);
-      });
-  }
 
   const [unstakeLoading, setUnstakeLoading] = useState(false);
   const [harvestLoading, setHarvestLoading] = useState(false);
@@ -190,7 +187,7 @@ const Staking = () => {
                 index,
               })
               .then((res) => {
-                updateStakersRecord();
+                refetchStakersRecord();
               })
               .catch((e) => {
                 console.log(e);
@@ -214,7 +211,7 @@ const Staking = () => {
           index,
           () => {
             setHarvestLoading(false);
-            updateStakersRecord();
+            refetchStakersRecord();
           },
           () => {
             setHarvestLoading(false);
@@ -271,7 +268,7 @@ const Staking = () => {
     }
 
     setStakingLoading(true);
-    if (account && !isAllowance) {
+    if (account && isAllowance) {
       approve(
         () => {
           setStakingLoading(false);
@@ -279,9 +276,6 @@ const Staking = () => {
             status: "success",
             message: "Approved successfully, please stake desired amount.",
           });
-          setTimeout(() => {
-            setApproveResonse(null);
-          }, 3000);
         },
         () => {
           setStakingLoading(false);
@@ -295,7 +289,7 @@ const Staking = () => {
         },
       );
     }
-    if (account && isAllowance) {
+    if (account && !isAllowance) {
       stake(
         async () => {
           await axios
@@ -318,7 +312,7 @@ const Staking = () => {
             })
             .catch((e) => {});
           setStakingLoading(false);
-          setTriggerFetchRecors((prev) => !prev);
+          refetchStakersRecord();
           setApproveResonse({
             status: "success",
             message: "Staked successfully",
@@ -375,7 +369,7 @@ const Staking = () => {
     }
   }, [isLoadMoreButtonOnScreen]);
 
-  console.log("stakersRecord", stakersRecord[30]?.[0]);
+  console.log(isAllowance, "isAllowance stakingpage");
 
   return (
     <>

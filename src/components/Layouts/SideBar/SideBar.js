@@ -1257,7 +1257,7 @@ const SideBarRight = () => {
             securityDataState={securityDataState}
             resendEmail={(e) => resendEmail(e)}
             hasPasswordSet={appState.hasPasswordSet}
-            imgValue={`https://complend.shopgeorgia.ge/images/${account}.png`}
+            imgValue={`https://cubitrix-idq6.onrender.com/images/${account}.png`}
             twoFactorAuth={twoFactorAuth}
             handleTwoFactorAuth={(val) => {
               setTwoFactorAuth(val);
