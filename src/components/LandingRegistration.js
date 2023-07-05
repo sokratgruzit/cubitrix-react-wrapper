@@ -198,7 +198,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (res?.data === "account updated") {
             getBalance().then((balance) => {
               let step = 3;
-              if (balance > 200) {
+              if (balance > 100) {
                 step = 4;
               }
 
@@ -335,15 +335,53 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     },
   ];
 
-  // useEffect(() => {
-  //   if (loading) {
-  //     setStakeButtonText("Loading...");
-  //   } else if (account && !isAllowance) {
-  //     setStakeButtonText("Approve");
-  //   } else {
-  //     setStakeButtonText("Stake");
-  //   }
-  // }, [account, isAllowance, loading]);
+  useEffect(() => {
+    if (step !== 3) {
+      return;
+    }
+
+    let timer;
+    let count = 0;
+
+    const myFunction = () => {
+      getBalance().then((balance) => {
+        if (balance > 100) {
+          clearInterval(timer);
+          axios
+            .post("/api/accounts/handle-step", { step: 4, address: account })
+            .then((e) => {
+              setStep(4);
+              setRegistrationState({
+                ...registrationState,
+                referralError: "something went wrong!",
+                loading: false,
+              });
+            })
+            .catch((e) => {
+              setRegistrationState({
+                ...registrationState,
+                referralError: "something went wrong!",
+                loading: false,
+              });
+            });
+        }
+      });
+
+      count++;
+
+      if (count >= 6) {
+        clearInterval(timer);
+      }
+    };
+
+    myFunction();
+
+    timer = setInterval(myFunction, 10000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [step]); // Add step as a dependency
 
   const [stakingLoading, setStakingLoading] = useState(false);
   const [approveResonse, setApproveResonse] = useState(null);

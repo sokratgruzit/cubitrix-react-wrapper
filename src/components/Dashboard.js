@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import { Dashboard as DashboardUI } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -142,6 +140,7 @@ const Dashboard = () => {
       generateTransactionsData();
       prevDashboardTransactionsDataReload.current = dashboardTransactionsDataReload;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardTransactionsDataReload]);
 
   const generateAccountsData = async () => {
@@ -363,12 +362,18 @@ const Dashboard = () => {
     platinium: "/img/dashboard/platinium.png",
   };
 
-  const handleSidebarOpen = (sideBar) => [
+  const handleSidebarOpen = (sideBar, accountType) => {
+    if (sideBar === "exchange" && accountType) {
+      dispatch({
+        type: "SET_EXCHANGE_ACCOUNT_TYPE",
+        payload: accountType,
+      });
+    }
     dispatch({
       type: "SET_SIDE_BAR",
       payload: { sideBarOpen: true, sideBar },
-    }),
-  ];
+    });
+  };
 
   function setAccountType(type) {
     dispatch({
@@ -397,7 +402,7 @@ const Dashboard = () => {
       accountsData={accountsData}
       cardImgs={cardImgs}
       handleDeposit={() => handleSidebarOpen("deposit")}
-      handleExchange={() => handleSidebarOpen("exchange")}
+      handleExchange={(a, b) => handleSidebarOpen("exchange", b)}
       handleWithdraw={() => handleSidebarOpen("withdraw")}
       handleTransfer={() => handleSidebarOpen("transfer")}
     />

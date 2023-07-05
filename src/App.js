@@ -89,7 +89,6 @@ function App() {
         address: account,
       })
       .then((res) => {
-        console.log(res.data.success.data.accounts[0].extensions);
         dispatch({
           type: "SET_USER_DATA",
           payload: res.data.success.data.accounts[0],

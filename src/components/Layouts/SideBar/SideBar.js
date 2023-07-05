@@ -22,7 +22,7 @@ import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { injected, walletConnect } from "../../../connector";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import QRCode from "qrcode";
 
 import WBNB from "../../../abi/WBNB.json";
@@ -32,15 +32,13 @@ const SideBarRight = () => {
   const userMetaData = useSelector((state) => state.appState.userData?.meta);
   const userBalances = useSelector((state) => state.appState.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
-  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
+  const exchangeAccountType = useSelector((state) => state.appState?.exchangeAccountType);
 
   const [personalData, setPersonalData] = useState(null);
-  const { account, connect, disconnect, library, active } = useConnect();
+  const { account, connect, disconnect, library } = useConnect();
 
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
-
-  const balance = useSelector((state) => state.appState?.userData?.balance);
 
   const dispatch = useDispatch();
 
@@ -1190,6 +1188,11 @@ const SideBarRight = () => {
     }
   }, [accountType, userBalances]);
 
+  const mainAccount = useMemo(
+    () => userBalances.find((acc) => acc.account_category === "main"),
+    [userBalances],
+  );
+
   return (
     <>
       {twoFactorAuth && activated && (
@@ -1335,9 +1338,17 @@ const SideBarRight = () => {
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
-            accountType={"Atar"}
-            accountBalance={chosenAccount?.balance?.toFixed(2)}
-            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            accountType={exchangeAccountType}
+            accountBalance={
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance?.toFixed(2)
+                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+            }
+            accountBalanceSecond={`$${
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance * 2?.toFixed(2)
+                : (mainAccount.assets[exchangeAccountType] * 2)?.toFixed(2)
+            }`}
           />
         )}
         {sideBar === "deposit" && (
