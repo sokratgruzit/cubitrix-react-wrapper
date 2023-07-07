@@ -1299,7 +1299,9 @@ const SideBarRight = () => {
     }
   }, [card, exchangeAccountType, ratedExchange]);
 
+  const [exchangeLoading, setExchangeLoading] = useState(false);
   const handleExchangeSubmit = async () => {
+    setExchangeLoading(true);
     await axios
       .post("/api/transactions/exchange", {
         address: account,
@@ -1309,6 +1311,7 @@ const SideBarRight = () => {
         toAmount: currentObject.receive_amount,
       })
       .then((res) => {
+        setExchangeLoading(false);
         generateAccountsData();
         dispatch({
           type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
@@ -1316,6 +1319,7 @@ const SideBarRight = () => {
         });
       })
       .catch((e) => {
+        setExchangeLoading(false);
         console.log(e);
       });
   };
@@ -1461,7 +1465,7 @@ const SideBarRight = () => {
             cardImg={"/img/dashboard/atar.png"}
             accounts={exchangeAccounts}
             handleSubmit={handleExchangeSubmit}
-            buttonLabel={"Continue"}
+            buttonLabel={exchangeLoading ? "Loading..." : "Exchange"}
             success={success}
             helpText={helpText}
             showHelpText={showHelpText}
