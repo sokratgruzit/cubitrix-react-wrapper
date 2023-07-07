@@ -87,8 +87,8 @@ const SideBarRight = () => {
   const [showHelpText, setShowHelpText] = useState(false);
   const [currentObject, setCurrentObject] = useState({
     amount: "0",
-    transfer_amount: "0",
-    receive_amount: "0",
+    transfer_amount: 0,
+    receive_amount: 0,
     transfer: "",
     clientId: "",
     address: "",
@@ -146,6 +146,18 @@ const SideBarRight = () => {
     // }
     // eslint-disable-next-line
   }, [account]);
+
+  const [rates, setRates] = useState({});
+  useEffect(() => {
+    axios
+      .get("/api/accounts/get_rates")
+      .then((res) => {
+        setRates(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
 
   const handleClose = () => {
     dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
@@ -426,7 +438,7 @@ const SideBarRight = () => {
       title: "Transfer amount",
       name: "amount",
       type: "default",
-      rightText: "CPL",
+      rightText: "ATR",
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -593,7 +605,7 @@ const SideBarRight = () => {
       title: "Transfer amount",
       name: "amount",
       type: "default",
-      rightText: "CPL",
+      rightText: "ATR",
       placeholder: "enter",
       onChange: (e) =>
         setCurrentObject((prev) => ({
@@ -718,22 +730,6 @@ const SideBarRight = () => {
           setShowHelpText(false);
         }, 3000);
       });
-  };
-
-  const handleExchangeSubmit = async () => {
-    setHelpText("Exchange was successful.");
-    setShowHelpText(true);
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(null);
-      setHelpText("");
-      setShowHelpText(false);
-      setCurrentObject((prev) => ({
-        ...prev,
-        transfer_amount: "0",
-        receive_amount: "0",
-      }));
-    }, 3000);
   };
 
   const handleWithdrawSubmit = async () => {
@@ -912,43 +908,29 @@ const SideBarRight = () => {
     [userBalances],
   );
 
-  const [card, setCard] = useState({});
-
-  const exchangeInputs = useMemo(() => {
-    if (card && card.title) {
-      let title = card.title.toLowerCase();
-      console.log(card);
-      const arr = [
-        {
-          title: "Transfer amount",
-          name: "transfer_amount",
-          type: "default",
-          rightText: exchangeAccountType,
-          onChange: (e) =>
-            setCurrentObject((prev) => ({
-              ...prev,
-              [e.target.name]: e.target.value,
-            })),
-        },
-        {
-          title: "Receive amount",
-          name: "receive_amount",
-          type: "default",
-          rightText: card.title,
-          onChange: (e) =>
-            setCurrentObject((prev) => ({
-              ...prev,
-              [e.target.name]: e.target.value,
-            })),
-        },
-      ];
-
-      return arr;
-    }
-  }, [card, exchangeAccountType]);
-
   const exchangeAccounts = useMemo(() => {
     const arr = [
+      {
+        svg: (
+          <svg
+            width="34"
+            height="34"
+            viewBox="0 0 34 34"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16.995 1.70154C17.0015 1.6995 17.0084 1.6995 17.0149 1.70154C22.1825 4.68813 26.4727 8.98253 29.4542 14.153C32.4358 19.3235 34.0036 25.1877 34 31.1563L23.8129 25.3952V25.3919C23.8097 23.0061 23.179 20.6632 21.984 18.5984C20.7891 16.5335 19.0719 14.8193 17.005 13.6279C14.9395 14.8204 13.2244 16.5357 12.0323 18.6014C10.8401 20.667 10.2128 23.0102 10.2136 25.3952L1.15764e-05 31.1563C-0.00491609 25.1863 1.56339 19.3204 4.54697 14.1495C7.53055 8.97852 11.824 4.68507 16.995 1.70154Z"
+              fill="#B3B3B3"
+            />
+            <path
+              d="M16.995 1.70154C17.0015 1.6995 17.0084 1.6995 17.0149 1.70154C22.1825 4.68813 26.4727 8.98253 29.4542 14.153C32.4358 19.3235 34.0036 25.1877 34 31.1563L23.8129 25.3952V25.3919C24.9506 20.2172 25.1837 8.23457 17.0149 1.70154C17.0084 1.6995 17.0015 1.6995 16.995 1.70154C8.81835 8.23457 9.06712 20.2194 10.2136 25.3952L1.15764e-05 31.1563C-0.00491609 25.1863 1.56339 19.3204 4.54697 14.1495C7.53055 8.97852 11.824 4.68507 16.995 1.70154Z"
+              fill="white"
+            />
+          </svg>
+        ),
+        title: "ATAR",
+        price: 2,
+      },
       {
         svg: (
           <svg
@@ -1207,26 +1189,136 @@ const SideBarRight = () => {
         ),
         title: "PLATINUM",
         price:
-          mainAccount?.assets?.["platinium"] === undefined
+          mainAccount?.assets?.["platinum"] === undefined
             ? undefined
-            : mainAccount?.assets?.["gold"],
+            : mainAccount?.assets?.["platinum"],
       },
     ];
 
-    return arr;
-  }, [mainAccount]);
+    const filteredArr = arr.filter(
+      (item) => item.title !== exchangeAccountType.toUpperCase(),
+    );
 
-  const [rates, setRates] = useState({});
+    return filteredArr;
+  }, [mainAccount, exchangeAccountType]);
+
+  const [card, setCard] = useState(null);
+  const [ratedExchange, setRatedExchange] = useState(null);
+
+  console.log(ratedExchange);
+
   useEffect(() => {
-    axios
-      .get("/api/accounts/get_rates")
+    if (card && rates.btc && exchangeAccountType) {
+      setRatedExchange(
+        Number(
+          (
+            (card.title === "ATAR" ? 2 : rates[card.title.toLowerCase()].usd) /
+            (exchangeAccountType === "ATAR" ? 2 : rates[exchangeAccountType].usd)
+          ).toFixed(6),
+        ),
+      );
+    }
+  }, [
+    exchangeAccountType,
+    card,
+    currentObject.transfer_amount,
+    currentObject.receive_amount,
+    rates,
+  ]);
+  useEffect(() => {
+    if (card && card.title && exchangeAccountType) {
+      setCurrentObject((prev) => ({
+        ...prev,
+        receive_amount: 0,
+        transfer_amount: 0,
+      }));
+    }
+  }, [card, exchangeAccountType]);
+
+  useEffect(() => {
+    if (exchangeAccountType) {
+      setCard(null);
+    }
+  }, [exchangeAccountType]);
+
+  const exchangeInputs = useMemo(() => {
+    if (card) {
+      const arr = [
+        {
+          title: "Transfer amount",
+          name: "transfer_amount",
+          type: "default",
+          rightText:
+            exchangeAccountType === "ATAR" ? "ATR" : exchangeAccountType.toUpperCase(),
+          onChange: (e) => {
+            setCurrentObject((prev) => ({
+              ...prev,
+              [e.target.name]: e.target.value,
+            }));
+            if (e.target.value === "") {
+              setCurrentObject((prev) => ({
+                ...prev,
+                receive_amount: "",
+              }));
+              return;
+            }
+            setCurrentObject((prev) => ({
+              ...prev,
+              receive_amount:
+                Math.round((e.target.value / ratedExchange) * 10 ** 6) / 10 ** 6,
+            }));
+          },
+        },
+        {
+          title: "Receive amount",
+          name: "receive_amount",
+          type: "default",
+          rightText: card.title,
+          onChange: (e) => {
+            setCurrentObject((prev) => ({
+              ...prev,
+              [e.target.name]: e.target.value,
+            }));
+            if (e.target.value === "") {
+              setCurrentObject((prev) => ({
+                ...prev,
+                transfer_amount: "",
+              }));
+              return;
+            }
+            setCurrentObject((prev) => ({
+              ...prev,
+              transfer_amount:
+                Math.round(e.target.value * ratedExchange * 10 ** 6) / 10 ** 6,
+            }));
+          },
+        },
+      ];
+
+      return arr;
+    }
+  }, [card, exchangeAccountType, ratedExchange]);
+
+  const handleExchangeSubmit = async () => {
+    await axios
+      .post("/api/transactions/exchange", {
+        address: account,
+        fromAccType: exchangeAccountType,
+        fromAmount: currentObject.transfer_amount,
+        toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
+        toAmount: currentObject.receive_amount,
+      })
       .then((res) => {
-        setRates(res.data);
+        generateAccountsData();
+        dispatch({
+          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+          payload: {},
+        });
       })
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  };
 
   return (
     <>
@@ -1376,6 +1468,7 @@ const SideBarRight = () => {
             accountType={exchangeAccountType}
             setCard={setCard}
             card={card}
+            ratedExchange={ratedExchange}
             accountBalance={
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance?.toFixed(2)
@@ -1386,11 +1479,7 @@ const SideBarRight = () => {
                 ? chosenAccount?.balance * 2?.toFixed(2)
                 : (
                     mainAccount.assets[exchangeAccountType] *
-                    rates?.[
-                      exchangeAccountType === "platinium"
-                        ? "platinum"
-                        : exchangeAccountType
-                    ]?.usd
+                    rates?.[exchangeAccountType]?.usd
                   )?.toFixed(2)
             }`}
           />

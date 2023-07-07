@@ -526,8 +526,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   };
 
-  console.log(isAllowance, "isAllowance registration");
-
   return (
     <LandingSteps
       account={account}

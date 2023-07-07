@@ -354,12 +354,12 @@ const Dashboard = () => {
   };
 
   const cardImgs = {
-    cpl: "/img/dashboard/atar.png",
+    atar: "/img/dashboard/atar.png",
     btc: "/img/dashboard/btc.png",
     eth: "/img/dashboard/eth.png",
     usdt: "/img/dashboard/usdt.png",
     gold: "/img/dashboard/gold.png",
-    platinium: "/img/dashboard/platinium.png",
+    platinum: "/img/dashboard/platinum.png",
   };
 
   const handleSidebarOpen = (sideBar, accountType) => {

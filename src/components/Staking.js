@@ -369,8 +369,6 @@ const Staking = () => {
     }
   }, [isLoadMoreButtonOnScreen]);
 
-  console.log(isAllowance, "isAllowance stakingpage");
-
   return (
     <>
       <StakingUI
