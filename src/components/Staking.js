@@ -35,6 +35,7 @@ import {
 import axios from "../api/axios";
 import { useEffect } from "react";
 import { createRef } from "react";
+import { toast } from "react-toastify";
 
 const Staking = () => {
   const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false);
@@ -272,20 +273,15 @@ const Staking = () => {
       approve(
         () => {
           setStakingLoading(false);
-          setApproveResonse({
-            status: "success",
-            message: "Approved successfully, please stake desired amount.",
+          toast.success("Approved successfully, please stake desired amount.", {
+            autoClose: 8000,
           });
         },
         () => {
           setStakingLoading(false);
-          setApproveResonse({
-            status: "error",
-            message: "Approval failed, please try again.",
+          toast.error("Approval failed, please try again.", {
+            autoClose: 8000,
           });
-          setTimeout(() => {
-            setApproveResonse(null);
-          }, 3000);
         },
       );
     }
@@ -313,26 +309,20 @@ const Staking = () => {
             .catch((e) => {});
           setStakingLoading(false);
           refetchStakersRecord();
-          setApproveResonse({
-            status: "success",
-            message: "Staked successfully",
+          toast.success("Staked successfully.", {
+            autoClose: 8000,
           });
           handleDepositAmount("");
           handleTimePeriod(0);
           setTimeout(() => {
-            setApproveResonse(null);
             setCreateStakingPopUpActive(false);
           }, 3000);
         },
         () => {
           setStakingLoading(false);
-          setApproveResonse({
-            status: "error",
-            message: "Staking failed, please try again.",
+          toast.error("Staking failed, please try again.", {
+            autoClose: 8000,
           });
-          setTimeout(() => {
-            setApproveResonse(null);
-          }, 3000);
         },
       );
     }

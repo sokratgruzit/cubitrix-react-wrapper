@@ -43,6 +43,8 @@ import LandingRegistration from "./components/LandingRegistration";
 
 // import { useStake } from "@cubitrix/cubitrix-react-connect-module";
 import { useStake } from "./hooks/use-stake";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 window.Buffer = window.Buffer || Buffer;
 function App() {
@@ -400,6 +402,7 @@ function App() {
             setInitialRegister={setInitialRegister}
           />
         )}
+        <ToastContainer />
         <Routes>
           <Route
             path="/"
