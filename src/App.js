@@ -41,6 +41,9 @@ import WBNB from "./abi/WBNB.json";
 import Landing from "./components/Landing";
 import LandingRegistration from "./components/LandingRegistration";
 
+// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "./hooks/use-stake";
+
 window.Buffer = window.Buffer || Buffer;
 function App() {
   const sideBarOpen = useSelector((state) => state.appState?.sideBarOpen);
@@ -76,6 +79,22 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
+  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";
+  const { checkAllowance } = useStake({ Router, tokenAddress });
+
+  const { depositAmount } = useSelector((state) => state.stake);
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      checkAllowance();
+    }
+    // eslint-disable-next-line
+  }, [account, triedReconnect, active, depositAmount]);
+
+  const [step, setStep] = useState(5);
+  const [initialRegister, setInitialRegister] = useState(true);
+
   const updateState = () => {
     dispatch({
       type: "SET_USER_DATA",
@@ -104,6 +123,7 @@ function App() {
 
   useEffect(() => {
     if (account && triedReconnect && active) {
+      setInitialRegister(true);
       const fetchData = async () => {
         await axios
           .post("/api/accounts/login", {
@@ -171,7 +191,6 @@ function App() {
           )
           .then((res) => {
             if (res.data?.account) {
-              console.log(res.data?.account);
               dispatch({
                 type: "SET_SYSTEM_ACCOUNT_DATA",
                 payload: res.data.account,
@@ -287,11 +306,8 @@ function App() {
     },
   ];
 
-  const [step, setStep] = useState(5);
-  const [initialRegister, setInitialRegister] = useState(true);
   const navigate = useNavigate();
 
-  let tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
   const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 
@@ -314,6 +330,10 @@ function App() {
         library &&
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "false" },
+        });
         getBalance().then((balance) => {
           if (balance > 200) {
             setStep(4);
@@ -322,8 +342,11 @@ function App() {
           }
         });
       } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
-        // setStep(systemAcc?.step || 2);
       } else {
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "false" },
+        });
         setStep(2);
       }
     }
@@ -339,9 +362,6 @@ function App() {
 
     return balanceInEth;
   }
-
-  console.log(appState?.connectionError);
-
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
@@ -426,13 +446,14 @@ function App() {
           />
           <Route
             path="/staking"
-            element={
-              isExtensionsLoaded && activeExtensions.staking === "false" ? (
-                <Navigate to="/" />
-              ) : (
-                <Staking />
-              )
-            }
+            // element={
+            //   isExtensionsLoaded && activeExtensions.staking === "false" ? (
+            //     <Navigate to="/" />
+            //   ) : (
+            //     <Staking />
+            //   )
+            // }
+            element={<Staking />}
           />
           <Route
             path="/referral"

@@ -1,7 +1,12 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
+import {
+  useConnect,
+  //  useStake
+} from "@cubitrix/cubitrix-react-connect-module";
+
+import { useStake } from "../hooks/use-stake";
 import { injected, walletConnect } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -38,6 +43,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [receivePaymentAddress, setReceivePaymentAddress] = useState(
     "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
   );
+
+  const [tokenBalance, setTokenBalance] = useState(0);
 
   useEffect(() => {
     if (receivePaymentAddress) {
@@ -149,37 +156,36 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       loading: true,
     });
 
-    // axios
-    //   .post("api/referral/assign_refferal_to_user", {
-    //     referral,
-    //     address: account,
-    //   })
-    //   .then((res) => {
-    //     update_profile();
-    //   })
-    //   .catch((err) => {
-    //     let error = "Referral code could not be assigned";
-    //     if (err?.response?.data === "Referral code doesnot exist") {
-    //       error = "Referral code does not exist";
-    //     }
-    //     let errorsMessages = [
-    //       "User already activated both referral code",
-    //       "User already activated uni level referral code",
-    //       "User already activated binary level referral code",
-    //     ];
-    //     if (errorsMessages.includes(err?.response?.data)) {
-    //       update_profile();
-    //       return;
-    //     }
+    axios
+      .post("api/referral/register_referral", {
+        referral_address: referral,
+        user_address: account,
+        side: "auto",
+      })
+      .then((res) => {
+        update_profile();
+      })
+      .catch((err) => {
+        let error = "Referral code could not be assigned";
+        if (err?.response?.data === "Referral code doesnot exist") {
+          error = "Referral code does not exist";
+        }
+        let errorsMessages = [
+          "User already activated both referral code",
+          "User already activated uni level referral code",
+          "User already activated binary level referral code",
+        ];
+        if (errorsMessages.includes(err?.response?.data)) {
+          update_profile();
+          return;
+        }
 
-    //     setRegistrationState({
-    //       ...registrationState,
-    //       referralError: error,
-    //       loading: false,
-    //     });
-    //   });
-
-    update_profile();
+        setRegistrationState({
+          ...registrationState,
+          referralError: error,
+          loading: false,
+        });
+      });
 
     async function update_profile() {
       axios
@@ -199,7 +205,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (res?.data === "account updated") {
             getBalance().then((balance) => {
               let step = 3;
-              if (balance > 200) {
+              setTokenBalance(balance);
+              if (balance > 100) {
                 step = 4;
               }
 
@@ -336,95 +343,186 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     },
   ];
 
-  const [stakeButtonText, setStakeButtonText] = useState("Approve");
-
   useEffect(() => {
-    if (loading) {
-      setStakeButtonText("Loading...");
-    } else if (account && isAllowance) {
-      setStakeButtonText("Approve");
-    } else {
-      setStakeButtonText("Stake");
+    if (step !== 3) {
+      return;
     }
-  }, [account, isAllowance, loading]);
+
+    let timer;
+    let count = 0;
+
+    const myFunction = () => {
+      getBalance().then((balance) => {
+        setTokenBalance(balance);
+        if (balance > 100) {
+          clearInterval(timer);
+          axios
+            .post("/api/accounts/handle-step", { step: 4, address: account })
+            .then((e) => {
+              setStep(4);
+              setRegistrationState({
+                ...registrationState,
+                referralError: "something went wrong!",
+                loading: false,
+              });
+            })
+            .catch((e) => {
+              setRegistrationState({
+                ...registrationState,
+                referralError: "something went wrong!",
+                loading: false,
+              });
+            });
+        }
+      });
+
+      count++;
+
+      if (count >= 6) {
+        clearInterval(timer);
+      }
+    };
+
+    myFunction();
+
+    timer = setInterval(myFunction, 10000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [step]); // Add step as a dependency
+
+  const [stakingLoading, setStakingLoading] = useState(false);
+  const [approveResonse, setApproveResonse] = useState(null);
 
   const handleDepositSubmit = async () => {
-    if (depositAmount < 1 && currentObject?.amount === "0") {
+    setStakingLoading(true);
+
+    if (!depositAmount && !isAllowance) {
+      setApproveResonse({
+        status: "error",
+        message: "Please enter a valid amount",
+      });
+      setTimeout(() => {
+        setStakingLoading(false);
+        setApproveResonse(null);
+      }, 3000);
+      return;
     }
 
     if (account && isAllowance) {
-      approve(() => {});
+      approve(
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "success",
+            message: "Approved successfully, please stake desired amount.",
+          });
+        },
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "error",
+            message: "Approval failed, please try again.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 5000);
+        },
+      );
     }
     if (account && !isAllowance) {
-      stake(async () => {
-        setStep(5);
-        axios
-          .post("/api/accounts/handle-step", {
-            active: true,
-            address: account,
-            step: 5,
-          })
-          .then((res) => {
-            dispatch({
-              type: "UPDATE_ACTIVE_EXTENSIONS",
-              payload: { dashboard: "true" },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        axios
-          .post("/api/accounts/manage_extensions", {
-            address: account,
-            extensions: { staking: "true", referral: "true" },
-          })
-          .then((res) => {
-            if (res?.data?.account) {
+      stake(
+        async () => {
+          setStep(5);
+          axios
+            .post("/api/accounts/handle-step", {
+              active: true,
+              address: account,
+              step: 5,
+            })
+            .then((res) => {
               dispatch({
                 type: "UPDATE_ACTIVE_EXTENSIONS",
-                payload: res.data.account.extensions,
+                payload: { dashboard: "true" },
               });
-            }
-          })
-          .catch((e) => console.log(e.response));
-        axios
-          .post(
-            "/api/accounts/activate-account",
-            {
-              address: account,
-            },
-            {
-              timeout: 60000,
-            },
-          )
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-              setTimeout(() => {
-                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-                handleDepositAmount(0);
-              }, 3000);
-            }
-          })
-          .catch((e) => {});
-        axios
-          .post("/api/accounts/get_account_balances", {
-            address: account?.toLowerCase(),
-          })
-          .then((res) => {
-            dispatch({
-              type: "SET_ACCOUNTS_DATA",
-              payload: res?.data?.data,
+            })
+            .catch((err) => {
+              console.log(err);
             });
-          })
-          .catch((err) => {
-            console.error(err);
+          axios
+            .post("/api/accounts/manage_extensions", {
+              address: account,
+              extensions: { staking: "true", referral: "true" },
+            })
+            .then((res) => {
+              if (res?.data?.account) {
+                dispatch({
+                  type: "UPDATE_ACTIVE_EXTENSIONS",
+                  payload: res.data.account.extensions,
+                });
+              }
+            })
+            .catch((e) => console.log(e.response));
+          axios
+            .post(
+              "/api/accounts/activate-account",
+              {
+                address: account,
+              },
+              {
+                timeout: 60000,
+              },
+            )
+            .then((res) => {
+              if (res.data?.account) {
+                dispatch({
+                  type: "SET_SYSTEM_ACCOUNT_DATA",
+                  payload: res.data.account,
+                });
+                setTimeout(() => {
+                  setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+                  handleDepositAmount(0);
+                }, 3000);
+              }
+            })
+            .catch((e) => {});
+          axios
+            .post("/api/accounts/get_account_balances", {
+              address: account?.toLowerCase(),
+            })
+            .then((res) => {
+              dispatch({
+                type: "SET_ACCOUNTS_DATA",
+                payload: res?.data?.data,
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "success",
+            message: "Staked successfully",
           });
-        navigate("/dashboard");
-      });
+          handleDepositAmount("");
+          handleTimePeriod(0);
+          setTimeout(() => {
+            setApproveResonse(null);
+            navigate("/dashboard");
+          }, 3000);
+        },
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "error",
+            message: "Staking failed, please try again.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 3000);
+        },
+      );
     }
   };
 
@@ -463,10 +561,14 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       handleTimePeriod={handleTimePeriod}
       handleTimeperiodDate={handleTimeperiodDate}
       durationOptions={durationOptions}
-      buttonLabel={stakeButtonText}
+      buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
       handleSubmit={() => handleDepositSubmit()}
       inputs={inputs}
       currentObject={currentObject}
+      stakingLoading={stakingLoading}
+      approveResonse={approveResonse}
+      isAllowance={isAllowance}
+      tokenBalance={tokenBalance}
     />
   );
 };

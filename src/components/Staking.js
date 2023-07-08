@@ -13,10 +13,12 @@ import {
 
 // hooks
 import {
-  useStake,
+  // useStake,
   STAKE_INIT_STATE,
   useConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "../hooks/use-stake";
+
 import { useTableParameters } from "../hooks/useTableParameters";
 import { useMobileWidth } from "../hooks/useMobileWidth";
 import { useOnScreen } from "../hooks/useOnScreen";
@@ -38,7 +40,7 @@ const Staking = () => {
   const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false);
   const [approveResonse, setApproveResonse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [fetchCount, setFetchCount] = useState(10);
+  const [fetchCount, setFetchCount] = useState(0);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const { active, account } = useConnect();
   const hasMoreData = useSelector((state) => state.stake.hasMoreData);
@@ -76,7 +78,7 @@ const Staking = () => {
 
   useEffect(() => {
     if (account && triedReconnect && active) {
-      getStackerInfo(0, fetchCount)
+      getStackerInfo(0 + 5 * fetchCount, 10 + 5 * fetchCount)
         .then(() => {
           setIsFetching(false);
           setLoading(false);
@@ -87,6 +89,23 @@ const Staking = () => {
         });
     }
   }, [account, triedReconnect, active, fetchCount]);
+
+  async function refetchStakersRecord() {
+    try {
+      dispatch({
+        type: "UPDATE_STAKE_STATE",
+        payload: {
+          stakersRecord: [],
+        },
+      });
+      setLoading(true);
+      setIsFetching(false);
+      await getStackerInfo(0, 10 + 5 * fetchCount);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   useEffect(() => {
     if (account && triedReconnect && active) {
@@ -125,6 +144,8 @@ const Staking = () => {
     setCreateStakingPopUpActive(true);
   };
 
+  const [unstakeLoading, setUnstakeLoading] = useState(false);
+  const [harvestLoading, setHarvestLoading] = useState(false);
   const th = [
     {
       name: "Staked Amount",
@@ -154,7 +175,29 @@ const Staking = () => {
       id: 5,
       mobileWidth: 35,
       className: "table-button-none",
-      onClick: (index) => unstake(index),
+      onClick: (index) => {
+        setUnstakeLoading(true);
+        unstake(
+          index,
+          () => {
+            setUnstakeLoading(false);
+            axios
+              .post("api/transactions/unstake_transaction", {
+                address: account,
+                index,
+              })
+              .then((res) => {
+                refetchStakersRecord();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          },
+          () => {
+            setUnstakeLoading(false);
+          },
+        );
+      },
     },
     {
       name: "",
@@ -162,7 +205,19 @@ const Staking = () => {
       id: 6,
       mobileWidth: 20,
       className: "table-button-none",
-      onClick: (index) => harvest(index),
+      onClick: (index) => {
+        setHarvestLoading(true);
+        harvest(
+          index,
+          () => {
+            setHarvestLoading(false);
+            refetchStakersRecord();
+          },
+          () => {
+            setHarvestLoading(false);
+          },
+        );
+      },
     },
   ];
 
@@ -205,45 +260,81 @@ const Staking = () => {
     ],
   ];
 
+  const [stakingLoading, setStakingLoading] = useState(false);
   const handleCalculatorSubmit = async () => {
     setApproveResonse(null);
     if (!account) {
       handleConnect();
     }
 
+    setStakingLoading(true);
     if (account && isAllowance) {
-      approve(() => {
-        setApproveResonse({
-          status: "success",
-          message: "Approved successfully, please stake desired amount.",
-        });
-      });
+      approve(
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "success",
+            message: "Approved successfully, please stake desired amount.",
+          });
+        },
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "error",
+            message: "Approval failed, please try again.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 3000);
+        },
+      );
     }
     if (account && !isAllowance) {
-      stake(async () => {
-        await axios
-          .post(
-            "/api/accounts/activate-account",
-            {
-              address: account,
-            },
-            {
-              timeout: 60000,
-            },
-          )
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-            }
-          })
-          .catch((e) => {});
-        handleTimePeriod(0);
-        handleDepositAmount("");
-        setCreateStakingPopUpActive(false);
-      });
+      stake(
+        async () => {
+          await axios
+            .post(
+              "/api/accounts/activate-account",
+              {
+                address: account,
+              },
+              {
+                timeout: 60000,
+              },
+            )
+            .then((res) => {
+              if (res.data?.account) {
+                dispatch({
+                  type: "SET_SYSTEM_ACCOUNT_DATA",
+                  payload: res.data.account,
+                });
+              }
+            })
+            .catch((e) => {});
+          setStakingLoading(false);
+          refetchStakersRecord();
+          setApproveResonse({
+            status: "success",
+            message: "Staked successfully",
+          });
+          handleDepositAmount("");
+          handleTimePeriod(0);
+          setTimeout(() => {
+            setApproveResonse(null);
+            setCreateStakingPopUpActive(false);
+          }, 3000);
+        },
+        () => {
+          setStakingLoading(false);
+          setApproveResonse({
+            status: "error",
+            message: "Staking failed, please try again.",
+          });
+          setTimeout(() => {
+            setApproveResonse(null);
+          }, 3000);
+        },
+      );
     }
   };
 
@@ -253,8 +344,9 @@ const Staking = () => {
       <Button
         element={"referral-button"}
         label={"Create Staking"}
-        icon={<AddSquareIcon color={`#00C6FF`} />}
+        icon={<AddSquareIcon />}
         onClick={handlePopUpOpen}
+        customStyles={{ height: "44px", flexDirection: "row" }}
       />
     ),
   };
@@ -273,7 +365,7 @@ const Staking = () => {
   useEffect(() => {
     if (isLoadMoreButtonOnScreen) {
       setIsFetching(true);
-      setFetchCount((prevCount) => prevCount + 5);
+      setFetchCount((prevCount) => prevCount + 1);
     }
   }, [isLoadMoreButtonOnScreen]);
 
@@ -291,6 +383,8 @@ const Staking = () => {
         hasMoreData={hasMoreData}
         infiniteScrollRef={infiniteScrollRef}
         isFetching={isFetching}
+        unstakeLoading={unstakeLoading}
+        harvestLoading={harvestLoading}
       />
       {createStakingPopUpActive && (
         <Popup
@@ -309,6 +403,7 @@ const Staking = () => {
                 handleDepositAmount,
                 timeperiodDate,
                 handleTimeperiodDate,
+                stakingLoading,
               }}
               approveResonse={approveResonse}
             />
@@ -316,7 +411,6 @@ const Staking = () => {
           label={"Staking Calculator"}
           handlePopUpClose={handleClose}
           description={"Stake Complend to earn Complend reward"}
-          headerCustomStyles={{ background: "#272C57" }}
         />
       )}
     </>
