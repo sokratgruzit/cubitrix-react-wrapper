@@ -200,16 +200,18 @@ const Referral = () => {
       console.log(err);
     }
   };
-  //
-  // const getReferralTree = async () => {
-  //   try {
-  //     const { data } = await axios.get("/api/referral/get_referral_tree");
-  //
-  //     console.log(data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+
+  const getReferralTree = async () => {
+    try {
+      const { data } = await axios.post("/api/referral/get_referral_tree",{
+        address: "1",
+      });
+
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleCreateCodeSubmit = async () => {
     setCreateCodeError("");
@@ -252,8 +254,10 @@ const Referral = () => {
       generateTableData("rebates");
       getReferralTotal();
       generateCode();
+      getReferralTree();
     }
     getOptions();
+    getReferralTree();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, active, triedReconnect]);
 

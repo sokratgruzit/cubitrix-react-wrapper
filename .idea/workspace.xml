@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e2f8ef4d-a3e7-4950-a9be-d510410b884f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Referral.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Referral.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,7 +42,12 @@
       <updated>1688119271204</updated>
       <workItem from="1688119272991" duration="1377000" />
       <workItem from="1688209114587" duration="501000" />
-      <workItem from="1688371551162" duration="1830000" />
+      <workItem from="1688371551162" duration="4914000" />
+      <workItem from="1688458127570" duration="542000" />
+      <workItem from="1688471563794" duration="545000" />
+      <workItem from="1688490795908" duration="590000" />
+      <workItem from="1688548382432" duration="828000" />
+      <workItem from="1688635093234" duration="1696000" />
     </task>
     <servers />
   </component>
