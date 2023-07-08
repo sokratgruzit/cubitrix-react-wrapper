@@ -106,6 +106,7 @@ const SideBarRight = () => {
       setCurrentObject((prev) => ({
         ...prev,
         transferType: "internal",
+        account: "main",
       }));
     }
     // eslint-disable-next-line
@@ -702,9 +703,143 @@ const SideBarRight = () => {
         toast.error("Transaction failed.", { autoClose: 8000 });
       });
   };
-
+  const [withdrawSubmitLoading, setWithdrawSubmitLoading] = useState(false);
   const handleWithdrawSubmit = async () => {
-    setCurrentObject((prev) => ({ ...prev, clientId: "", amount: "0" }));
+    if (!account) {
+      toast.error("Please connect your wallet.", { autoClose: 8000 });
+      return;
+    }
+
+    if (!currentObject.address) {
+      toast.error("Please enter address.", { autoClose: 8000 });
+      return;
+    }
+
+    if (currentObject?.address?.length < 42) {
+      toast.error("Please enter a valid address.", { autoClose: 8000 });
+      return;
+    }
+
+    if (isNaN(currentObject.amount)) {
+      toast.error("Please enter a valid amount.", { autoClose: 8000 });
+      return;
+    }
+
+    if (Number(currentObject.amount) <= 0) {
+      toast.error("Incorrect amount", { autoClose: 8000 });
+      return;
+    }
+
+    setWithdrawSubmitLoading(true);
+    axios
+      .post("/api/transactions/make_withdrawal", {
+        address: account,
+        address_to: currentObject.address,
+        amount: currentObject.amount,
+        accountType: exchangeAccountType,
+        rate: rates[exchangeAccountType].usd,
+      })
+      .then((res) => {
+        toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
+        if (res.data?.result) {
+          generateAccountsData();
+          dispatch({
+            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+            payload: {},
+          });
+        }
+        setWithdrawSubmitLoading(false);
+      })
+      .catch((e) => {
+        let error;
+        if (e.response?.data?.message === "insufficient funds") {
+          error = "Insufficient balance";
+        }
+        toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+        setWithdrawSubmitLoading(false);
+      });
+
+    // const web3 = library;
+    // const fromAddress = account;
+
+    // const toAddress = userBalances?.find(
+    //   (item) => item?.account_category === "system",
+    // )?.address;
+
+    // const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
+
+    // const amount = web3.utils.toBN(
+    //   web3.utils.toWei(currentObject.amount.toString(), "ether"),
+    // );
+
+    // const gasPrice = await web3.eth.getGasPrice();
+
+    // const transferData = tokenContract.methods
+    //   .transfer(toAddress, amount.toString())
+    //   .encodeABI();
+
+    // const transactionObject = {
+    //   from: fromAddress,
+    //   to: tokenAddress,
+    //   data: transferData,
+    //   gasPrice,
+    // };
+
+    // web3.eth
+    //   .sendTransaction(transactionObject)
+    //   .then((receipt) => {
+    //     axios
+    //       .post("/api/transactions/make_withdrawal", {
+    //         address: account,
+    //         hash: receipt.transactionHash,
+    //         address_to: currentObject.address,
+    //         accountType: exchangeAccountType,
+    //       })
+    //       .then((res) => {
+    //         if (res?.data?.updatedAccount) {
+    //           dispatch({
+    //             type: "SET_SYSTEM_ACCOUNT_DATA",
+    //             payload: res.data.updatedAccount,
+    //           });
+    //           dispatch({
+    //             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+    //             payload: {},
+    //           });
+    //           toast.success("Amount deposited successfully.", { autoClose: 8000 });
+    //         }
+    //         setDepositLoading(false);
+    //       })
+    //       .catch((e) => {
+    //         console.log(e);
+    //         setDepositLoading(false);
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     setDepositLoading(false);
+    //     if (error.message.includes("User denied transaction signature")) {
+    //       toast.error("Transaction rejected.", { autoClose: 8000 });
+    //       return;
+    //     }
+    //     toast.error("Transaction failed.", { autoClose: 8000 });
+    //   });
+
+    // axios
+    //   .post("/api/transactions/make_withdrawal", {
+    //     address: account,
+    //     address_to: currentObject.address,
+    //     amount: currentObject.amount,
+    //   })
+    //   .then((res) => {
+    //     console.log(res);
+    //     setWithdrawSubmitLoading(false);
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //     toast.error("Withdrawal failed.", { autoClose: 8000 });
+    //     setWithdrawSubmitLoading(false);
+    //   });
+    // console.log(currentObject.amount, currentObject.address);
+    // setCurrentObject((prev) => ({ ...prev, clientId: "", amount: "0" }));
   };
 
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
@@ -1363,11 +1498,22 @@ const SideBarRight = () => {
             currentObject={currentObject}
             cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleWithdrawSubmit}
-            buttonLabel={"Continue"}
-            transferSubmitLoading={transferSubmitLoading}
-            accountType={"Atar"}
-            accountBalance={chosenAccount?.balance?.toFixed(2)}
-            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            buttonLabel={withdrawSubmitLoading ? "Loading..." : "Withdraw"}
+            withdrawSubmitLoading={withdrawSubmitLoading}
+            accountType={exchangeAccountType}
+            accountBalance={
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance?.toFixed(2)
+                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+            }
+            accountBalanceSecond={`$${
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance * 2?.toFixed(2)
+                : (
+                    mainAccount.assets[exchangeAccountType] *
+                    rates?.[exchangeAccountType]?.usd
+                  )?.toFixed(2)
+            }`}
           />
         )}
         {sideBar === "exchange" && (

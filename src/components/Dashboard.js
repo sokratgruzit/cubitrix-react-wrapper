@@ -369,6 +369,13 @@ const Dashboard = () => {
         payload: accountType,
       });
     }
+    console.log(sideBar, accountType);
+    if (sideBar === "withdraw" && accountType) {
+      dispatch({
+        type: "SET_EXCHANGE_ACCOUNT_TYPE",
+        payload: accountType,
+      });
+    }
     dispatch({
       type: "SET_SIDE_BAR",
       payload: { sideBarOpen: true, sideBar },
@@ -403,7 +410,7 @@ const Dashboard = () => {
       cardImgs={cardImgs}
       handleDeposit={() => handleSidebarOpen("deposit")}
       handleExchange={(a, b) => handleSidebarOpen("exchange", b)}
-      handleWithdraw={() => handleSidebarOpen("withdraw")}
+      handleWithdraw={(a, b) => handleSidebarOpen("withdraw", b)}
       handleTransfer={() => handleSidebarOpen("transfer")}
     />
   );
