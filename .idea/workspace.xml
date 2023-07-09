@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="97a1d861-c6f8-47e7-9af4-569f4e760c51" name="Changes" comment="">
+    <list default="true" id="e2f8ef4d-a3e7-4950-a9be-d510410b884f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Extensions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Extensions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LandingRegistration.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LandingRegistration.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Staking.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Staking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TopUp/TopUp.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TopUp/TopUp.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Transactions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Transactions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/appStateReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/appStateReducer.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,14 +30,15 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/App.js" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/components/Staking.js" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/package-lock.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/api/axios.js" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/components/Referral.js" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/package.json" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectId" id="2JrVgMBaKPXdiuliVqGFcCxd2mx" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectId" id="2Rv8c2WjzXsg0BVDoMZkx5njrRP" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -33,62 +47,29 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="97a1d861-c6f8-47e7-9af4-569f4e760c51" name="Changes" comment="" />
-      <created>1672836302669</created>
+      <changelist id="e2f8ef4d-a3e7-4950-a9be-d510410b884f" name="Changes" comment="" />
+      <created>1688119271204</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1672836302669</updated>
-      <workItem from="1672836304061" duration="674000" />
-      <workItem from="1676538879714" duration="3320000" />
-      <workItem from="1676623495314" duration="5119000" />
-      <workItem from="1676795879288" duration="2248000" />
-      <workItem from="1676881581525" duration="7184000" />
-      <workItem from="1676971165839" duration="8178000" />
-      <workItem from="1677062449499" duration="4415000" />
-      <workItem from="1677231035748" duration="599000" />
-      <workItem from="1677316962789" duration="599000" />
-      <workItem from="1677337766793" duration="220000" />
-      <workItem from="1678095031883" duration="1624000" />
-      <workItem from="1678464664901" duration="534000" />
-      <workItem from="1678704122143" duration="1490000" />
-      <workItem from="1678713751128" duration="324000" />
-      <workItem from="1678985480602" duration="609000" />
-      <workItem from="1679047567381" duration="896000" />
-      <workItem from="1679996430961" duration="60000" />
-      <workItem from="1680001809627" duration="713000" />
-      <workItem from="1680016324034" duration="570000" />
-      <workItem from="1680166746014" duration="33000" />
-      <workItem from="1680166800582" duration="1857000" />
-      <workItem from="1680177513609" duration="104000" />
-      <workItem from="1681138995377" duration="351000" />
-      <workItem from="1681150841545" duration="179000" />
-      <workItem from="1681907071801" duration="695000" />
-      <workItem from="1683711197317" duration="1895000" />
-      <workItem from="1683808534555" duration="963000" />
-      <workItem from="1688053136412" duration="1357000" />
-      <workItem from="1688117223055" duration="1366000" />
+      <updated>1688119271204</updated>
+      <workItem from="1688119272991" duration="1377000" />
+      <workItem from="1688209114587" duration="501000" />
+      <workItem from="1688371551162" duration="4914000" />
+      <workItem from="1688458127570" duration="542000" />
+      <workItem from="1688471563794" duration="545000" />
+      <workItem from="1688490795908" duration="590000" />
+      <workItem from="1688548382432" duration="828000" />
+      <workItem from="1688635093234" duration="14997000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
 </project>
