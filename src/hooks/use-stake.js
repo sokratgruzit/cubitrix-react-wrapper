@@ -1,19 +1,40 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import STACK_ABI from "../abi/stack.json";
 import WBNB from "../abi/WBNB.json";
 import moment from "moment";
 
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "./use-connect";
+// import { INIT_STATE } from "../reducers/stakeReducer";
 
-import { INIT_STATE } from "../store/stakeReducer";
+import { useWeb3React } from "@web3-react/core";
+
+const INIT_STATE = {
+  stackContractInfo: {
+    totalStakers: 0,
+    totalStakedToken: 0,
+  },
+  stakersInfo: {
+    totalStakedTokenUser: 0,
+    totalUnstakedTokenUser: 0,
+    totalClaimedRewardTokenUser: 0,
+    currentStaked: 0,
+    realtimeReward: 0,
+    stakeCount: 0,
+    alreadyExists: false,
+  },
+  depositAmount: "",
+  timeperiod: 0,
+  balance: 0,
+  stakersRecord: [],
+  isAllowance: false,
+  loading: false,
+  hasMoreData: false,
+  timeperiodDate: moment().add(30, "days").format("DD/MM/YYYY h:mm A"),
+};
 
 export const useStake = ({ Router, tokenAddress }) => {
-  const { library } = useConnect();
+  let { account, library } = useWeb3React();
   var web3Obj = library;
-
-  const { account } = useSelector((state) => state.connect);
 
   const { depositAmount, timeperiod } = useSelector((state) => state.stake);
 
@@ -28,12 +49,6 @@ export const useStake = ({ Router, tokenAddress }) => {
   };
 
   const checkAllowance = async () => {
-    dispatch({
-      type: "UPDATE_STAKE_STATE",
-      payload: {
-        loading: true,
-      },
-    });
     try {
       var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       var decimals = await tokenContract.methods.decimals().call();
@@ -47,51 +62,38 @@ export const useStake = ({ Router, tokenAddress }) => {
           balance: balanceInEth,
         },
       });
-      var allowance = await tokenContract.methods.allowance(account, Router).call();
+      var allowance =
+        (await tokenContract.methods.allowance(account, Router).call()) / pow;
 
-      if (allowance <= 2) {
+      const depositNumber = Number(depositAmount);
+      if (allowance < 1 || (depositNumber > 0 && allowance < depositNumber)) {
         dispatch({
           type: "UPDATE_STAKE_STATE",
           payload: {
             isAllowance: true,
           },
         });
+      } else if (allowance > 1e30) {
+        dispatch({
+          type: "UPDATE_STAKE_STATE",
+          payload: {
+            isAllowance: true,
+          },
+        });
+      } else {
+        dispatch({
+          type: "UPDATE_STAKE_STATE",
+          payload: {
+            isAllowance: false,
+          },
+        });
       }
-      if (depositAmount > 0) {
-        var amount = depositAmount * pow;
-        if (allowance < amount) {
-          dispatch({
-            type: "UPDATE_STAKE_STATE",
-            payload: {
-              isAllowance: true,
-            },
-          });
-        }
-      }
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          loading: false,
-        },
-      });
     } catch (err) {
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          loading: false,
-        },
-      });
+      console.log("isAlowance error", err);
     }
   };
 
-  const approve = async (callback) => {
-    console.log("goes to approve");
-    dispatch({
-      type: "UPDATE_STAKE_STATE",
-      payload: {
-        loading: true,
-      },
-    });
+  const approve = async (callback, errCallback) => {
     try {
       var contract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       var amountIn = 10 ** 69;
@@ -100,41 +102,26 @@ export const useStake = ({ Router, tokenAddress }) => {
         .approve(Router, amountIn.toString())
         .send({ from: account })
         .then(() => {
-          console.log(callback, "shiit this runs wtf");
-          // if (callback) callback();
+          if (callback) callback();
           dispatch({
             type: "UPDATE_STAKE_STATE",
             payload: {
               isAllowance: false,
-              loading: false,
             },
           });
         });
     } catch (err) {
-      console.log(err);
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          loading: false,
-        },
-      });
+      if (errCallback) errCallback(err);
       notify(true, err.message);
     }
   };
 
-  const stake = async (callback) => {
+  const stake = async (callback, errCallback) => {
     if (isNaN(parseFloat(depositAmount)) || parseFloat(depositAmount) <= 0) {
       notify(true, "Error! please enter amount");
       return;
     }
     await checkAllowance();
-    dispatch({
-      type: "UPDATE_STAKE_STATE",
-      payload: {
-        loading: true,
-      },
-    });
-
     try {
       var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
       const decimals = await tokenContract.methods.decimals().call();
@@ -153,7 +140,6 @@ export const useStake = ({ Router, tokenAddress }) => {
           dispatch({
             type: "UPDATE_STAKE_STATE",
             payload: {
-              loading: false,
               depositAmount: INIT_STATE.depositAmount,
               timeperiodDate: INIT_STATE.timeperiodDate,
               timeperiod: INIT_STATE.timeperiod,
@@ -163,97 +149,77 @@ export const useStake = ({ Router, tokenAddress }) => {
           notify(false, "Staking process complete.");
         });
     } catch (err) {
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          loading: false,
-        },
-      });
+      if (errCallback) errCallback(err);
       notify(true, err.message);
     }
   };
 
-  const unstake = async (index) => {
-    dispatch({
-      type: "UPDATE_STAKE_STATE",
-      payload: {
-        loading: true,
-      },
-    });
+  const unstake = async (index, callback, errCallback) => {
     try {
       var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
       await contract.methods
         .unstake(index.toString())
         .send({ from: account })
         .then((result) => {
+          if (callback) callback(index);
           getStackerInfo();
-          dispatch({
-            type: "UPDATE_STAKE_STATE",
-            payload: {
-              loading: false,
-            },
-          });
           notify(false, "successfully unstake");
         });
     } catch (err) {
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          loading: false,
-        },
-      });
+      if (errCallback) errCallback(err);
       notify(true, "unstake fail");
     }
   };
 
-  const harvest = async (index) => {
-    dispatch({
-      type: "UPDATE_STAKE_STATE",
-      payload: {
-        loading: true,
-      },
-    });
+  const harvest = async (index, callback, errCallback) => {
     try {
       var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
       await contract.methods
         .harvest(index.toString())
         .send({ from: account })
         .then((err) => {
+          if (callback) callback(index);
           getStackerInfo();
-          dispatch({
-            type: "UPDATE_STAKE_STATE",
-            payload: {
-              loading: false,
-            },
-          });
           checkAllowance();
           notify(false, "Reward successfully harvested");
         });
     } catch (err) {
-      console.log(err);
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          loading: false,
-        },
-      });
+      if (errCallback) errCallback(err);
       notify(true, err.message);
     }
   };
 
-  const getStackerInfo = async () => {
+  const getStackerInfo = async (startIndex, count) => {
     dispatch({
       type: "UPDATE_STAKE_STATE",
       payload: {
         loading: true,
       },
     });
+
     try {
-      var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
-      var decimals = await tokenContract.methods.decimals().call();
-      var getBalance = await tokenContract.methods.balanceOf(account.toString()).call();
-      var pow = 10 ** decimals;
-      var balanceInEth = getBalance / pow;
+      const tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
+      const contract = new web3Obj.eth.Contract(STACK_ABI, Router);
+
+      let [
+        decimals,
+        getBalance,
+        totalStakedToken,
+        totalStakers,
+        realtimeReward,
+        Stakers,
+      ] = await Promise.all([
+        tokenContract.methods.decimals().call(),
+        tokenContract.methods.balanceOf(account.toString()).call(),
+        contract.methods.totalStakedToken.call().call(),
+        contract.methods.totalStakers.call().call(),
+        contract.methods.realtimeReward(account).call(),
+        contract.methods.Stakers(account).call(),
+      ]);
+
+      const pow = 10 ** decimals;
+      const balanceInEth = getBalance / pow;
+
       dispatch({
         type: "UPDATE_STAKE_STATE",
         payload: {
@@ -261,15 +227,9 @@ export const useStake = ({ Router, tokenAddress }) => {
         },
       });
 
-      var contract = new web3Obj.eth.Contract(STACK_ABI, Router);
-      var totalStakedToken = await contract.methods.totalStakedToken.call().call();
-      var totalStakers = await contract.methods.totalStakers.call().call();
-      var realtimeReward = await contract.methods.realtimeReward(account).call();
-      var Stakers = await contract.methods.Stakers(account).call();
-
-      var totalStakedTokenUser = Stakers.totalStakedTokenUser / pow;
-      var totalUnstakedTokenUser = Stakers.totalUnstakedTokenUser / pow;
-      var currentStaked = totalStakedTokenUser - totalUnstakedTokenUser;
+      let totalStakedTokenUser = Stakers.totalStakedTokenUser / pow;
+      let totalUnstakedTokenUser = Stakers.totalUnstakedTokenUser / pow;
+      let currentStaked = totalStakedTokenUser - totalUnstakedTokenUser;
       totalStakedToken = totalStakedToken / pow;
 
       Stakers.totalStakedTokenUser = totalStakedTokenUser;
@@ -277,16 +237,25 @@ export const useStake = ({ Router, tokenAddress }) => {
       Stakers.currentStaked = currentStaked;
       Stakers.realtimeReward = realtimeReward / pow;
       Stakers.totalClaimedRewardTokenUser = Stakers.totalClaimedRewardTokenUser / pow;
-      var stakersRecord = [];
-      for (var i = 0; i < parseInt(Stakers.stakeCount); i++) {
-        var stakersRecordData = await contract.methods.stakersRecord(account, i).call();
 
-        var realtimeRewardPerBlock = await contract.methods
-          .realtimeRewardPerBlock(account, i.toString())
-          .call();
+      const stakersRecord = [];
+      const endIndex = Math.min(startIndex + count, parseInt(Stakers.stakeCount));
+
+      const recordsPromises = [];
+      for (let i = startIndex; i < endIndex; i++) {
+        recordsPromises.push(contract.methods.stakersRecord(account, i).call());
+        recordsPromises.push(
+          contract.methods.realtimeRewardPerBlock(account, i.toString()).call(),
+        );
+      }
+
+      const recordsResults = await Promise.all(recordsPromises);
+
+      for (let i = 0; i < recordsResults.length; i += 2) {
+        let stakersRecordData = recordsResults[i];
+        let realtimeRewardPerBlock = recordsResults[i + 1];
 
         stakersRecordData.realtimeRewardPerBlock = realtimeRewardPerBlock[0] / pow;
-
         stakersRecordData.unstaketime = moment
           .unix(stakersRecordData.unstaketime)
           .format("DD/MM/YYYY h:mm A");
@@ -295,21 +264,29 @@ export const useStake = ({ Router, tokenAddress }) => {
           .format("DD/MM/YYYY h:mm A");
         stakersRecord.push(stakersRecordData);
       }
+
+      const hasMoreData = endIndex < parseInt(Stakers.stakeCount);
+
       dispatch({
         type: "UPDATE_STAKE_STATE",
         payload: {
           stakersInfo: Stakers,
-          stakersRecord,
           stackContractInfo: {
             totalStakers,
             totalStakedToken,
           },
+          hasMoreData,
           loading: false,
         },
       });
+      dispatch({
+        type: "UPDATE_STAKERS_RECORD",
+        payload: {
+          stakersRecord,
+        },
+      });
     } catch (err) {
-      // console.log(err);
-
+      // Handle error
       dispatch({
         type: "UPDATE_STAKE_STATE",
         payload: {
@@ -331,6 +308,8 @@ export const useStake = ({ Router, tokenAddress }) => {
           balance: 0,
         },
       });
+
+      console.error(err);
     }
   };
 
@@ -340,7 +319,6 @@ export const useStake = ({ Router, tokenAddress }) => {
     var getBalance = await tokenContract.methods.balanceOf(account.toString()).call();
     var pow = 10 ** decimals;
     var balanceInEth = getBalance / pow;
-
     dispatch({
       type: "UPDATE_STAKE_STATE",
       payload: {
@@ -373,21 +351,6 @@ export const useStake = ({ Router, tokenAddress }) => {
       },
     });
   };
-
-  useEffect(() => {
-    if (account) {
-      checkAllowance();
-      getStackerInfo();
-    } else {
-      dispatch({
-        type: "UPDATE_STAKE_STATE",
-        payload: {
-          ...INIT_STATE,
-        },
-      });
-    }
-    // eslint-disable-next-line
-  }, [account, depositAmount]);
 
   const values = useMemo(
     () => ({

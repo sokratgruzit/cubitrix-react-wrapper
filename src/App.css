@@ -23,3 +23,21 @@ a {
 .sideOpen .header {
   border-right: 2px solid #070b1a;
 }
+
+.cover-most-bg {
+  z-index: 1002 !important;
+}
+
+.Toastify__toast {
+  background: #152c2f !important;
+  border: 1px solid #115650 !important;
+  border-radius: 15px !important;
+}
+
+.Toastify__toast--error svg {
+  fill: #ff0c46;
+}
+
+.Toastify__progress-bar--error {
+  background-color: #ff0c46 !important;
+}

@@ -5,6 +5,12 @@ const INIT_STATE = {
   triedReconnect: false,
   isExtensionsLoaded: false,
   coinbaseLoading: false,
+  connectionError: "",
+  accountsData: [],
+  dashboardTransactionsDataReload: {},
+  dashboardAccountType: "main",
+  exchangeAccountType: "",
+  feeWarnAccountType: "",
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -25,7 +31,15 @@ const appStateReducer = (state = INIT_STATE, action) => {
     case "SET_SYSTEM_ACCOUNT_DATA":
       return {
         ...state,
-        userData: { ...state?.userData, system: [action.payload] },
+        userData: {
+          ...state?.userData,
+          ...action.payload,
+        },
+        accountsData: state.accountsData.map((account) =>
+          account.account_category === "main"
+            ? { ...account, balance: action.payload.balance }
+            : account,
+        ),
       };
 
     case "UPDATE_ACTIVE_EXTENSIONS":
@@ -55,6 +69,37 @@ const appStateReducer = (state = INIT_STATE, action) => {
         coinbaseLoading: action.payload.value,
       };
 
+    case "CONNECTION_ERROR":
+      return {
+        ...state,
+        connectionError: action.payload,
+      };
+
+    case "SET_ACCOUNTS_DATA":
+      return {
+        ...state,
+        accountsData: action.payload,
+      };
+    case "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD":
+      return {
+        ...state,
+        dashboardTransactionsDataReload: { ...action.payload },
+      };
+    case "SET_DASHBOARD_ACCOUNT_TYPE":
+      return {
+        ...state,
+        dashboardAccountType: action.payload,
+      };
+    case "SET_EXCHANGE_ACCOUNT_TYPE":
+      return {
+        ...state,
+        exchangeAccountType: action.payload,
+      };
+    case "SET_FEE_WARN_TYPE":
+      return {
+        ...state,
+        feeWarnAccountType: action.payload,
+      };
     default:
       return state;
   }

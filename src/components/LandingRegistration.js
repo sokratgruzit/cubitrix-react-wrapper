@@ -1,10 +1,12 @@
 import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-// import { useConnect, useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "../hooks/use-connect";
-// don't forget
+import {
+  useConnect,
+  //  useStake
+} from "@cubitrix/cubitrix-react-connect-module";
+
+import { useStake } from "../hooks/use-stake";
 import { injected, walletConnect } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -16,14 +18,15 @@ import axios from "../api/axios";
 import QRCode from "qrcode";
 import WBNB from "../abi/WBNB.json";
 
+import { toast } from "react-toastify";
+
 const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
-  const account = useSelector((state) => state.connect.account);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { connect, disconnect, error, setError, connectionLoading, library } =
+  const { account, connect, disconnect, connectionLoading, library, active } =
     useConnect();
 
   // const [loading, setLoading] = useState(true);
@@ -34,6 +37,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [receivePaymentAddress, setReceivePaymentAddress] = useState(
     "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
   );
+
+  const [tokenBalance, setTokenBalance] = useState(0);
 
   useEffect(() => {
     if (receivePaymentAddress) {
@@ -104,6 +109,18 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     emailSent: false,
   });
 
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      setRegistrationState({
+        loading: false,
+        fullnameError: "",
+        emailError: "",
+        referralError: "",
+        emailSent: false,
+      });
+    }
+  }, [account, triedReconnect, active]);
+
   async function handleRegistration({ fullName, email, referral }) {
     const errors = {};
     if (!fullName) {
@@ -134,9 +151,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     });
 
     axios
-      .post("api/referral/assign_refferal_to_user", {
-        referral,
-        address: account,
+      .post("api/referral/register_referral", {
+        referral_address: referral,
+        user_address: account,
+        side: "auto",
       })
       .then((res) => {
         update_profile();
@@ -158,9 +176,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
         setRegistrationState({
           ...registrationState,
-          referralError: error,
           loading: false,
         });
+        toast.error(error, { autoClose: 8000 });
       });
 
     async function update_profile() {
@@ -181,10 +199,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (res?.data === "account updated") {
             getBalance().then((balance) => {
               let step = 3;
+              setTokenBalance(balance);
               if (balance > 100) {
                 step = 4;
               }
-              // don't forget
 
               axios
                 .post("/api/accounts/handle-step", { step, address: account })
@@ -192,16 +210,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                   setStep(e?.data?.account?.step ?? 3);
                   setRegistrationState({
                     ...registrationState,
-                    referralError: "something went wrong!",
                     loading: false,
                   });
                 })
                 .catch((e) => {
                   setRegistrationState({
                     ...registrationState,
-                    referralError: "something went wrong!",
                     loading: false,
                   });
+                  toast.error("Something went wrong!", { autoClose: 8000 });
                 });
             });
           }
@@ -210,17 +227,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (err?.response?.data === "email already exists & is verified") {
             setRegistrationState((prev) => ({
               ...prev,
-              emailError: "Email is already in use.",
               loading: false,
             }));
+            toast.error("Email is already in use.", { autoClose: 8000 });
           }
-
-          setTimeout(() => {
-            setRegistrationState({
-              ...registrationState,
-              emailError: "",
-            });
-          }, 3000);
         });
     }
   }
@@ -235,32 +245,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
     return balanceInEth;
   }
-
-  const metaAcc = appState?.userData?.meta;
-  // useEffect(() => {
-  //   if (account && triedReconnect) {
-  //     if (metaAcc && metaAcc.email && metaAcc.name) {
-  //       setStep(3);
-  //     } else {
-  //       setStep(2);
-  //     }
-  //   } else if (!account || !triedReconnect) {
-  //     setStep(1);
-  //   }
-  // }, [account, triedReconnect, appState?.userData?.meta]);
-
-  // useEffect(() => {
-  //   if (account) {
-  //     if (metaAcc?.email) {
-  //       setStep(3);
-  //       return;
-  //     }
-  //     setStep(2);
-  //   } else {
-  //     setStep(1);
-  //     // setInitialRegister(false);
-  //   }
-  // }, [account]);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -291,7 +275,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       });
   }
 
+  const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
+    setCoinbaseLoading(true);
     axios
       .post("api/transactions/coinbase_deposit_transaction", {
         from: account,
@@ -299,9 +285,12 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       })
       .then((res) => {
         setHostedUrl(res?.data?.responseData?.hosted_url);
+        setCoinbaseLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        toast.error("Something went wrong!", { autoClose: 8000 });
+        setCoinbaseLoading(false);
       });
   }
 
@@ -325,7 +314,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       tokenAddress,
     });
 
-  const { depositAmount, timeperiod, isAllowance, timeperiodDate, loading } = useSelector(
+  const { depositAmount, timeperiod, isAllowance, timeperiodDate } = useSelector(
     (state) => state.stake,
   );
 
@@ -345,77 +334,168 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     },
   ];
 
-  const [stakeButtonText, setStakeButtonText] = useState("Approve");
-
   useEffect(() => {
-    if (loading) {
-      setStakeButtonText("Loading...");
-    } else if (account && isAllowance) {
-      setStakeButtonText("Approve");
-    } else {
-      setStakeButtonText("Stake");
+    if (step !== 3) {
+      return;
     }
-  }, [account, isAllowance, loading]);
+
+    let timer;
+    let count = 0;
+
+    const myFunction = () => {
+      getBalance().then((balance) => {
+        setTokenBalance(balance);
+        if (balance > 100) {
+          clearInterval(timer);
+          axios
+            .post("/api/accounts/handle-step", { step: 4, address: account })
+            .then((e) => {
+              setStep(4);
+              setRegistrationState({
+                ...registrationState,
+                loading: false,
+              });
+            })
+            .catch((e) => {
+              setRegistrationState({
+                ...registrationState,
+                loading: false,
+              });
+              toast.error("Something went wrong!", { autoClose: 8000 });
+            });
+        }
+      });
+
+      count++;
+
+      if (count >= 6) {
+        clearInterval(timer);
+      }
+    };
+
+    myFunction();
+
+    timer = setInterval(myFunction, 10000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [step]); // Add step as a dependency
+
+  const [stakingLoading, setStakingLoading] = useState(false);
+  const [approveResonse, setApproveResonse] = useState(null);
 
   const handleDepositSubmit = async () => {
-    if (depositAmount < 1 && currentObject?.amount === "0") {
+    setStakingLoading(true);
+
+    if (!depositAmount && !isAllowance) {
+      setApproveResonse({
+        status: "error",
+        message: "Please enter a valid amount",
+      });
+      setTimeout(() => {
+        setStakingLoading(false);
+        setApproveResonse(null);
+      }, 3000);
+      return;
     }
 
     if (account && isAllowance) {
-      approve(() => {});
+      approve(
+        () => {
+          setStakingLoading(false);
+          toast.success("Approved successfully, please stake desired amount.", {
+            autoClose: 8000,
+          });
+        },
+        () => {
+          setStakingLoading(false);
+          toast.error("Approval failed, please try again.", { autoClose: 8000 });
+        },
+      );
     }
     if (account && !isAllowance) {
-      stake(async () => {
-        setStep(5);
-        axios
-          .post("/api/accounts/handle-step", {
-            registered: true,
-            address: account,
-            step: 5,
-          })
-          .then((res) => {
-            dispatch({
-              type: "UPDATE_ACTIVE_EXTENSIONS",
-              payload: { dashboard: "true" },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        navigate("/dashboard");
-        axios
-          .post("/api/accounts/manage_extensions", {
-            address: account,
-            extensions: { staking: "true", referral: "true" },
-          })
-          .then((res) => {
-            if (res?.data?.account) {
-              console.log("res", res?.data);
+      stake(
+        async () => {
+          setStep(5);
+          axios
+            .post("/api/accounts/handle-step", {
+              active: true,
+              address: account,
+              step: 5,
+            })
+            .then((res) => {
               dispatch({
                 type: "UPDATE_ACTIVE_EXTENSIONS",
-                payload: res.data.account.extensions,
+                payload: { dashboard: "true" },
               });
-            }
-          })
-          .catch((e) => console.log(e.response));
-        await axios
-          .post("/api/accounts/activate-account", {
-            address: account,
-          })
-          .then((res) => {
-            if (res.data?.account) {
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          axios
+            .post("/api/accounts/manage_extensions", {
+              address: account,
+              extensions: { staking: "true", referral: "true" },
+            })
+            .then((res) => {
+              if (res?.data?.account) {
+                dispatch({
+                  type: "UPDATE_ACTIVE_EXTENSIONS",
+                  payload: res.data.account.extensions,
+                });
+              }
+            })
+            .catch((e) => console.log(e.response));
+          axios
+            .post(
+              "/api/accounts/activate-account",
+              {
+                address: account,
+              },
+              {
+                timeout: 60000,
+              },
+            )
+            .then((res) => {
+              if (res.data?.account) {
+                dispatch({
+                  type: "SET_SYSTEM_ACCOUNT_DATA",
+                  payload: res.data.account,
+                });
+                setTimeout(() => {
+                  setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+                  handleDepositAmount(0);
+                }, 3000);
+              }
+            })
+            .catch((e) => {});
+          axios
+            .post("/api/accounts/get_account_balances", {
+              address: account?.toLowerCase(),
+            })
+            .then((res) => {
               dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
+                type: "SET_ACCOUNTS_DATA",
+                payload: res?.data?.data,
               });
-              setTimeout(() => {
-                setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-                handleDepositAmount(0);
-              }, 3000);
-            }
-          })
-          .catch((e) => {});
-      });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+          setStakingLoading(false);
+          toast.success("Staked successfully", { autoClose: 8000 });
+          handleDepositAmount("");
+          handleTimePeriod(0);
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 3000);
+        },
+        () => {
+          setStakingLoading(false);
+          toast.error("Staking failed, please try again.", { autoClose: 8000 });
+        },
+      );
     }
   };
 
@@ -454,10 +534,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       handleTimePeriod={handleTimePeriod}
       handleTimeperiodDate={handleTimeperiodDate}
       durationOptions={durationOptions}
-      buttonLabel={stakeButtonText}
+      buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
       handleSubmit={() => handleDepositSubmit()}
       inputs={inputs}
       currentObject={currentObject}
+      stakingLoading={stakingLoading}
+      approveResonse={approveResonse}
+      isAllowance={isAllowance}
+      tokenBalance={tokenBalance}
+      depositAmount={depositAmount}
+      coinbaseLoading={coinbaseLoading}
     />
   );
 };

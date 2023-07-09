@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Transactions as TransactionsUI } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector } from "react-redux";
 
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+
 import { useMobileWidth } from "../hooks/useMobileWidth";
 import { NoHistoryIcon } from "../assets/svg";
 
@@ -21,8 +23,9 @@ const Transactions = () => {
   const [transactionsPaginationTotal, setTransactionsPaginationTotal] =
     useState(1);
   const [transactionsCurrentPage, setTransactionsCurrentPage] = useState(1);
-  const account = useSelector((state) => state.connect.account);
 
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const { account, active } = useConnect();
   const { width } = useMobileWidth();
 
   const generateTransactionsData = async () => {
@@ -40,12 +43,12 @@ const Transactions = () => {
       }
 
       const requestBody = {
-        address: "0xe72c1054c1900fc6c266fec9bedc178e72793a35",
+        address: account?.toLowerCase(),
         limit: 5,
         page: transactionsCurrentPage,
         ...filterObject,
         account:
-          filterObject?.account === "main" ? "system" : filterObject?.account,
+          filterObject?.account === "main" ? "main" : filterObject?.account,
         time:
           time instanceof Date
             ? `${year}-${(month + 1).toString().padStart(2, "0")}-${day
@@ -58,7 +61,7 @@ const Transactions = () => {
 
       const data = response.data;
 
-      const amountsToFrom = data?.amounts_to_from || {};
+      const amountsToFrom = data?.amounts_to_from?.[0] || {};
       setTransactionsPaginationTotal(data?.total_pages);
       setTransactionsData(data);
       setTotalTransactions({
@@ -73,13 +76,18 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    generateTransactionsData();
+    if (account && active && triedReconnect) {
+      generateTransactionsData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     filterObject?.type,
     filterObject?.time,
     filterObject?.account,
     transactionsCurrentPage,
     account,
+    active,
+    triedReconnect,
   ]);
 
   const transactionHeader = [
@@ -172,6 +180,8 @@ const Transactions = () => {
     },
   ];
 
+  console.log(filterObject);
+
   const inputs = [
     {
       title: "Choose Account",
@@ -181,7 +191,7 @@ const Transactions = () => {
         { name: "All", value: "all" },
         { name: "Main", value: "main" },
         { name: "Trade", value: "trade" },
-        { name: "Loan", value: "loan" },
+        // { name: "Loan", value: "loan" },
       ],
       defaultAny: "Any Account",
       onChange: (e) =>
@@ -196,9 +206,10 @@ const Transactions = () => {
       type: "lable-input-select",
       options: [
         { name: "All", value: "all" },
+        { name: "Payment", value: "payment" },
         { name: "Deposit", value: "deposit" },
         { name: "Transfer", value: "transfer" },
-        { name: "Internal Transaction", value: "internal_transaction" },
+        { name: "Internal Transfer", value: "internal_transfer" },
         { name: "Withdrawal", value: "withdrawal" },
         { name: "Referral Bonus", value: "referral_bonus" },
       ],
@@ -229,7 +240,14 @@ const Transactions = () => {
   return (
     <TransactionsUI
       header={"Transactions"}
-      description={`Total number of operations: ${totalTransactions?.total_transaction}`}
+      description={
+        <p className="font-14">
+          Total number of operations:{" "}
+          <span className="dashboard-transactions-span">
+            {totalTransactions?.total_transaction}
+          </span>
+        </p>
+      }
       rightPanelData={rightPanelData}
       footer={footer}
       tableHead={transactionHeader}

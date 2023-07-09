@@ -71,28 +71,27 @@ const TopUp = () => {
       });
   }
 
+  const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
+    setCoinbaseLoading(true);
     axios
       .post("api/transactions/coinbase_deposit_transaction", {
         from: account,
         amount,
       })
       .then((res) => {
+        setCoinbaseLoading(false);
         setHostedUrl(res?.data?.responseData?.hosted_url);
       })
       .catch((err) => {
+        setCoinbaseLoading(false);
         console.error(err);
       });
   }
 
   async function handlePurchase(method, tokenAmount) {
-    console.log(method, tokenAmount);
     if (method === "Coinbase") {
-      console.log("her");
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: true, sideBar: "Notify" },
-      });
+      handleCoindbasePayment(tokenAmount);
     }
   }
   return (
@@ -101,8 +100,7 @@ const TopUp = () => {
         display: "flex",
         gap: "30px",
         height: "calc(100vh)",
-      }}
-    >
+      }}>
       <TopUpDashboard
         receivePaymentAddress={receivePaymentAddress}
         methods={methods}
@@ -111,6 +109,7 @@ const TopUp = () => {
         handlePurchaseEvent={handlePurchase}
         exchangeRate={2}
         tranasctionFee={1}
+        coinbaseLoading={coinbaseLoading}
       />
     </div>
   );

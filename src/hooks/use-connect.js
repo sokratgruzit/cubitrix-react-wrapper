@@ -1,117 +1,158 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useWeb3React } from "@web3-react/core";
 
-export const useConnect = (props) => {
-  let { activate, account, library, deactivate, chainId } = useWeb3React();
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
-  const [connectionLoading, setConnectionLoading] = useState(false); // Should disable connect button while connecting to MetaMask
-  const [error, setError] = useState("");
-  const [tried, setTried] = useState(false);
+export const useConnect = (props) => {
+  let { activate, account, library, deactivate, chainId, active, error, connector } =
+    useWeb3React();
+
+  const [connectionLoading, setConnectionLoading] = useState(false);
 
   const dispatch = useDispatch();
   const isConnected = useSelector((state) => state.connect.isConnected);
   const providerType = useSelector((state) => state.connect.providerType);
 
-  // function for metamask eagerly connect. needs access to injected
-  const MetaMaskEagerlyConnect = (injected, callback) => {
+  async function MetaMaskEagerlyConnect(injected, callback) {
     if (providerType === "metaMask") {
-      injected
-        .isAuthorized()
-        .then((isAuthorized) => {
-          if (isAuthorized && isConnected) {
-            connect(providerType, injected);
-          } else {
-            dispatch({
-              type: "UPDATE_STATE",
-              account: "",
-              isConnected: false,
-            });
-          }
-        })
-        .finally(() => {
-          if (callback) {
-            callback();
-          }
+      try {
+        injected
+          .isAuthorized()
+          .then((isAuthorized) => {
+            if (isAuthorized && isConnected) {
+              connect(providerType, injected);
+            } else {
+              dispatch({
+                type: "UPDATE_STATE",
+                account: "",
+                isConnected: false,
+                providerType: "",
+              });
+              dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+            }
+          })
+          .finally(() => {
+            if (callback) {
+              callback();
+            }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  async function WalletConnectEagerly(walletConnect, callback) {
+    if (providerType === "walletConnect") {
+      try {
+        if (isConnected) {
+          setTimeout(() => {
+            connect(providerType, walletConnect);
+          }, 0);
+        } else {
+          dispatch({
+            type: "UPDATE_STATE",
+            account: "",
+            isConnected: false,
+            providerType: "",
+          });
+          dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  const switchToBscTestnet = async () => {
+    try {
+      if (window.ethereum) {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61", // ChainID for the Binance Smart Chain Testnet
+              chainName: "BSC Testnet",
+              nativeCurrency: {
+                name: "BNB",
+                symbol: "bnb",
+                decimals: 18,
+              },
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+              blockExplorerUrls: ["https://testnet.bscscan.com"],
+            },
+          ],
         });
+        dispatch({
+          type: "CONNECTION_ERROR",
+          payload: "",
+        });
+      } else {
+        console.log("Can't setup the BSC Testnet on BSC network");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  // try eagerly connect after refresh for wallet connect
-  useEffect(() => {
-    if (providerType === "walletConnect") {
-      if (isConnected) {
-        // brute force solution
-        setTimeout(() => {
-          connect(providerType);
-        }, 0);
-      } else {
-        dispatch({
-          type: "UPDATE_STATE",
-          account: "",
-          isConnected: false,
-        });
-      }
-    }
-    // eslint-disable-next-line
-  }, []);
-
-  // mirror account data values in redux
-  useEffect(() => {
-    dispatch({
-      type: "UPDATE_STATE",
-      account: account ? account : "",
-      chainId: chainId ? chainId : "",
-    });
-  }, [account, chainId, dispatch]);
-
-  //handle wallet connect eagerly popup
-  const firstUpdate = useRef(true);
-  useEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
+  const connect = async (providerType, injected) => {
+    if (typeof window.ethereum === "undefined" && providerType === "metaMask") {
+      dispatch({
+        type: "CONNECTION_ERROR",
+        payload: "No MetaMask detected",
+      });
       return;
     }
-    if (tried && !account) {
-      dispatch({
-        type: "UPDATE_STATE",
-        account: "",
-        isConnected: false,
-      });
+    if (providerType === "metaMask") {
+      setConnectionLoading(true);
     }
-    // eslint-disable-next-line
-  }, [tried, account]);
 
-  // Connect to wallet
-  const connect = async (providerType, injected) => {
-    setConnectionLoading(true);
-    if (typeof window.ethereum === "undefined" && providerType === "metaMask") {
-      return setError("no metamask");
+    if (active) {
+      await disconnect();
     }
+
     try {
-      await activate(injected, undefined, true)
+      new Promise((resolve, reject) => {
+        activate(injected, undefined, true).then(resolve).catch(reject);
+      })
         .then(() => {
           dispatch({
             type: "UPDATE_STATE",
             isConnected: true,
             providerType,
           });
-          setTried(true);
+          console.log("connect success");
         })
         .catch((e) => {
+          console.log(e, "connect failed");
           dispatch({ type: "UPDATE_STATE", account: "", isConnected: false });
-          if (e.toString().startsWith("UnsupportedChainIdError"))
-            setError("Please switch your network in wallet");
+          if (e.toString().startsWith("UnsupportedChainIdError")) {
+            dispatch({
+              type: "CONNECTION_ERROR",
+              payload: "Please switch your network in wallet",
+            });
+            if (injected instanceof WalletConnectConnector) {
+              injected.walletConnectProvider = undefined;
+            }
+          }
+        })
+        .finally(() => {
+          setTimeout(() => {
+            dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+          }, 500);
+          setConnectionLoading(false);
         });
-
-      setConnectionLoading(false);
     } catch (error) {
       console.log("Error on connecting: ", error);
     }
   };
 
-  const disconnect = async () => {
+  async function disconnect() {
     try {
+      if (library && library.provider && library.provider.close) {
+        await library.provider.close();
+      }
       deactivate();
       dispatch({
         type: "UPDATE_STATE",
@@ -119,25 +160,25 @@ export const useConnect = (props) => {
         providerType: "",
       });
     } catch (error) {
-      console.log("Error on disconnnect: ", error);
+      console.log("Error on disconnect: ", error);
     }
-  };
+  }
 
   const values = useMemo(
     () => ({
       account,
+      active,
       connect,
       disconnect,
       library,
       connectionLoading,
-      providerType,
       chainId,
-      error,
-      setError,
       MetaMaskEagerlyConnect,
+      WalletConnectEagerly,
+      switchToBscTestnet,
     }),
-    // eslint-disable-next-line
-    [account, connectionLoading, providerType, chainId, error, setError],
+    [account, active, connectionLoading, chainId, library],
   );
+
   return values;
 };

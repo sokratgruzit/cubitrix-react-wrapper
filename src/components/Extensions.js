@@ -1,15 +1,39 @@
 import React from "react";
 
+import { Popup, FeeWarning } from "@cubitrix/cubitrix-react-ui-module";
+
 // hooks
 import { useExtensionsData } from "../hooks/useExtensionsData";
+import { useSelector, useDispatch } from "react-redux";
 
 // UI
 import { Extensions as ExtensionsUI } from "@cubitrix/cubitrix-react-ui-module";
 
 const Extensions = () => {
-  const { extensionsCardsData } = useExtensionsData();
+  const { extensionsCardsData, handleChangeExtension } = useExtensionsData();
+  const appState = useSelector((state) => state.appState);
+  const dispatch = useDispatch();
 
-  return <ExtensionsUI extensionsCardsData={extensionsCardsData} />;
+  return (
+    <>
+      {appState.feeWarnAccountType && (
+        <Popup
+          popUpElement={
+            <FeeWarning
+              handleProceed={() => {
+                handleChangeExtension("trade", true);
+                dispatch({ type: "SET_FEE_WARN_TYPE", payload: null });
+              }}
+              handleCancel={() => dispatch({ type: "SET_FEE_WARN_TYPE", payload: null })}
+            />
+          }
+          label={"Opening account fee"}
+          handlePopUpClose={() => dispatch({ type: "SET_FEE_WARN_TYPE", payload: null })}
+        />
+      )}
+      <ExtensionsUI extensionsCardsData={extensionsCardsData} />;
+    </>
+  );
 };
 
 export default Extensions;
