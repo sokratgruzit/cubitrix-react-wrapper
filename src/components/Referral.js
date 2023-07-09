@@ -112,6 +112,18 @@ const Referral = () => {
           </div>
       </div>
   )
+  let referralTreeUserClick = async (address) => {
+    try {
+      const { data } = await axios.post("/api/referral/get_referral_tree",{
+        address: address,
+      });
+
+      console.log(data);
+      setReferralTreeData(data.final_result)
+    } catch (err) {
+      console.log(err);
+    }
+  }
   let referralTreeAdd = async (lvl,position) => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_code", {
@@ -120,8 +132,7 @@ const Referral = () => {
         position: position
       });
       console.log(data);
-      console.log(data);
-      console.log(data);
+      navigator.clipboard.writeText(data);
     } catch (err) {
       console.log(err);
     }
@@ -389,9 +400,10 @@ const Referral = () => {
       setActiveTreeUser({
         user_address: account
       })
+      console.log(activeTreeUser)
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [account]);
 
   let referralCodeTh = [
     {
@@ -657,6 +669,7 @@ const Referral = () => {
         referralTreeBtnsLeft={tableVisualType}
         referralTreeBtnsRight={tableType}
         referralTreeData={referralTreeData}
+        referralTreeUserClick={referralTreeUserClick}
         referralTreeAddClick={referralTreeAdd}
         referralHistoryTableHead={referralHistoryTh}
         rebatesTableData={rebatesTableData}
