@@ -10,6 +10,7 @@ const INIT_STATE = {
   dashboardTransactionsDataReload: {},
   dashboardAccountType: "main",
   exchangeAccountType: "",
+  feeWarnAccountType: "",
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -93,6 +94,11 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         exchangeAccountType: action.payload,
+      };
+    case "SET_FEE_WARN_TYPE":
+      return {
+        ...state,
+        feeWarnAccountType: action.payload,
       };
     default:
       return state;

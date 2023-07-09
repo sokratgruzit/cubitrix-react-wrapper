@@ -14,6 +14,7 @@ import {
   TransferFromAcc,
   Exchange,
   Deposit,
+  FeeWarning,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
@@ -26,6 +27,7 @@ import { useEffect, useState, useMemo } from "react";
 import QRCode from "qrcode";
 
 import WBNB from "../../../abi/WBNB.json";
+import { toast } from "react-toastify";
 
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
@@ -82,9 +84,6 @@ const SideBarRight = () => {
   const [signInAddress, setSignInAddress] = useState("");
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
 
-  const [success, setSuccess] = useState(null);
-  const [helpText, setHelpText] = useState("");
-  const [showHelpText, setShowHelpText] = useState(false);
   const [currentObject, setCurrentObject] = useState({
     amount: "0",
     transfer_amount: 0,
@@ -108,6 +107,7 @@ const SideBarRight = () => {
       setCurrentObject((prev) => ({
         ...prev,
         transferType: "internal",
+        account: "main",
       }));
     }
     // eslint-disable-next-line
@@ -467,6 +467,7 @@ const SideBarRight = () => {
       title: "Select Transfer type",
       name: "transferType",
       type: "lable-input-select",
+      editable: true,
       options:
         accountType === "main"
           ? [
@@ -635,13 +636,8 @@ const SideBarRight = () => {
 
   const [depositLoading, setDepositLoading] = useState(false);
   const handleDepositSubmit = async () => {
-    setSuccess(null);
-    setHelpText("");
-    setShowHelpText(false);
     if (!account) {
-      setHelpText("Please connect your wallet.");
-      setShowHelpText(true);
-      setSuccess(false);
+      toast.error("Please connect your wallet.", { autoClose: 8000 });
       return;
     }
 
@@ -691,14 +687,7 @@ const SideBarRight = () => {
                 type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
                 payload: {},
               });
-              setShowHelpText(true);
-              setSuccess(true);
-              setHelpText("Amount deposited successfully.");
-              setTimeout(() => {
-                setSuccess(null);
-                setHelpText("");
-                setShowHelpText(false);
-              }, 3000);
+              toast.success("Amount deposited successfully.", { autoClose: 8000 });
             }
             setDepositLoading(false);
           })
@@ -710,55 +699,159 @@ const SideBarRight = () => {
       .catch((error) => {
         setDepositLoading(false);
         if (error.message.includes("User denied transaction signature")) {
-          setHelpText("Transaction rejected.");
-          setShowHelpText(true);
-          setSuccess(false);
-          setTimeout(() => {
-            setSuccess(null);
-            setHelpText("");
-            setShowHelpText(false);
-          }, 3000);
+          toast.error("Transaction rejected.", { autoClose: 8000 });
           return;
         }
-        console.log(error);
-        setHelpText("Transaction failed.");
-        setShowHelpText(true);
-        setSuccess(false);
-        setTimeout(() => {
-          setSuccess(null);
-          setHelpText("");
-          setShowHelpText(false);
-        }, 3000);
+        toast.error("Transaction failed.", { autoClose: 8000 });
       });
   };
-
+  const [withdrawSubmitLoading, setWithdrawSubmitLoading] = useState(false);
   const handleWithdrawSubmit = async () => {
-    setHelpText("Withdraw was successful.");
-    setShowHelpText(true);
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(null);
-      setHelpText("");
-      setShowHelpText(false);
-      setCurrentObject((prev) => ({ ...prev, clientId: "", amount: "0" }));
-    }, 3000);
+    if (!account) {
+      toast.error("Please connect your wallet.", { autoClose: 8000 });
+      return;
+    }
+
+    if (!currentObject.address) {
+      toast.error("Please enter address.", { autoClose: 8000 });
+      return;
+    }
+
+    if (currentObject?.address?.length < 42) {
+      toast.error("Please enter a valid address.", { autoClose: 8000 });
+      return;
+    }
+
+    if (isNaN(currentObject.amount)) {
+      toast.error("Please enter a valid amount.", { autoClose: 8000 });
+      return;
+    }
+
+    if (Number(currentObject.amount) <= 0) {
+      toast.error("Incorrect amount", { autoClose: 8000 });
+      return;
+    }
+
+    setWithdrawSubmitLoading(true);
+    axios
+      .post("/api/transactions/make_withdrawal", {
+        address: account,
+        address_to: currentObject.address,
+        amount: currentObject.amount,
+        accountType: exchangeAccountType,
+        rate: rates[exchangeAccountType].usd,
+      })
+      .then((res) => {
+        toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
+        if (res.data?.result) {
+          generateAccountsData();
+          dispatch({
+            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+            payload: {},
+          });
+        }
+        setWithdrawSubmitLoading(false);
+      })
+      .catch((e) => {
+        let error;
+        if (e.response?.data?.message === "insufficient funds") {
+          error = "Insufficient balance";
+        }
+        toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+        setWithdrawSubmitLoading(false);
+      });
+
+    // const web3 = library;
+    // const fromAddress = account;
+
+    // const toAddress = userBalances?.find(
+    //   (item) => item?.account_category === "system",
+    // )?.address;
+
+    // const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
+
+    // const amount = web3.utils.toBN(
+    //   web3.utils.toWei(currentObject.amount.toString(), "ether"),
+    // );
+
+    // const gasPrice = await web3.eth.getGasPrice();
+
+    // const transferData = tokenContract.methods
+    //   .transfer(toAddress, amount.toString())
+    //   .encodeABI();
+
+    // const transactionObject = {
+    //   from: fromAddress,
+    //   to: tokenAddress,
+    //   data: transferData,
+    //   gasPrice,
+    // };
+
+    // web3.eth
+    //   .sendTransaction(transactionObject)
+    //   .then((receipt) => {
+    //     axios
+    //       .post("/api/transactions/make_withdrawal", {
+    //         address: account,
+    //         hash: receipt.transactionHash,
+    //         address_to: currentObject.address,
+    //         accountType: exchangeAccountType,
+    //       })
+    //       .then((res) => {
+    //         if (res?.data?.updatedAccount) {
+    //           dispatch({
+    //             type: "SET_SYSTEM_ACCOUNT_DATA",
+    //             payload: res.data.updatedAccount,
+    //           });
+    //           dispatch({
+    //             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+    //             payload: {},
+    //           });
+    //           toast.success("Amount deposited successfully.", { autoClose: 8000 });
+    //         }
+    //         setDepositLoading(false);
+    //       })
+    //       .catch((e) => {
+    //         console.log(e);
+    //         setDepositLoading(false);
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     setDepositLoading(false);
+    //     if (error.message.includes("User denied transaction signature")) {
+    //       toast.error("Transaction rejected.", { autoClose: 8000 });
+    //       return;
+    //     }
+    //     toast.error("Transaction failed.", { autoClose: 8000 });
+    //   });
+
+    // axios
+    //   .post("/api/transactions/make_withdrawal", {
+    //     address: account,
+    //     address_to: currentObject.address,
+    //     amount: currentObject.amount,
+    //   })
+    //   .then((res) => {
+    //     console.log(res);
+    //     setWithdrawSubmitLoading(false);
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //     toast.error("Withdrawal failed.", { autoClose: 8000 });
+    //     setWithdrawSubmitLoading(false);
+    //   });
+    // console.log(currentObject.amount, currentObject.address);
+    // setCurrentObject((prev) => ({ ...prev, clientId: "", amount: "0" }));
   };
 
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
   const handleTransferSubmit = async () => {
+    if (Number(currentObject.amount) <= 0) {
+      toast.error("Incorrect amount", { autoClose: 8000 });
+      return;
+    }
     if (currentObject.transferType === "external") {
       setTransferSubmitLoading(true);
-      if (Number(currentObject.amount) <= 0) {
-        setSuccess(false);
-        setHelpText("Incorrect amount");
-        setShowHelpText(true);
-        setTimeout(() => {
-          setSuccess(null);
-          setHelpText("");
-          setShowHelpText(false);
-        }, 3000);
-        return;
-      }
       axios
         .post("/api/transactions/make_transfer", {
           from: account,
@@ -779,15 +872,10 @@ const SideBarRight = () => {
               payload: {},
             });
           }
-
           setTransferSubmitLoading(false);
-          setShowHelpText(true);
-          setSuccess(true);
-          setHelpText("Transfer was successful.");
+          toast.success("Transfer was successful.", { autoClose: 8000 });
+
           setTimeout(() => {
-            setSuccess(null);
-            setHelpText("");
-            setShowHelpText(false);
             setCurrentObject((prev) => ({
               ...prev,
               type: "",
@@ -807,29 +895,11 @@ const SideBarRight = () => {
             errorMsg = "Recipient has not activated account";
           }
           setTransferSubmitLoading(false);
-          setSuccess(false);
-          setHelpText(errorMsg ?? "Transaction failed.");
-          setShowHelpText(true);
-          setTimeout(() => {
-            setSuccess(null);
-            setHelpText("");
-            setShowHelpText(false);
-          }, 3000);
+          toast.error(errorMsg ?? "Transaction failed.", { autoClose: 8000 });
         });
     }
     if (currentObject.transferType === "internal") {
       setTransferSubmitLoading(true);
-      if (Number(currentObject.amount) <= 0) {
-        setSuccess(false);
-        setHelpText("Incorrect amount");
-        setShowHelpText(true);
-        setTimeout(() => {
-          setSuccess(null);
-          setHelpText("");
-          setShowHelpText(false);
-        }, 3000);
-        return;
-      }
       axios
         .post("/api/transactions/make_transfer", {
           from: account,
@@ -842,10 +912,6 @@ const SideBarRight = () => {
         })
         .then((res) => {
           if (res.data?.data?.updatedAcc) {
-            // dispatch({
-            //   type: "SET_SYSTEM_ACCOUNT_DATA",
-            //   payload: res.data.data.updatedAcc,
-            // });
             generateAccountsData();
             dispatch({
               type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
@@ -854,18 +920,12 @@ const SideBarRight = () => {
           }
 
           setTransferSubmitLoading(false);
-          setShowHelpText(true);
-          setSuccess(true);
-          setHelpText("Transfer was successful.");
+          toast.success("Transfer was successful.", { autoClose: 8000 });
           setTimeout(() => {
-            setSuccess(null);
-            setHelpText("");
-            setShowHelpText(false);
             setCurrentObject((prev) => ({
               ...prev,
               type: "",
-              account: "",
-              amount: "0",
+              amount: 0,
               transferAddress: "",
             }));
           }, 3000);
@@ -880,14 +940,7 @@ const SideBarRight = () => {
             errorMsg = "Recipient has not activated account";
           }
           setTransferSubmitLoading(false);
-          setSuccess(false);
-          setHelpText(errorMsg ?? "Transaction failed.");
-          setShowHelpText(true);
-          setTimeout(() => {
-            setSuccess(null);
-            setHelpText("");
-            setShowHelpText(false);
-          }, 3000);
+          toast.error(errorMsg ?? "Transaction failed.", { autoClose: 8000 });
         });
     }
   };
@@ -1205,8 +1258,6 @@ const SideBarRight = () => {
   const [card, setCard] = useState(null);
   const [ratedExchange, setRatedExchange] = useState(null);
 
-  console.log(ratedExchange);
-
   useEffect(() => {
     if (card && rates.btc && exchangeAccountType) {
       setRatedExchange(
@@ -1317,9 +1368,11 @@ const SideBarRight = () => {
           type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
           payload: {},
         });
+        toast.success("Exchange successful.", { autoClose: 8000 });
       })
       .catch((e) => {
         setExchangeLoading(false);
+        toast.error("Exchange failed.", { autoClose: 8000 });
         console.log(e);
       });
   };
@@ -1447,13 +1500,22 @@ const SideBarRight = () => {
             currentObject={currentObject}
             cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleWithdrawSubmit}
-            buttonLabel={"Continue"}
-            success={success}
-            helpText={helpText}
-            showHelpText={showHelpText}
-            accountType={"Atar"}
-            accountBalance={chosenAccount?.balance?.toFixed(2)}
-            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            buttonLabel={withdrawSubmitLoading ? "Loading..." : "Withdraw"}
+            withdrawSubmitLoading={withdrawSubmitLoading}
+            accountType={exchangeAccountType}
+            accountBalance={
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance?.toFixed(2)
+                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+            }
+            accountBalanceSecond={`$${
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance * 2?.toFixed(2)
+                : (
+                    mainAccount.assets[exchangeAccountType] *
+                    rates?.[exchangeAccountType]?.usd
+                  )?.toFixed(2)
+            }`}
           />
         )}
         {sideBar === "exchange" && (
@@ -1466,9 +1528,7 @@ const SideBarRight = () => {
             accounts={exchangeAccounts}
             handleSubmit={handleExchangeSubmit}
             buttonLabel={exchangeLoading ? "Loading..." : "Exchange"}
-            success={success}
-            helpText={helpText}
-            showHelpText={showHelpText}
+            exchangeLoading={exchangeLoading}
             accountType={exchangeAccountType}
             setCard={setCard}
             card={card}
@@ -1497,9 +1557,7 @@ const SideBarRight = () => {
             cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleDepositSubmit}
             buttonLabel={depositLoading ? "Loading..." : "Deposit"}
-            success={success}
-            helpText={helpText}
-            showHelpText={showHelpText}
+            depositLoading={depositLoading}
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
             accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
@@ -1514,9 +1572,7 @@ const SideBarRight = () => {
             cardImg={"/img/dashboard/atar.png"}
             handleSubmit={handleTransferSubmit}
             buttonLabel={transferSubmitLoading ? "Loading..." : "Transfer"}
-            success={success}
-            helpText={helpText}
-            showHelpText={showHelpText}
+            transferSubmitLoading={transferSubmitLoading}
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
             accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}

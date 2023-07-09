@@ -18,22 +18,16 @@ import axios from "../api/axios";
 import QRCode from "qrcode";
 import WBNB from "../abi/WBNB.json";
 
+import { toast } from "react-toastify";
+
 const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    account,
-    connect,
-    disconnect,
-    error,
-    setError,
-    connectionLoading,
-    library,
-    active,
-  } = useConnect();
+  const { account, connect, disconnect, connectionLoading, library, active } =
+    useConnect();
 
   // const [loading, setLoading] = useState(true);
 
@@ -182,9 +176,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
         setRegistrationState({
           ...registrationState,
-          referralError: error,
           loading: false,
         });
+        toast.error(error, { autoClose: 8000 });
       });
 
     async function update_profile() {
@@ -216,16 +210,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                   setStep(e?.data?.account?.step ?? 3);
                   setRegistrationState({
                     ...registrationState,
-                    referralError: "something went wrong!",
                     loading: false,
                   });
                 })
                 .catch((e) => {
                   setRegistrationState({
                     ...registrationState,
-                    referralError: "something went wrong!",
                     loading: false,
                   });
+                  toast.error("Something went wrong!", { autoClose: 8000 });
                 });
             });
           }
@@ -234,17 +227,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (err?.response?.data === "email already exists & is verified") {
             setRegistrationState((prev) => ({
               ...prev,
-              emailError: "Email is already in use.",
               loading: false,
             }));
+            toast.error("Email is already in use.", { autoClose: 8000 });
           }
-
-          setTimeout(() => {
-            setRegistrationState({
-              ...registrationState,
-              emailError: "",
-            });
-          }, 3000);
         });
     }
   }
@@ -289,7 +275,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       });
   }
 
+  const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
+    setCoinbaseLoading(true);
     axios
       .post("api/transactions/coinbase_deposit_transaction", {
         from: account,
@@ -297,9 +285,12 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       })
       .then((res) => {
         setHostedUrl(res?.data?.responseData?.hosted_url);
+        setCoinbaseLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        toast.error("Something went wrong!", { autoClose: 8000 });
+        setCoinbaseLoading(false);
       });
   }
 
@@ -323,7 +314,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       tokenAddress,
     });
 
-  const { depositAmount, timeperiod, isAllowance, timeperiodDate, loading } = useSelector(
+  const { depositAmount, timeperiod, isAllowance, timeperiodDate } = useSelector(
     (state) => state.stake,
   );
 
@@ -362,16 +353,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               setStep(4);
               setRegistrationState({
                 ...registrationState,
-                referralError: "something went wrong!",
                 loading: false,
               });
             })
             .catch((e) => {
               setRegistrationState({
                 ...registrationState,
-                referralError: "something went wrong!",
                 loading: false,
               });
+              toast.error("Something went wrong!", { autoClose: 8000 });
             });
         }
       });
@@ -414,20 +404,13 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       approve(
         () => {
           setStakingLoading(false);
-          setApproveResonse({
-            status: "success",
-            message: "Approved successfully, please stake desired amount.",
+          toast.success("Approved successfully, please stake desired amount.", {
+            autoClose: 8000,
           });
         },
         () => {
           setStakingLoading(false);
-          setApproveResonse({
-            status: "error",
-            message: "Approval failed, please try again.",
-          });
-          setTimeout(() => {
-            setApproveResonse(null);
-          }, 5000);
+          toast.error("Approval failed, please try again.", { autoClose: 8000 });
         },
       );
     }
@@ -501,26 +484,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               console.error(err);
             });
           setStakingLoading(false);
-          setApproveResonse({
-            status: "success",
-            message: "Staked successfully",
-          });
+          toast.success("Staked successfully", { autoClose: 8000 });
           handleDepositAmount("");
           handleTimePeriod(0);
           setTimeout(() => {
-            setApproveResonse(null);
             navigate("/dashboard");
           }, 3000);
         },
         () => {
           setStakingLoading(false);
-          setApproveResonse({
-            status: "error",
-            message: "Staking failed, please try again.",
-          });
-          setTimeout(() => {
-            setApproveResonse(null);
-          }, 3000);
+          toast.error("Staking failed, please try again.", { autoClose: 8000 });
         },
       );
     }
@@ -569,6 +542,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       approveResonse={approveResonse}
       isAllowance={isAllowance}
       tokenBalance={tokenBalance}
+      depositAmount={depositAmount}
+      coinbaseLoading={coinbaseLoading}
     />
   );
 };
