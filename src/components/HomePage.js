@@ -56,7 +56,7 @@ function HomePage({ children }) {
               metaAcc.name
             ) {
               getBalance().then((balance) => {
-                if (balance >= 100) {
+                if (balance >= 5000) {
                   setStep(4);
                 } else {
                   setStep(3);

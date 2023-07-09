@@ -200,7 +200,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             getBalance().then((balance) => {
               let step = 3;
               setTokenBalance(balance);
-              if (balance > 100) {
+              if (balance >= 5000) {
                 step = 4;
               }
 
@@ -345,7 +345,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     const myFunction = () => {
       getBalance().then((balance) => {
         setTokenBalance(balance);
-        if (balance > 100) {
+        if (balance > 5000) {
           clearInterval(timer);
           axios
             .post("/api/accounts/handle-step", { step: 4, address: account })
