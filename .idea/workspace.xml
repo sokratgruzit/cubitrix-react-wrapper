@@ -3,20 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="e2f8ef4d-a3e7-4950-a9be-d510410b884f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dashboard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Extensions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Extensions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/LandingRegistration.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LandingRegistration.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Staking.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Staking.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TopUp/TopUp.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TopUp/TopUp.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Transactions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Transactions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/appStateReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/appStateReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Referral.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Referral.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +54,7 @@
       <workItem from="1688471563794" duration="545000" />
       <workItem from="1688490795908" duration="590000" />
       <workItem from="1688548382432" duration="828000" />
-      <workItem from="1688635093234" duration="14997000" />
+      <workItem from="1688635093234" duration="16250000" />
     </task>
     <servers />
   </component>
