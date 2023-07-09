@@ -38,6 +38,9 @@ const Referral = () => {
   const [referralTableType, setReferralTableType] = useState('uni');
   const [referralTreeData, setReferralTreeData] = useState([]);
   const [referraAddress, setReferraAddress] = useState(null);
+  const [activeTreeUser, setActiveTreeUser] = useState({
+      user_address: ''
+  });
 
   const triedReconnect = useSelector((state) => state.appState.triedReconnect);
 
@@ -321,7 +324,7 @@ const Referral = () => {
   const getReferralTree = async () => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_tree",{
-        address: "1",
+        address: referraAddress,
       });
 
       console.log(data);
@@ -382,6 +385,13 @@ const Referral = () => {
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, active, triedReconnect]);
+  useEffect(() => {
+      setActiveTreeUser({
+        user_address: account
+      })
+    // getOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   let referralCodeTh = [
     {
@@ -641,6 +651,7 @@ const Referral = () => {
       <ReferralUI
         cards={referralCards}
         handleCreateCode={handleCreateCode}
+        referralTreeActiveAddress={activeTreeUser}
         referralTreeActive={true}
         referralBinaryType={referralBinaryType}
         referralTreeBtnsLeft={tableVisualType}
