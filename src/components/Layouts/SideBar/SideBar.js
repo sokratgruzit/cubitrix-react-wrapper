@@ -14,6 +14,7 @@ import {
   TransferFromAcc,
   Exchange,
   Deposit,
+  FeeWarning,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
@@ -466,6 +467,7 @@ const SideBarRight = () => {
       title: "Select Transfer type",
       name: "transferType",
       type: "lable-input-select",
+      editable: true,
       options:
         accountType === "main"
           ? [

@@ -163,7 +163,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (account && triedReconnect && active) {
-      generateAccountsData();
       generateTransactionsData();
       generateTotalReferralData();
       generateTableData("codes");

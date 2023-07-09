@@ -176,6 +176,8 @@ const Transactions = () => {
     },
   ];
 
+  console.log(filterObject);
+
   const inputs = [
     {
       title: "Choose Account",
@@ -185,7 +187,7 @@ const Transactions = () => {
         { name: "All", value: "all" },
         { name: "Main", value: "main" },
         { name: "Trade", value: "trade" },
-        { name: "Loan", value: "loan" },
+        // { name: "Loan", value: "loan" },
       ],
       defaultAny: "Any Account",
       onChange: (e) =>
@@ -203,7 +205,7 @@ const Transactions = () => {
         { name: "Payment", value: "payment" },
         { name: "Deposit", value: "deposit" },
         { name: "Transfer", value: "transfer" },
-        { name: "Internal Transaction", value: "internal_transaction" },
+        { name: "Internal Transfer", value: "internal_transfer" },
         { name: "Withdrawal", value: "withdrawal" },
         { name: "Referral Bonus", value: "referral_bonus" },
       ],

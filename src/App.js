@@ -123,8 +123,27 @@ function App() {
       .catch((e) => {});
   };
 
+  const generateAccountsData = async () => {
+    try {
+      const apiUrl = "/api/accounts/get_account_balances";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+      const data = response.data;
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
     if (account && triedReconnect && active) {
+      generateAccountsData();
       setInitialRegister(true);
       const fetchData = async () => {
         await axios

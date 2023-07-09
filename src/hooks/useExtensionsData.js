@@ -15,6 +15,25 @@ export const useExtensionsData = () => {
   const emailVerified = appState.emailVerified;
   const isActive = appState.userData?.active;
   const [extsActive, setExtsActive] = useState({});
+  const userBalances = useSelector((state) => state.appState.accountsData);
+
+  const generateAccountsData = async () => {
+    try {
+      const apiUrl = "/api/accounts/get_account_balances";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+      const data = response.data;
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const handleChangeExtension = (title, value) => {
     if ((title === "loan" || title === "trade") && (!isActive || !emailVerified)) return;
@@ -39,6 +58,7 @@ export const useExtensionsData = () => {
           });
         }
         setExtsActive(res.data.account.extensions);
+        generateAccountsData();
       })
       .catch((e) => {
         console.log(e.response);
@@ -58,7 +78,19 @@ export const useExtensionsData = () => {
       description:
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
+      handleSwitch: (title, value) => {
+        if (title === "trade" && (!isActive || !emailVerified)) return;
+
+        if (!userBalances.find((item) => item.account_category === "trade") && value) {
+          dispatch({
+            type: "SET_FEE_WARN_TYPE",
+            payload: "trade",
+          });
+          return;
+        }
+
+        handleChangeExtension(title.toLowerCase(), value);
+      },
       active: extsActive.trade === "true" ? true : false,
       disabled: !(isActive && emailVerified),
     },
