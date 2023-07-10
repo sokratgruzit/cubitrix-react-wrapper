@@ -148,9 +148,11 @@ const Referral = () => {
         console.log(data);
         setTimeout(() => {
           setReferralTreeData(data.final_result)
-          setAnimateTree(true);
           setActiveTreeUser(item);
-        },2000)
+          setTimeout(() => {
+            setAnimateTree(true);
+          },500)
+        },600)
       } catch (err) {
         console.log(err);
       }
@@ -426,6 +428,9 @@ const Referral = () => {
       generateTreeTableData('binary')
       // getReferralTree();
       getReferralAddress(account.toLowerCase());
+      setActiveTreeUser({
+        user_address: referraAddress
+      })
       getReferralTree();
     }
     getReferralAddress(account.toLowerCase());
@@ -433,14 +438,6 @@ const Referral = () => {
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, active, triedReconnect]);
-  useEffect(() => {
-    setActiveTreeUser({
-      user_address: account
-    })
-    console.log(activeTreeUser)
-    // getOptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account]);
 
   let referralCodeTh = [
     {
