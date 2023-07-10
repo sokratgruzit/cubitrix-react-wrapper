@@ -449,11 +449,11 @@ const Referral = () => {
       });
       getReferralTree();
     }
-    getReferralAddress(account.toLowerCase());
-    getReferralTree();
+    // getReferralAddress(account.toLowerCase());
+    // getReferralTree();
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, active, triedReconnect]);
+  }, [account, active, triedReconnect, referraAddress]);
 
   let referralCodeTh = [
     {
