@@ -47,14 +47,7 @@ const Referral = () => {
 
   const { account, active } = useConnect();
 
-  const [referralTotal, setReferralTotal] = useState({
-    rebatesUniLevel: 0,
-    rebatesBinaryTotal: 0,
-    weeklyUniLevel: 0,
-    weeklyBinaryTotal: 0,
-    rebatesTotal: 0,
-    weeklyTotal: 0,
-  });
+  const [referralTotal, setReferralTotal] = useState(false);
   const width = 1300;
   let tableVisualType = (
       <div className={`referral-inner-table-more`}>
@@ -113,6 +106,22 @@ const Referral = () => {
         </div>
       </div>
   )
+  let referralStats = async () => {
+    try {
+      try {
+        const { data } = await axios.post("/api/referral/get_reerral_global_data",{
+          address: referraAddress,
+        });
+        console.log(data)
+        setReferralTotal(data)
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
   let referralTreeUserBackClick = async () => {
     if(account !== activeTreeUser.user_address) {
       setAnimateTree(false);
@@ -164,7 +173,7 @@ const Referral = () => {
   let referralTreeAdd = async (lvl,position) => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_code", {
-        address: referraAddress,
+        address: activeTreeUser.user_address,
         lvl: lvl,
         position: position
       });
@@ -211,6 +220,10 @@ const Referral = () => {
       });
       console.log(data,'asdasdasdasdad');
       setReferraAddress(data);
+      setActiveTreeUser({
+        user_address: referraAddress
+      })
+      getReferralTree();
     } catch (err) {
       console.log(err);
     }
@@ -322,42 +335,6 @@ const Referral = () => {
         : setReferralHistoryTableLoading(false);
   };
 
-  const getReferralTotal = async () => {
-    try {
-      const { data } = await axios.post("/api/referral/get_referral_data_of_user", {
-        address: account,
-      });
-
-      let total = {
-        rebatesUniLevel: 0,
-        rebatesBinaryTotal: 0,
-        weeklyUniLevel: 0,
-        weeklyBinaryTotal: 0,
-      };
-
-      data.total_referral_rebates_total.forEach((item) => {
-        if (item._id === "referral_bonus_uni_level") {
-          return (total.rebatesUniLevel = item.amount);
-        }
-        total.rebatesBinaryTotal = total.rebatesBinaryTotal + item.amount;
-      });
-
-      data.total_referral_rebates_weekly.forEach((item) => {
-        if (item._id === "referral_bonus_uni_level") {
-          return (total.weeklyUniLevel = item.amount);
-        }
-        total.weeklyBinaryTotal = total.weeklyBinaryTotal + item.amount;
-      });
-
-      setReferralTotal({
-        ...total,
-        rebatesTotal: total.rebatesUniLevel + total.rebatesBinaryTotal,
-        weeklyTotal: total.weeklyUniLevel + total.weeklyBinaryTotal,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   const getOptions = async () => {
     try {
@@ -397,7 +374,6 @@ const Referral = () => {
         generateCode(),
         generateTableData("codes"),
         generateTableData("rebates"),
-        getReferralTotal(),
       ]);
 
       if (results?.[0].status === "rejected") {
@@ -420,24 +396,20 @@ const Referral = () => {
     }
   };
   useEffect(() => {
-    if (account && triedReconnect && active && referraAddress) {
+    if (account && triedReconnect && active) {
       generateTableData("codes");
       generateTableData("rebates");
-      getReferralTotal();
       generateCode();
       generateTreeTableData('binary')
       // getReferralTree();
       getReferralAddress(account.toLowerCase());
-      setActiveTreeUser({
-        user_address: referraAddress
-      })
-      getReferralTree();
+      referralStats()
     }
-    getReferralAddress(account.toLowerCase());
-    getReferralTree();
+
+    // getReferralAddress(account.toLowerCase());
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, active, triedReconnect]);
+  }, [account, active, triedReconnect,referraAddress]);
 
   let referralCodeTh = [
     {
@@ -654,30 +626,30 @@ const Referral = () => {
     icon: <NoHistoryIcon />,
   };
 
-  const referralRebatesTotal = [
+  let referralRebatesTotal = [
     {
-      title: "Rebates Uni Total",
-      value: referralTotal?.rebatesUniLevel,
+      title: "Binary Users",
+      value: referralTotal?.binary_users,
     },
     {
-      title: "Rebates Binary Total",
-      value: referralTotal?.rebatesBinaryTotal,
+      title: "Binary Comission This Month",
+      value: referralTotal?.binary_comission_this_month && referralTotal?.binary_comission_this_month.length > 0 ? referralTotal?.binary_comission_this_month[0]?.totalAmount : 0,
     },
     {
-      title: "Rebates Total",
-      value: referralTotal?.rebatesTotal,
+      title: "Binary Comission Total",
+      value: referralTotal?.binary_comission_total && referralTotal?.binary_comission_total.length > 0 ? referralTotal?.binary_comission_total[0]?.totalAmount : 0,
     },
     {
-      title: "Weekly Uni Total",
-      value: referralTotal?.weeklyUniLevel,
+      title: "Uni Users",
+      value: referralTotal?.uni_users,
     },
     {
-      title: "Weekly Binary Total",
-      value: referralTotal?.weeklyBinaryTotal,
+      title: "Uni Comission This Month",
+      value: referralTotal?.uni_comission_this_month && referralTotal?.uni_comission_this_month.length > 0 ? referralTotal?.uni_comission_this_month[0]?.totalAmount : 0,
     },
     {
-      title: "Weekly Total",
-      value: referralTotal?.weeklyTotal,
+      title: "Uni Comission Total",
+      value: referralTotal?.uni_comission_total && referralTotal?.uni_comission_total.length > 0 ? referralTotal?.uni_comission_total[0]?.totalAmount : 0,
     },
   ];
 
