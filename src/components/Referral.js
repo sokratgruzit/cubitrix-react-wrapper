@@ -38,6 +38,7 @@ const Referral = () => {
   const [referralTableType, setReferralTableType] = useState("uni");
   const [referralTreeData, setReferralTreeData] = useState([]);
   const [referraAddress, setReferraAddress] = useState(null);
+  const [animateTree, setAnimateTree] = useState(false);
   const [activeTreeUser, setActiveTreeUser] = useState({
     user_address: "",
   });
@@ -131,6 +132,52 @@ const Referral = () => {
       </div>
     </div>
   );
+  let referralTreeUserBackClick = async () => {
+    if (account !== activeTreeUser.user_address) {
+      setAnimateTree(false);
+      try {
+        try {
+          const { data } = await axios.post("/api/referral/get_referral_parent_address", {
+            address: activeTreeUser.user_address,
+          });
+          console.log(data);
+          let newUser = {
+            user_address: data,
+          };
+          referralTreeUserClick(newUser);
+        } catch (err) {
+          console.log(err);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+  let referralTreeUserClick = async (item) => {
+    console.log(item);
+    setAnimateTree(false);
+    try {
+      try {
+        const { data } = await axios.post("/api/referral/get_referral_tree", {
+          address: referraAddress,
+          second_address: item.user_address,
+        });
+
+        console.log(data);
+        setTimeout(() => {
+          setReferralTreeData(data.final_result);
+          setActiveTreeUser(item);
+          setTimeout(() => {
+            setAnimateTree(true);
+          }, 500);
+        }, 600);
+      } catch (err) {
+        console.log(err);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   let referralTreeAdd = async (lvl, position) => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_code", {
@@ -139,8 +186,7 @@ const Referral = () => {
         position: position,
       });
       console.log(data);
-      console.log(data);
-      console.log(data);
+      navigator.clipboard.writeText(data);
     } catch (err) {
       console.log(err);
     }
@@ -175,10 +221,10 @@ const Referral = () => {
       ),
     },
   ];
-  const getReferralAddress = async () => {
+  const getReferralAddress = async (address) => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_address", {
-        address: account.toLowerCase(),
+        address: address,
       });
       console.log(data, "asdasdasdasdad");
       setReferraAddress(data);
@@ -341,6 +387,7 @@ const Referral = () => {
   };
 
   const getReferralTree = async () => {
+    setAnimateTree(false);
     try {
       const { data } = await axios.post("/api/referral/get_referral_tree", {
         address: referraAddress,
@@ -348,6 +395,7 @@ const Referral = () => {
 
       console.log(data);
       setReferralTreeData(data.final_result);
+      setAnimateTree(true);
     } catch (err) {
       console.log(err);
     }
@@ -395,21 +443,17 @@ const Referral = () => {
       generateCode();
       generateTreeTableData("binary");
       // getReferralTree();
-      getReferralAddress();
+      getReferralAddress(account.toLowerCase());
+      setActiveTreeUser({
+        user_address: referraAddress,
+      });
       getReferralTree();
     }
-    getReferralAddress();
+    getReferralAddress(account.toLowerCase());
     getReferralTree();
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, active, triedReconnect]);
-  useEffect(() => {
-    setActiveTreeUser({
-      user_address: account,
-    });
-    // getOptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   let referralCodeTh = [
     {
@@ -670,11 +714,13 @@ const Referral = () => {
         cards={referralCards}
         handleCreateCode={handleCreateCode}
         referralTreeActiveAddress={activeTreeUser}
-        referralTreeActive={true}
+        referralTreeActive={animateTree}
         referralBinaryType={referralBinaryType}
         referralTreeBtnsLeft={tableVisualType}
         referralTreeBtnsRight={tableType}
         referralTreeData={referralTreeData}
+        referralTreeUserClick={referralTreeUserClick}
+        referralTreeUserBackClick={referralTreeUserBackClick}
         referralTreeAddClick={referralTreeAdd}
         referralHistoryTableHead={referralHistoryTh}
         rebatesTableData={rebatesTableData}
