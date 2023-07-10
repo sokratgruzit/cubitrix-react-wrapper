@@ -31,7 +31,7 @@ const Extensions = () => {
           handlePopUpClose={() => dispatch({ type: "SET_FEE_WARN_TYPE", payload: null })}
         />
       )}
-      <ExtensionsUI extensionsCardsData={extensionsCardsData} />;
+      <ExtensionsUI extensionsCardsData={extensionsCardsData} />
     </>
   );
 };
