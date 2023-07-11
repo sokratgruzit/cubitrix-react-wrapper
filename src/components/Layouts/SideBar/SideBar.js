@@ -1491,6 +1491,7 @@ const SideBarRight = () => {
             disconnect={disconnect}
             userAccount={handleUserAccount}
             account={account}
+            mainAccount={mainAccount.address}
           />
         )}
         {sideBar === "UserAccount" && (
