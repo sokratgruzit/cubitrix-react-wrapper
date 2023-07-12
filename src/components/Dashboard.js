@@ -180,34 +180,53 @@ const Dashboard = () => {
     },
   ];
 
-  const referralHistoryHeader = [
-    {
-      id: 0,
-      name: "From",
-      width: 15,
-      mobileWidth: width >= 500 ? 45 : 100,
-      height: "40px",
-    },
-    {
-      id: 1,
-      name: "Referral Bonus",
-      width: 15,
-      height: "40px",
-    },
-    {
-      id: 2,
-      name: "Referral Level",
-      width: 15,
-      height: "40px",
-    },
-    {
-      id: 3,
-      name: "Amount",
-      width: 15,
-      mobileWidth: width >= 500 ? 45 : false,
-      height: "40px",
-    },
-  ];
+  const referralHistoryTh = useMemo(() => {
+    if (referralHistoryType === "uni") {
+      return [
+        {
+          name: "User Address",
+          width: 15,
+          mobileWidth: 45,
+          id: 0,
+        },
+        {
+          name: "User Level",
+          width: 15,
+          id: 1,
+        },
+        {
+          name: "Amount",
+          width: 15,
+          id: 2,
+        },
+        {
+          name: "Date",
+          width: 15,
+          mobileWidth: 45,
+          id: 3,
+        },
+      ];
+    } else {
+      return [
+        {
+          name: "Amount",
+          width: 15,
+          mobileWidth: 45,
+          id: 0,
+        },
+        {
+          name: "Position",
+          width: 15,
+          id: 1,
+        },
+        {
+          name: "Date",
+          width: 15,
+          id: 2,
+        },
+      ];
+    }
+  }, [referralHistoryType]);
 
   const referralRebatesTableEmpty = {
     label: "No Referral Rebates History",
@@ -310,13 +329,59 @@ const Dashboard = () => {
     </div>
   );
 
+  let referralHistoryThUni = [
+    {
+      name: "User Address",
+      width: 15,
+      mobileWidth: 45,
+      id: 0,
+    },
+    {
+      name: "User Level",
+      width: 15,
+      id: 1,
+    },
+    {
+      name: "Amount",
+      width: 15,
+      id: 2,
+    },
+    {
+      name: "Date",
+      width: 15,
+      mobileWidth: 45,
+      id: 3,
+    },
+  ];
+  let referralHistoryThBinary = [
+    {
+      name: "Amount",
+      width: 15,
+      mobileWidth: 45,
+      id: 0,
+    },
+    {
+      name: "Position",
+      width: 15,
+      id: 1,
+    },
+    {
+      name: "Date",
+      width: 15,
+      id: 2,
+    },
+  ];
+
   return (
     <DashboardUI
       accountType={accountType}
       setAccountType={setAccountType}
       transactionsData={transactionsData}
       transactionHeader={transactionHeader}
-      referralHistoryHeader={referralHistoryHeader}
+      referralHistoryHeader={referralHistoryTh}
+      referralHistoryTableType={
+        referralHistoryType === "uni" ? "referral-history" : "referral-history-binary"
+      }
       rebatesTableData={rebatesTableData}
       totalTransactions={totalTransactions}
       referralHistoryTableEmpty={referralRebatesTableEmpty}
