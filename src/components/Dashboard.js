@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 import { Dashboard as DashboardUI } from "@cubitrix/cubitrix-react-ui-module";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,13 +10,11 @@ import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 import axios from "../api/axios";
 
 const Dashboard = () => {
-  const [codesTableData, setCodesTableData] = useState([]);
   const [rebatesTableData, setRebatesTableData] = useState([]);
   const [transactionsData, setTransactionsData] = useState({});
   const [totalTransactions, setTotalTransactions] = useState({});
 
   const [totalReferralData, setTotalReferralData] = useState(false);
-  const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
   const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
@@ -25,6 +23,12 @@ const Dashboard = () => {
   const dashboardTransactionsDataReload = useSelector(
     (state) => state.appState?.dashboardTransactionsDataReload,
   );
+  const userBalances = useSelector((state) => state.appState.accountsData);
+
+  const mainAccount = useMemo(
+    () => userBalances.find((acc) => acc.account_category === "main"),
+    [userBalances],
+  );
 
   const { account, active } = useConnect();
 
@@ -32,41 +36,28 @@ const Dashboard = () => {
 
   const dispatch = useDispatch();
 
-  const generateTableData = async (table, page) => {
-    if (table === "codes") {
-      setReferralCodeTableLoading(true);
-    } else {
-      setReferralHistoryTableLoading(true);
-    }
-
+  async function generateReferralData() {
     try {
-      const apiUrl = `/api/referral/${
-        table === "codes"
-          ? "get_referral_code_of_user"
-          : "get_referral_rebates_history_of_user"
-      }`;
-
-      const requestBody = {
-        address: account?.toLowerCase(),
-        limit: 3,
-        page: 1,
-      };
-
-      const response = await axios.post(apiUrl, requestBody);
-
-      const data = response.data;
-
-      if (table === "codes") {
-        setCodesTableData(data.referral_code);
-        setReferralCodeTableLoading(false);
-      } else {
-        setRebatesTableData(data.referral_rebates_history);
-        setReferralHistoryTableLoading(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
+      setReferralHistoryTableLoading(true);
+      axios
+        .post(`/api/referral/get_referral_uni_transactions`, {
+          address: mainAccount.address,
+          limit: 3,
+          page: 1,
+        })
+        .then((res) => {
+          console.log(res.data, "aaaaaaaaaaa", mainAccount.address);
+          setRebatesTableData(res.data.transaction);
+          setReferralHistoryTableLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setReferralHistoryTableLoading(false);
+        });
+    } catch (e) {
+      console.log(e?.response);
     }
-  };
+  }
 
   const generateTransactionsData = async () => {
     setTransactionsTableLoading(true);
@@ -106,19 +97,18 @@ const Dashboard = () => {
     } catch (err) {
       console.log(err);
     }
-  }
+  };
   const generateTotalReferralData = async () => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_address", {
-        address:  account?.toLowerCase(),
+        address: account?.toLowerCase(),
       });
       console.log(data, "asdasdasdasdad");
 
-      getTotalData(data)
+      getTotalData(data);
     } catch (err) {
       console.log(err);
     }
-
   };
 
   const prevDashboardTransactionsDataReload = useRef(dashboardTransactionsDataReload);
@@ -131,33 +121,19 @@ const Dashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardTransactionsDataReload]);
 
-  const generateAccountsData = async () => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
-
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
-      });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   useEffect(() => {
     if (account && triedReconnect && active) {
       generateTransactionsData();
       generateTotalReferralData();
-      generateTableData("codes");
-      generateTableData("rebates");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, triedReconnect, active]);
+
+  useEffect(() => {
+    if (account && triedReconnect && active && mainAccount?.address) {
+      generateReferralData();
+    }
+  }, [account, triedReconnect, active, mainAccount?.address]);
 
   const transactionHeader = [
     {
@@ -231,41 +207,6 @@ const Dashboard = () => {
     },
   ];
 
-  const referralCodeHeader = [
-    {
-      id: 0,
-      name: "My Referral Code",
-      width: 15,
-      height: "40px",
-    },
-    {
-      id: 1,
-      name: "User Address",
-      width: 15,
-      mobileWidth: width >= 500 ? 45 : 100,
-      height: "40px",
-    },
-    {
-      id: 2,
-      name: "User Level",
-      width: 15,
-      height: "40px",
-    },
-    {
-      id: 3,
-      name: "Rate",
-      width: 15,
-      height: "40px",
-    },
-    {
-      id: 4,
-      name: "Total Earned",
-      width: 15,
-      mobileWidth: width >= 500 ? 45 : false,
-      height: "40px",
-    },
-  ];
-
   const referralHistoryHeader = [
     {
       id: 0,
@@ -294,47 +235,6 @@ const Dashboard = () => {
       height: "40px",
     },
   ];
-
-  let referralCardsData = [
-    {
-      title: "Uni",
-      data: [
-        {
-          title: "Level User",
-          value: totalReferralData?.uni_users,
-        },
-        {
-          title: "Total Comission",
-          value:  totalReferralData?.uni_comission_total &&
-          totalReferralData?.uni_comission_total.length > 0
-              ? totalReferralData?.uni_comission_total[0]?.totalAmount
-              : 0,
-        },
-      ],
-    },
-    {
-      title: "Binary",
-      active: true,
-      data: [
-        {
-          title: "Level User",
-          value: totalReferralData?.binary_users,
-        },
-        {
-          title: "Total Comission",
-          value:    totalReferralData?.binary_comission_total &&
-          totalReferralData?.binary_comission_total.length > 0
-              ? totalReferralData?.binary_comission_total[0]?.totalAmount
-              : 0,
-        },
-      ],
-    },
-  ];
-
-  const referralCodeTableEmpty = {
-    label: "No Referral Code History",
-    icon: <NoHistoryIcon />,
-  };
 
   const referralRebatesTableEmpty = {
     label: "No Referral Rebates History",
@@ -387,16 +287,11 @@ const Dashboard = () => {
       setAccountType={setAccountType}
       transactionsData={transactionsData}
       transactionHeader={transactionHeader}
-      referralCodeHeader={referralCodeHeader}
       referralHistoryHeader={referralHistoryHeader}
-      referralCardsData={referralCardsData}
-      codesTableData={codesTableData}
       rebatesTableData={rebatesTableData}
       totalTransactions={totalTransactions}
-      referralCodeTableEmpty={referralCodeTableEmpty}
       referralHistoryTableEmpty={referralRebatesTableEmpty}
       transactionsTableEmpty={transactionsTableEmpty}
-      referralCodeTableLoading={referralCodeTableLoading}
       referralHistoryTableLoading={referralHistoryTableLoading}
       transactionsTableLoading={transactionsTableLoading}
       accountsData={accountsData}
