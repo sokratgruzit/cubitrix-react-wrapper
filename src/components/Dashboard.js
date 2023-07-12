@@ -25,6 +25,8 @@ const Dashboard = () => {
   );
   const userBalances = useSelector((state) => state.appState.accountsData);
 
+  const [referralHistoryType, setReferralHistoryType] = useState("uni");
+
   const mainAccount = useMemo(
     () => userBalances.find((acc) => acc.account_category === "main"),
     [userBalances],
@@ -35,29 +37,6 @@ const Dashboard = () => {
   const { width } = useMobileWidth();
 
   const dispatch = useDispatch();
-
-  async function generateReferralData() {
-    try {
-      setReferralHistoryTableLoading(true);
-      axios
-        .post(`/api/referral/get_referral_uni_transactions`, {
-          address: mainAccount.address,
-          limit: 3,
-          page: 1,
-        })
-        .then((res) => {
-          console.log(res.data, "aaaaaaaaaaa", mainAccount.address);
-          setRebatesTableData(res.data.transaction);
-          setReferralHistoryTableLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setReferralHistoryTableLoading(false);
-        });
-    } catch (e) {
-      console.log(e?.response);
-    }
-  }
 
   const generateTransactionsData = async () => {
     setTransactionsTableLoading(true);
@@ -128,12 +107,6 @@ const Dashboard = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, triedReconnect, active]);
-
-  useEffect(() => {
-    if (account && triedReconnect && active && mainAccount?.address) {
-      generateReferralData();
-    }
-  }, [account, triedReconnect, active, mainAccount?.address]);
 
   const transactionHeader = [
     {
@@ -217,7 +190,7 @@ const Dashboard = () => {
     },
     {
       id: 1,
-      name: "Referral Code",
+      name: "Referral Bonus",
       width: 15,
       height: "40px",
     },
@@ -281,6 +254,62 @@ const Dashboard = () => {
       payload: type,
     });
   }
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      getReferralHistory(referralHistoryType ?? "uni");
+    }
+  }, [account, active, triedReconnect, mainAccount?.address, referralHistoryType]);
+
+  async function getReferralHistory(type) {
+    try {
+      setReferralHistoryTableLoading(true);
+      axios
+        .post(
+          type === "uni"
+            ? `/api/referral/get_referral_uni_transactions`
+            : `/api/referral/get_referral_binary_transactions`,
+          {
+            address: mainAccount.address,
+            limit: 3,
+            page: 1,
+          },
+        )
+        .then((res) => {
+          console.log(res.data.transaction);
+          setRebatesTableData(res.data.transaction);
+          setReferralHistoryTableLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setReferralHistoryTableLoading(false);
+        });
+    } catch (e) {
+      console.log(e?.response);
+    }
+  }
+
+  const referralHistoryRightButtons = (
+    <div className={`referral-inner-table-more`}>
+      <div
+        className={`referral-table-more-svg ${
+          referralHistoryType === "uni" ? "referral-table-more-svg_active" : ""
+        }`}
+        onClick={() => {
+          setReferralHistoryType("uni");
+        }}>
+        Uni
+      </div>
+      <div
+        className={`referral-table-more-svg ${
+          referralHistoryType === "binary" ? "referral-table-more-svg_active" : ""
+        }`}
+        onClick={() => setReferralHistoryType("binary")}>
+        Binary
+      </div>
+    </div>
+  );
+
   return (
     <DashboardUI
       accountType={accountType}
@@ -300,6 +329,7 @@ const Dashboard = () => {
       handleExchange={(a, b) => handleSidebarOpen("exchange", b)}
       handleWithdraw={(a, b) => handleSidebarOpen("withdraw", b)}
       handleTransfer={() => handleSidebarOpen("transfer")}
+      referralHistoryButtonsRight={referralHistoryRightButtons}
     />
   );
 };

@@ -40,10 +40,12 @@ const Referral = () => {
     user_address: "",
   });
 
+  const [binaryTreePageUni, setBinaryTreePageUni] = useState(1);
+  const [binaryTreePageTotalUni, setBinaryTreePageTotalUni] = useState(1);
   const [binaryTreePage, setBinaryTreePage] = useState(1);
   const [binaryTreePageTotal, setBinaryTreePageTotal] = useState(1);
-  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
 
+  const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [referralHistoryType, setReferralHistoryType] = useState("uni");
   const [rebatesCurrentPageUni, setRebatesCurrentPageUni] = useState(1);
   const [rebatesPaginationTotalUni, setRebatesPaginationTotalUni] = useState(1);
@@ -326,8 +328,8 @@ const Referral = () => {
             page: page || 1,
           },
         );
-
         setReferralTableData(data);
+        // setBinaryTreePageTotalUni(data?.total_page);
       } catch (err) {
         console.log(err);
       }
@@ -335,7 +337,6 @@ const Referral = () => {
   };
 
   const getOptions = async (type) => {
-    console.log("asdasbdjhabshdbasjdhashd");
     setLvlData([]);
     try {
       const { data } = await axios.post("/api/referral/get_referral_options", {
@@ -348,8 +349,6 @@ const Referral = () => {
       if (type == "Binary bv") {
         setLvlData(data.object_value.binaryData);
       }
-      console.log(data.object_value, "yle");
-      console.log("asdasbdjhabshdbasjdhashd");
     } catch (err) {
       console.log(err);
     }
@@ -409,7 +408,6 @@ const Referral = () => {
   };
   useEffect(() => {
     if (account && triedReconnect && active) {
-      generateTreeTableData("uni");
       getReferralAddress(account.toLowerCase());
       referralStats();
     }
@@ -419,31 +417,42 @@ const Referral = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, active, triedReconnect, referralAddress]);
   useEffect(() => {
-    if (account) {
-      generateTreeTableData(referralTableType);
+    if (account && triedReconnect && active) {
+      generateTreeTableData(referralTableType, binaryTreePageUni);
     }
 
     // getReferralAddress(account.toLowerCase());
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, referralTableType]);
+  }, [account, referralTableType, binaryTreePageUni]);
 
   useEffect(() => {
-    console.log(referralAddress, "thissss");
     if (account && triedReconnect && active) {
-      getReferralHistory();
+      getReferralHistory(referralHistoryType ?? "uni");
     }
-  }, [account, active, triedReconnect, referralAddress, rebatesCurrentPageUni]);
+  }, [
+    account,
+    active,
+    triedReconnect,
+    referralAddress,
+    rebatesCurrentPageUni,
+    referralHistoryType,
+  ]);
 
-  async function getReferralHistory() {
+  async function getReferralHistory(type) {
     try {
       setReferralHistoryTableLoading(true);
       axios
-        .post(`/api/referral/get_referral_uni_transactions`, {
-          address: referralAddress,
-          limit: 5,
-          page: rebatesCurrentPageUni,
-        })
+        .post(
+          type === "uni"
+            ? `/api/referral/get_referral_uni_transactions`
+            : `/api/referral/get_referral_binary_transactions`,
+          {
+            address: referralAddress,
+            limit: 5,
+            page: rebatesCurrentPageUni,
+          },
+        )
         .then((res) => {
           setRebatesPaginationTotalUni(res.data.total_page);
           setRebatesTableData(res.data.transaction);
@@ -466,7 +475,7 @@ const Referral = () => {
       id: 0,
     },
     {
-      name: "Referral Code",
+      name: "Referral Bonus",
       width: 15,
       id: 1,
     },
@@ -577,6 +586,27 @@ const Referral = () => {
     },
   ];
 
+  const referralHistoryRightButtons = (
+    <div className={`referral-inner-table-more`}>
+      <div
+        className={`referral-table-more-svg ${
+          referralHistoryType === "uni" ? "referral-table-more-svg_active" : ""
+        }`}
+        onClick={() => {
+          setReferralHistoryType("uni");
+        }}>
+        Uni
+      </div>
+      <div
+        className={`referral-table-more-svg ${
+          referralHistoryType === "binary" ? "referral-table-more-svg_active" : ""
+        }`}
+        onClick={() => setReferralHistoryType("binary")}>
+        Binary
+      </div>
+    </div>
+  );
+
   return (
     <>
       <ReferralUI
@@ -595,13 +625,13 @@ const Referral = () => {
         referralTreeAddClick={referralTreeAdd}
         referralTreeTableHead={referralTreeTableTh}
         referralTreeTableData={referralTableData?.list}
-        referralTreePaginationCurrent={binaryTreePage}
-        referralTreePaginationTotal={binaryTreePageTotal}
+        referralTreePaginationCurrent={binaryTreePageUni}
+        referralTreePaginationTotal={binaryTreePageTotalUni}
         referralTreePaginationEvent={(page) => {
-          setBinaryTreePage(page);
+          setBinaryTreePageUni(page);
         }}
         rebatesTableData={rebatesTableData}
-        referralHistoryButtonsRight={<div>someone please help</div>}
+        referralHistoryButtonsRight={referralHistoryRightButtons}
         referralHistoryTableHead={referralHistoryTh}
         referralHistoryTableEmpty={referralHistoryTableEmpty}
         referralHistoryTableLoading={referralHistoryTableLoading}
