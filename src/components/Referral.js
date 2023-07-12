@@ -467,28 +467,46 @@ const Referral = () => {
     }
   }
 
-  let referralHistoryTh = [
+  let referralHistoryThUni = [
     {
-      name: "From",
+      name: "User Address",
       width: 15,
       mobileWidth: 45,
       id: 0,
     },
     {
-      name: "Referral Bonus",
+      name: "User Level",
       width: 15,
       id: 1,
     },
     {
-      name: "Referral Level",
+      name: "Amount",
       width: 15,
       id: 2,
     },
     {
-      name: "Amount",
+      name: "Date",
       width: 15,
       mobileWidth: 45,
       id: 3,
+    },
+  ];
+  let referralHistoryThBinary = [
+    {
+      name: "Amount",
+      width: 15,
+      mobileWidth: 45,
+      id: 0,
+    },
+    {
+      name: "Position",
+      width: 15,
+      id: 1,
+    },
+    {
+      name: "Date",
+      width: 15,
+      id: 2,
     },
   ];
 
@@ -632,7 +650,8 @@ const Referral = () => {
         }}
         rebatesTableData={rebatesTableData}
         referralHistoryButtonsRight={referralHistoryRightButtons}
-        referralHistoryTableHead={referralHistoryTh}
+        referralHistoryTableHead={referralHistoryType === "uni" ? referralHistoryThUni : referralHistoryThBinary}
+        referralHistoryTableType={referralHistoryType === "uni" ? 'referral-history' : 'referral-history-binary'}
         referralHistoryTableEmpty={referralHistoryTableEmpty}
         referralHistoryTableLoading={referralHistoryTableLoading}
         referralHistoryPaginationCurrent={rebatesCurrentPageUni}
