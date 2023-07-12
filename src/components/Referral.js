@@ -35,9 +35,11 @@ const Referral = () => {
   const [createCodeError, setCreateCodeError] = useState("");
   const [createCodeSuccess, setCreateCodeSuccess] = useState("");
   const [referralBinaryType, setReferralBinaryType] = useState("visual");
-  const [referralTableType, setReferralTableType] = useState("uni");
+  const [referralTableType, setReferralTableType] = useState("binary");
   const [referralTreeData, setReferralTreeData] = useState([]);
-  const [referraAddress, setReferraAddress] = useState(null);
+  const [referralTableData, setReferralTableData] = useState([]);
+  const [referralTableHead, setReferralTableHead] = useState([]);
+  const [referralAddress, setReferralAddress] = useState(null);
   const [animateTree, setAnimateTree] = useState(false);
   const [activeTreeUser, setActiveTreeUser] = useState({
     user_address: "",
@@ -127,15 +129,11 @@ const Referral = () => {
   );
   let referralStats = async () => {
     try {
-      try {
-        const { data } = await axios.post("/api/referral/get_reerral_global_data", {
-          address: referraAddress,
-        });
-        console.log(data);
-        setReferralTotal(data);
-      } catch (err) {
-        console.log(err);
-      }
+      const { data } = await axios.post("/api/referral/get_reerral_global_data", {
+        address: referralAddress,
+      });
+      console.log(data);
+      setReferralTotal(data);
     } catch (err) {
       console.log(err);
     }
@@ -167,7 +165,7 @@ const Referral = () => {
     try {
       try {
         const { data } = await axios.post("/api/referral/get_referral_tree", {
-          address: referraAddress,
+          address: referralAddress,
           second_address: item.user_address,
         });
 
@@ -229,15 +227,79 @@ const Referral = () => {
       ),
     },
   ];
+  useEffect(() => {
+    if(referralTableType == 'binary') {
+      let referralTreeTableTh = [
+        {
+          name: "Member Name",
+          width: 15,
+          id: 0,
+        },
+        {
+          name: "User Level / Position",
+          width: 15,
+          mobileWidth: 45,
+          id: 1,
+        },
+        {
+          name: "Total Staked",
+          width: 15,
+          id: 2,
+        },
+        {
+          name: "Date Joined",
+          width: 15,
+          id: 3,
+        },
+      ];
+      setReferralTableHead(referralTreeTableTh)
+    }
+    if(referralTableType == 'uni') {
+      let referralTreeTableUniTh = [
+        {
+          name: "Member Name",
+          width: 15,
+          id: 0,
+        },
+        {
+          name: "User Level / Position",
+          width: 15,
+          mobileWidth: 45,
+          id: 1,
+        },
+        {
+          name: "Rate",
+          width: 15,
+          id: 2,
+        },
+        {
+          name: "Total Staked",
+          width: 15,
+          id: 3,
+        },
+        {
+          name: "Total Earned",
+          width: 15,
+          id: 4,
+        },
+        {
+          name: "Date Joined",
+          width: 15,
+          id: 5,
+        },
+      ];
+      setReferralTableHead(referralTreeTableUniTh)
+    }
+  },[referralTableType])
   const getReferralAddress = async (address) => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_address", {
         address: address,
       });
       console.log(data, "asdasdasdasdad");
-      setReferraAddress(data);
+      setReferralAddress(data);
       setActiveTreeUser({
-        user_address: referraAddress,
+        user_address: referralAddress,
       });
       getReferralTree();
     } catch (err) {
@@ -245,37 +307,37 @@ const Referral = () => {
     }
   };
   const generateTreeTableData = async (table, page) => {
-    table === "binary"
-      ? setReferralCodeTableLoading(true)
-      : setReferralHistoryTableLoading(true);
-    try {
-      const { data } = await axios.post(
-        `/api/referral/${
-          table === "binary"
-            ? "get_referra_binary_transactions"
-            : "get_referra_uni_transactions"
-        }`,
-        {
-          address: account,
-          limit: 5,
-          page: page || 1,
-        },
-      );
+    if(referralAddress) {
+      table === "binary"
+          ? setReferralCodeTableLoading(true)
+          : setReferralHistoryTableLoading(true);
+      try {
+        const { data } = await axios.post(
+            `/api/referral/${
+                table === "binary"
+                    ? "get_referral_data"
+                    : "get_referral_data_uni"
+            }`,
+            {
+              address: referralAddress,
+              limit: 5,
+              page: page || 1,
+            },
+        );
 
-      // if (table === "codes") {
-      //   setCodesTableData(data.referral_code);
-      //   setCodesPaginationTotal(data.total_pages);
-      // } else {
-      //   setRebatesTableData(data.referral_rebates_history);
-      //   setRebatesPaginationTotal(data.total_pages);
-      // }
-      console.log(data, "hiiiis");
-    } catch (err) {
-      console.log(err);
+        // if (table === "codes") {
+        //   setCodesTableData(data.referral_code);
+        //   setCodesPaginationTotal(data.total_pages);
+        // } else {
+        //   setRebatesTableData(data.referral_rebates_history);
+        //   setRebatesPaginationTotal(data.total_pages);
+        // }
+        console.log(data, "hiiiis");
+        setReferralTableData(data);
+      } catch (err) {
+        console.log(err);
+      }
     }
-    table === "codes"
-      ? setReferralCodeTableLoading(false)
-      : setReferralHistoryTableLoading(false);
   };
   const generateCode = async () => {
     try {
@@ -365,7 +427,7 @@ const Referral = () => {
     setAnimateTree(false);
     try {
       const { data } = await axios.post("/api/referral/get_referral_tree", {
-        address: referraAddress,
+        address: referralAddress,
       });
 
       console.log(data);
@@ -414,7 +476,7 @@ const Referral = () => {
       generateTableData("codes");
       generateTableData("rebates");
       generateCode();
-      generateTreeTableData("binary");
+      generateTreeTableData("uni");
       // getReferralTree();
       getReferralAddress(account.toLowerCase());
       referralStats();
@@ -423,37 +485,17 @@ const Referral = () => {
     // getReferralAddress(account.toLowerCase());
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, active, triedReconnect, referraAddress]);
+  }, [account, active, triedReconnect, referralAddress]);
+  useEffect(() => {
+    if (account) {
+      generateTreeTableData(referralTableType);
+    }
 
-  let referralCodeTh = [
-    {
-      name: "My Referral Code",
-      width: 15,
-      id: 0,
-    },
-    {
-      name: "User Address",
-      width: 15,
-      mobileWidth: 45,
-      id: 1,
-    },
-    {
-      name: "User Level",
-      width: 15,
-      id: 2,
-    },
-    {
-      name: "Rate",
-      width: 15,
-      id: 3,
-    },
-    {
-      name: "Total Earned",
-      width: 15,
-      mobileWidth: 45,
-      id: 4,
-    },
-  ];
+    // getReferralAddress(account.toLowerCase());
+    // getOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, referralTableType]);
+
 
   let referralHistoryTh = [
     {
@@ -699,6 +741,8 @@ const Referral = () => {
       <ReferralUI
         cards={referralCards}
         handleCreateCode={handleCreateCode}
+        referralTableType={referralTableType}
+        referralAddress={referralAddress}
         referralTreeActiveAddress={activeTreeUser}
         referralTreeActive={animateTree}
         referralBinaryType={referralBinaryType}
@@ -710,7 +754,8 @@ const Referral = () => {
         referralTreeAddClick={referralTreeAdd}
         referralHistoryTableHead={referralHistoryTh}
         rebatesTableData={rebatesTableData}
-        referralCodeTableHead={referralCodeTh}
+        referralTreeTableData={referralTableData?.list}
+        referralTreeTableHead={referralTableHead}
         codesTableData={codesTableData}
         referralCodeTableEmpty={referralCodeTableEmpty}
         referralHistoryTableEmpty={referralHistoryTableEmpty}
