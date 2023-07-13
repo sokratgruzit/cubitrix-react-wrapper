@@ -424,7 +424,7 @@ const Referral = () => {
     // getReferralAddress(account.toLowerCase());
     // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, referralTableType, binaryTreePageUni]);
+  }, [account, referralTableType, binaryTreePageUni, referralBinaryType]);
 
   useEffect(() => {
     if (account && triedReconnect && active) {
@@ -571,7 +571,10 @@ const Referral = () => {
       value:
         referralTotal?.binary_comission_this_month &&
         referralTotal?.binary_comission_this_month.length > 0
-          ? referralTotal?.binary_comission_this_month[0]?.totalAmount
+          ? referralTotal?.binary_comission_this_month[0]?.totalAmount?.toLocaleString(
+              "en-US",
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+            )
           : 0,
     },
     {
@@ -579,7 +582,10 @@ const Referral = () => {
       value:
         referralTotal?.binary_comission_total &&
         referralTotal?.binary_comission_total.length > 0
-          ? referralTotal?.binary_comission_total[0]?.totalAmount
+          ? referralTotal?.binary_comission_total[0]?.totalAmount?.toLocaleString(
+              "en-US",
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+            )
           : 0,
     },
     {
@@ -591,7 +597,10 @@ const Referral = () => {
       value:
         referralTotal?.uni_comission_this_month &&
         referralTotal?.uni_comission_this_month.length > 0
-          ? referralTotal?.uni_comission_this_month[0]?.totalAmount
+          ? referralTotal?.uni_comission_this_month[0]?.totalAmount?.toLocaleString(
+              "en-US",
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+            )
           : 0,
     },
     {
@@ -599,7 +608,10 @@ const Referral = () => {
       value:
         referralTotal?.uni_comission_total &&
         referralTotal?.uni_comission_total.length > 0
-          ? referralTotal?.uni_comission_total[0]?.totalAmount
+          ? referralTotal?.uni_comission_total[0]?.totalAmount?.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
           : 0,
     },
   ];
@@ -650,8 +662,12 @@ const Referral = () => {
         }}
         rebatesTableData={rebatesTableData}
         referralHistoryButtonsRight={referralHistoryRightButtons}
-        referralHistoryTableHead={referralHistoryType === "uni" ? referralHistoryThUni : referralHistoryThBinary}
-        referralHistoryTableType={referralHistoryType === "uni" ? 'referral-history' : 'referral-history-binary'}
+        referralHistoryTableHead={
+          referralHistoryType === "uni" ? referralHistoryThUni : referralHistoryThBinary
+        }
+        referralHistoryTableType={
+          referralHistoryType === "uni" ? "referral-history" : "referral-history-binary"
+        }
         referralHistoryTableEmpty={referralHistoryTableEmpty}
         referralHistoryTableLoading={referralHistoryTableLoading}
         referralHistoryPaginationCurrent={rebatesCurrentPageUni}
