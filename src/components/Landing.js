@@ -4,8 +4,12 @@ import { Landing as LandingMain } from "@cubitrix/cubitrix-react-ui-module";
 import { Scroll } from "scrollex";
 import { useSelector } from "react-redux";
 import './Landing.css';
-import ABg from "../assets/img/landingA.png"
-import patternBg from "../assets/img/patternBg.svg"
+import ABg from "../assets/img/landing/landingA.png"
+import patternBg from "../assets/img/landing/patternBg.svg"
+import card1 from "../assets/img/landing/patternBg.svg"
+import card2 from "../assets/img/landing/patternBg.svg"
+import card3 from "../assets/img/landing/patternBg.svg"
+import card4 from "../assets/img/landing/patternBg.svg"
 
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
@@ -191,9 +195,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
         </Scroll.Section>
         <Scroll.Section className="h-screen center bg-1">
             <div className="landingSlideContainer">
-
               <div className="landingSlideContainerInner">
-
                   <div className="landingSlideContainerSecond">
                     <Scroll.Item keyframes={keyframes.scaleOut}>
                     <svg width="691" height="207" viewBox="0 0 691 207" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -206,6 +208,15 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               </div>
 
             </div>
+        </Scroll.Section>
+        <Scroll.Section className="h-screen center bg-1">
+          <div className="landingCardsContainer">
+            <div className="landingCardsContainerInner">
+                <div className="landingCard">
+
+                </div>
+            </div>
+          </div>
         </Scroll.Section>
       </Scroll.Container>
       {/*<LandingMain*/}
