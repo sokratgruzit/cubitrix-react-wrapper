@@ -229,34 +229,34 @@ const Staking = () => {
       {
         icon: <CurrentStake />,
         title: "Current Stake",
-        value: parseFloat(stakersInfo.currentStaked).toFixed(5),
+        value: stakersInfo.currentStaked,
       },
       {
         icon: <Earn />,
         title: "Earn",
-        value: parseFloat(stakersInfo.realtimeReward).toFixed(10),
+        value: stakersInfo.realtimeReward,
       },
       {
         icon: <ClaimedReward />,
         title: "Claimed Reward",
-        value: parseFloat(stakersInfo.totalClaimedRewardTokenUser).toFixed(5),
+        value: stakersInfo.totalClaimedRewardTokenUser,
       },
     ],
     [
       {
         icon: <WalletBalance />,
         title: "Your Wallet Balance",
-        value: balance.toFixed(5),
+        value: balance,
       },
       {
         icon: <TotalStaked />,
         title: "Total Staked",
-        value: parseFloat(stakersInfo.totalStakedTokenUser).toFixed(5),
+        value: stakersInfo.totalStakedTokenUser,
       },
       {
         icon: <TotalUnstaked />,
         title: "Total Unstaked",
-        value: parseFloat(stakersInfo.totalUnstakedTokenUser).toFixed(5),
+        value: stakersInfo.totalUnstakedTokenUser,
       },
     ],
   ];

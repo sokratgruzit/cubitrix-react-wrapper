@@ -1491,7 +1491,7 @@ const SideBarRight = () => {
             disconnect={disconnect}
             userAccount={handleUserAccount}
             account={account}
-            mainAccount={mainAccount.address}
+            mainAccount={mainAccount?.address}
           />
         )}
         {sideBar === "UserAccount" && (
@@ -1576,13 +1576,13 @@ const SideBarRight = () => {
             accountBalance={
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance?.toFixed(2)
-                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+                : mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance * 2?.toFixed(2)
                 : (
-                    mainAccount.assets[exchangeAccountType] *
+                    mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd
                   )?.toFixed(2)
             }`}
@@ -1606,13 +1606,13 @@ const SideBarRight = () => {
             accountBalance={
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance?.toFixed(2)
-                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+                : mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance * 2?.toFixed(2)
                 : (
-                    mainAccount.assets[exchangeAccountType] *
+                    mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd
                   )?.toFixed(2)
             }`}

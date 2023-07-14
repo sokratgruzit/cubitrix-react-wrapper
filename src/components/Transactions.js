@@ -167,16 +167,14 @@ const Transactions = () => {
 
   const rightPanelData = [
     {
-      title: "Recieved",
+      title: "Incoming",
       value: totalTransactions?.received,
     },
     {
-      title: "Spent",
+      title: "Outgoing",
       value: totalTransactions?.spent,
     },
   ];
-
-  console.log(filterObject);
 
   const inputs = [
     {
@@ -207,7 +205,7 @@ const Transactions = () => {
         { name: "Transfer", value: "transfer" },
         { name: "Internal Transfer", value: "internal_transfer" },
         { name: "Withdrawal", value: "withdrawal" },
-        { name: "Referral Bonus", value: "referral_bonus" },
+        { name: "Referral Bonus", value: "bonus" },
       ],
       defaultAny: "Any Type",
       onChange: (e) =>

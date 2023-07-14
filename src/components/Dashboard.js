@@ -55,9 +55,10 @@ const Dashboard = () => {
       const data = response.data;
       const amountsToFrom = data?.amounts_to_from?.[0] || {};
       setTransactionsData(data);
+      console.log(amountsToFrom);
       setTotalTransactions({
         total_transaction: data?.total_transaction || 0,
-        received: amountsToFrom.toCount || 0,
+        received: amountsToFrom.toSum || 0,
         spent: amountsToFrom.fromSum || 0,
       });
 
