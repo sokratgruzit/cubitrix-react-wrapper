@@ -302,7 +302,7 @@ function App() {
     },
     {
       to: "/top-up",
-      label: "Payment Method",
+      label: "Purchase",
       svg: (
         <svg
           width="24"

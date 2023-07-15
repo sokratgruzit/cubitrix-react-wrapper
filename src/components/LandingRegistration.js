@@ -133,9 +133,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     if (!email) {
       errors.emailError = "Email is required";
     }
-    if (!referral) {
-      errors.referralError = "Referral code is required";
-    }
 
     if (Object.keys(errors).length > 0) {
       setRegistrationState({
@@ -150,38 +147,38 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       loading: true,
     });
 
-    axios
-      .post("api/referral/register_referral", {
-        referral_address: referral,
-        user_address: account,
-        side: "auto",
-      })
-      .then((res) => {
-        update_profile();
-      })
-      .catch((err) => {
-        update_profile();
+    // axios
+    //   .post("api/referral/register_referral", {
+    //     referral_address: referral,
+    //     user_address: account,
+    //     side: "auto",
+    //   })
+    //   .then((res) => {
+    //     update_profile();
+    //   })
+    //   .catch((err) => {
+    //     update_profile();
 
-        let error = "Referral code could not be assigned";
-        if (err?.response?.data === "Referral code doesnot exist") {
-          error = "Referral code does not exist";
-        }
-        let errorsMessages = [
-          "User already activated both referral code",
-          "User already activated uni level referral code",
-          "User already activated binary level referral code",
-        ];
-        if (errorsMessages.includes(err?.response?.data)) {
-          update_profile();
-          return;
-        }
+    //     let error = "Referral code could not be assigned";
+    //     if (err?.response?.data === "Referral code doesnot exist") {
+    //       error = "Referral code does not exist";
+    //     }
+    //     let errorsMessages = [
+    //       "User already activated both referral code",
+    //       "User already activated uni level referral code",
+    //       "User already activated binary level referral code",
+    //     ];
+    //     if (errorsMessages.includes(err?.response?.data)) {
+    //       update_profile();
+    //       return;
+    //     }
 
-        setRegistrationState({
-          ...registrationState,
-          loading: false,
-        });
-        toast.error(error, { autoClose: 8000 });
-      });
+    //     setRegistrationState({
+    //       ...registrationState,
+    //       loading: false,
+    //     });
+    //     toast.error(error, { autoClose: 8000 });
+    //   });
 
     update_profile();
 
