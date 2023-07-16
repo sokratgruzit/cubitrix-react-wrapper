@@ -64,7 +64,7 @@ const Transactions = () => {
       setTransactionsData(data);
       setTotalTransactions({
         total_transaction: data?.total_transaction || 0,
-        received: amountsToFrom?.toCount || 0,
+        received: amountsToFrom?.toSum || 0,
         spent: amountsToFrom?.fromSum || 0,
       });
       setLoading(false);

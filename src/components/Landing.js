@@ -15,7 +15,7 @@ import contentBg1 from "../assets/img/landing/contentBg1.png"
 import contentBg2 from "../assets/img/landing/contentBg2.png"
 import contentBg3 from "../assets/img/landing/contentBg3.png"
 import footerBg from "../assets/img/landing/footerBg.png"
-import { MiniChart } from "react-ts-tradingview-widgets";
+// import { MiniChart } from "react-tradingview-widget";
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
 
@@ -378,7 +378,6 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               <a href="##">Privacy Policy</a>
               <a href="##">Terms and Conditions</a>
             </div>
-            {/*<MiniChart copyrightStyles={false}></MiniChart>*/}
           </div>
         </Scroll.Section>
       </Scroll.Container>
