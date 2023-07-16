@@ -201,7 +201,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             getBalance().then((balance) => {
               let step = 3;
               setTokenBalance(balance);
-              if (balance >= 5000) {
+              if (balance > 100) {
                 step = 4;
               }
 
@@ -369,32 +369,33 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     let count = 0;
 
     const myFunction = () => {
-      getBalance().then((balance) => {
-        setTokenBalance(balance);
-        if (balance > 5000) {
-          clearInterval(timer);
-          axios
-            .post("/api/accounts/handle-step", { step: 4, address: account })
-            .then((e) => {
-              setStep(4);
-              setRegistrationState({
-                ...registrationState,
-                loading: false,
+      if (library) {
+        getBalance().then((balance) => {
+          setTokenBalance(balance);
+          if (balance > 100) {
+            clearInterval(timer);
+            axios
+              .post("/api/accounts/handle-step", { step: 4, address: account })
+              .then((e) => {
+                setStep(4);
+                setRegistrationState({
+                  ...registrationState,
+                  loading: false,
+                });
+              })
+              .catch((e) => {
+                setRegistrationState({
+                  ...registrationState,
+                  loading: false,
+                });
+                toast.error("Something went wrong!", { autoClose: 8000 });
               });
-            })
-            .catch((e) => {
-              setRegistrationState({
-                ...registrationState,
-                loading: false,
-              });
-              toast.error("Something went wrong!", { autoClose: 8000 });
-            });
-        }
-      });
+          }
+        });
 
-      count++;
-
-      if (count >= 6) {
+        count++;
+      }
+      if (count >= 30) {
         clearInterval(timer);
       }
     };
@@ -406,7 +407,25 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     return () => {
       clearInterval(timer);
     };
-  }, [step]); // Add step as a dependency
+  }, [step, library]); // Add step as a dependency
+
+  const generateAccountsData = async () => {
+    try {
+      const apiUrl = "/api/accounts/get_account_balances";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+      const data = response.data;
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const [stakingLoading, setStakingLoading] = useState(false);
   const [approveResonse, setApproveResonse] = useState(null);
@@ -484,26 +503,30 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         return;
       }
 
-      axios
-        .post("api/referral/register_referral", {
-          referral_address: referralState.value,
-          user_address: account,
-          side: "auto",
-        })
-        .then((res) => {
-          proceedStake();
-        })
-        .catch((err) => {
-          if (err?.response?.data) {
-            toast.error(err?.response?.data, {
-              autoClose: 8000,
-            });
+      if (buyAmount > 500 && referralState.value) {
+        axios
+          .post("api/referral/register_referral", {
+            referral_address: referralState.value,
+            user_address: account,
+            side: "auto",
+          })
+          .then((res) => {
+            proceedStake();
+          })
+          .catch((err) => {
+            if (err?.response?.data) {
+              toast.error(err?.response?.data, {
+                autoClose: 8000,
+              });
+              setStakingLoading(false);
+              return;
+            }
             setStakingLoading(false);
-            return;
-          }
-          setStakingLoading(false);
-          toast.error("something went wrong", { autoClose: 8000 });
-        });
+            toast.error("something went wrong", { autoClose: 8000 });
+          });
+      } else {
+        proceedStake();
+      }
 
       function proceedStake() {
         stake(
@@ -554,6 +577,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                     type: "SET_SYSTEM_ACCOUNT_DATA",
                     payload: res.data.account,
                   });
+                  generateAccountsData();
                   setTimeout(() => {
                     setCurrentObject((prev) => ({ ...prev, amount: "0" }));
                     handleDepositAmount(0);
