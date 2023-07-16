@@ -3,9 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="e2f8ef4d-a3e7-4950-a9be-d510410b884f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/img/landingA.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assets/img/patternBg.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Landing.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Landing.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/Landing.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Landing.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,6 +39,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -62,7 +64,7 @@
       <workItem from="1688548382432" duration="828000" />
       <workItem from="1688635093234" duration="34098000" />
       <workItem from="1689065248277" duration="31450000" />
-      <workItem from="1689321415472" duration="12978000" />
+      <workItem from="1689321415472" duration="33775000" />
     </task>
     <servers />
   </component>
