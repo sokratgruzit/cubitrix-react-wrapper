@@ -178,6 +178,7 @@ function App() {
         value={value}
         onChange={handleChange}
       />
+      {value}
       {error && <p>{error}</p>}
       {showOptions && (
         <div style={{ position: "relative" }}>

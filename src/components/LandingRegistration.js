@@ -1,4 +1,4 @@
-import { LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
+import { HelpText, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
 import {
@@ -250,7 +250,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    referral: "",
+    // referral: "",
   });
 
   useEffect(() => {
@@ -258,7 +258,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       setFormData({
         fullName: appState?.userData?.meta?.name ?? "",
         email: appState?.userData?.meta?.email ?? "",
-        referral: appState?.userData?.referral?.[0]?.referral ?? "",
+        // referral: appState?.userData?.referral?.[0]?.referral ?? "",
       });
     }
   }, [appState?.userData]);
@@ -278,7 +278,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
+    // const buyAmount = (amount - 1) / 2;
     setCoinbaseLoading(true);
+
     axios
       .post("api/transactions/coinbase_deposit_transaction", {
         from: account,
@@ -386,6 +388,13 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [stakingLoading, setStakingLoading] = useState(false);
   const [approveResonse, setApproveResonse] = useState(null);
 
+  const [referralState, setReferralState] = useState({
+    value: "",
+    loading: false,
+    message: "",
+    status: "",
+  });
+
   const handleDepositSubmit = async () => {
     setStakingLoading(true);
 
@@ -416,136 +425,199 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       );
     }
     if (account && !isAllowance) {
-      stake(
-        async () => {
-          setStep(5);
-          axios
-            .post("/api/accounts/handle-step", {
-              active: true,
-              address: account,
-              step: 5,
-            })
-            .then((res) => {
-              dispatch({
-                type: "UPDATE_ACTIVE_EXTENSIONS",
-                payload: { dashboard: "true" },
-              });
-            })
-            .catch((err) => {
-              console.log(err);
+      const buyAmount = Number(depositAmount);
+      if (buyAmount < 100) {
+        toast.error("Minimum amount is 100", { autoClose: 8000 });
+        setStakingLoading(false);
+        return;
+      }
+      if (buyAmount > 500000) {
+        toast.error("Maximum amount is 500000", { autoClose: 8000 });
+        setStakingLoading(false);
+        return;
+      }
+
+      if (
+        (buyAmount > 500 && buyAmount < 5000) ||
+        (buyAmount > 500 && buyAmount % 5000 !== 0)
+      ) {
+        toast.error("Amount higher than 500 should be multiple of 5000", {
+          autoClose: 8000,
+        });
+        setStakingLoading(false);
+        return;
+      }
+
+      if (buyAmount > 500 && !referralState.value) {
+        setReferralState({
+          ...referralState,
+          message: "empty",
+          status: "",
+        });
+        toast.error("Please enter referral code", {
+          autoClose: 8000,
+        });
+        setStakingLoading(false);
+        return;
+      }
+
+      axios
+        .post("api/referral/register_referral", {
+          referral_address: referralState.value,
+          user_address: account,
+          side: "auto",
+        })
+        .then((res) => {
+          proceedStake();
+        })
+        .catch((err) => {
+          if (err?.response?.data) {
+            toast.error(err?.response?.data, {
+              autoClose: 8000,
             });
-          axios
-            .post("/api/accounts/manage_extensions", {
-              address: account,
-              extensions: { staking: "true", referral: "true" },
-            })
-            .then((res) => {
-              if (res?.data?.account) {
+            setStakingLoading(false);
+            return;
+          }
+          setStakingLoading(false);
+          toast.error("something went wrong", { autoClose: 8000 });
+        });
+
+      function proceedStake() {
+        stake(
+          async () => {
+            setStep(5);
+            axios
+              .post("/api/accounts/handle-step", {
+                active: true,
+                address: account,
+                step: 5,
+              })
+              .then((res) => {
                 dispatch({
                   type: "UPDATE_ACTIVE_EXTENSIONS",
-                  payload: res.data.account.extensions,
+                  payload: { dashboard: "true" },
                 });
-              }
-            })
-            .catch((e) => console.log(e.response));
-          axios
-            .post(
-              "/api/accounts/activate-account",
-              {
-                address: account,
-              },
-              {
-                timeout: 60000,
-              },
-            )
-            .then((res) => {
-              if (res.data?.account) {
-                dispatch({
-                  type: "SET_SYSTEM_ACCOUNT_DATA",
-                  payload: res.data.account,
-                });
-                setTimeout(() => {
-                  setCurrentObject((prev) => ({ ...prev, amount: "0" }));
-                  handleDepositAmount(0);
-                }, 3000);
-              }
-            })
-            .catch((e) => {});
-          axios
-            .post("/api/accounts/get_account_balances", {
-              address: account?.toLowerCase(),
-            })
-            .then((res) => {
-              dispatch({
-                type: "SET_ACCOUNTS_DATA",
-                payload: res?.data?.data,
+              })
+              .catch((err) => {
+                console.log(err);
               });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-          setStakingLoading(false);
-          toast.success("Staked successfully", { autoClose: 8000 });
-          handleDepositAmount("");
-          handleTimePeriod(0);
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 3000);
-        },
-        () => {
-          setStakingLoading(false);
-          toast.error("Staking failed, please try again.", { autoClose: 8000 });
-        },
-      );
+            axios
+              .post("/api/accounts/manage_extensions", {
+                address: account,
+                extensions: { staking: "true", referral: "true" },
+              })
+              .then((res) => {
+                if (res?.data?.account) {
+                  dispatch({
+                    type: "UPDATE_ACTIVE_EXTENSIONS",
+                    payload: res.data.account.extensions,
+                  });
+                }
+              })
+              .catch((e) => console.log(e.response));
+            axios
+              .post(
+                "/api/accounts/activate-account",
+                {
+                  address: account,
+                },
+                {
+                  timeout: 120000,
+                },
+              )
+              .then((res) => {
+                if (res.data?.account) {
+                  dispatch({
+                    type: "SET_SYSTEM_ACCOUNT_DATA",
+                    payload: res.data.account,
+                  });
+                  setTimeout(() => {
+                    setCurrentObject((prev) => ({ ...prev, amount: "0" }));
+                    handleDepositAmount(0);
+                  }, 3000);
+                }
+              })
+              .catch((e) => {});
+            axios
+              .post("/api/accounts/get_account_balances", {
+                address: account?.toLowerCase(),
+              })
+              .then((res) => {
+                dispatch({
+                  type: "SET_ACCOUNTS_DATA",
+                  payload: res?.data?.data,
+                });
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+            setStakingLoading(false);
+            toast.success("Staked successfully", { autoClose: 8000 });
+            handleDepositAmount("");
+            handleTimePeriod(0);
+            setTimeout(() => {
+              navigate("/dashboard");
+            }, 3000);
+          },
+          () => {
+            setStakingLoading(false);
+            toast.error("Staking failed, please try again.", { autoClose: 8000 });
+          },
+        );
+      }
     }
   };
 
   return (
-    <LandingSteps
-      account={account}
-      receivePaymentAddress={receivePaymentAddress}
-      handleMetamaskConnect={async () => {
-        await connect("metaMask", injected);
-      }}
-      handleWalletConnect={async () => {
-        await connect("walletConnect", walletConnect);
-      }}
-      connectionLoading={connectionLoading}
-      step={step}
-      setStep={setStep}
-      initialLoading={false}
-      methods={methods}
-      paymentTypes={paymentTypes}
-      handleRegistration={handleRegistration}
-      registrationState={registrationState}
-      setRegistrationState={setRegistrationState}
-      handlePaymentConfirm={handlePaymentConfirm}
-      handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
-      formData={formData}
-      setFormData={setFormData}
-      resendEmail={resendEmail}
-      disconnect={disconnect}
-      closeLandingSteps={() => setInitialRegister(false)}
-      qrcode={qrCodeUrl}
-      handlePurchaseEvent={handlePurchaseEvent}
-      exchangeRate={2}
-      tranasctionFee={1}
-      timeperiod={timeperiod}
-      timeperiodDate={timeperiodDate}
-      handleTimePeriod={handleTimePeriod}
-      handleTimeperiodDate={handleTimeperiodDate}
-      durationOptions={durationOptions}
-      buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
-      handleSubmit={() => handleDepositSubmit()}
-      inputs={inputs}
-      currentObject={currentObject}
-      stakingLoading={stakingLoading}
-      approveResonse={approveResonse}
-      isAllowance={isAllowance}
-      tokenBalance={tokenBalance}
-      depositAmount={depositAmount}
-      coinbaseLoading={coinbaseLoading}
-    />
+    <>
+      <LandingSteps
+        account={account}
+        receivePaymentAddress={receivePaymentAddress}
+        handleMetamaskConnect={async () => {
+          await connect("metaMask", injected);
+        }}
+        handleWalletConnect={async () => {
+          await connect("walletConnect", walletConnect);
+        }}
+        connectionLoading={connectionLoading}
+        step={step}
+        setStep={setStep}
+        initialLoading={false}
+        methods={methods}
+        paymentTypes={paymentTypes}
+        handleRegistration={handleRegistration}
+        registrationState={registrationState}
+        setRegistrationState={setRegistrationState}
+        handlePaymentConfirm={handlePaymentConfirm}
+        handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
+        formData={formData}
+        setFormData={setFormData}
+        resendEmail={resendEmail}
+        disconnect={disconnect}
+        closeLandingSteps={() => setInitialRegister(false)}
+        qrcode={qrCodeUrl}
+        handlePurchaseEvent={handlePurchaseEvent}
+        exchangeRate={2}
+        tranasctionFee={1}
+        timeperiod={timeperiod}
+        timeperiodDate={timeperiodDate}
+        handleTimePeriod={handleTimePeriod}
+        handleTimeperiodDate={handleTimeperiodDate}
+        durationOptions={durationOptions}
+        buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
+        handleSubmit={() => handleDepositSubmit()}
+        inputs={inputs}
+        currentObject={currentObject}
+        stakingLoading={stakingLoading}
+        approveResonse={approveResonse}
+        isAllowance={isAllowance}
+        tokenBalance={tokenBalance}
+        depositAmount={depositAmount}
+        coinbaseLoading={coinbaseLoading}
+        referralState={referralState}
+        setReferralState={setReferralState}
+      />
+    </>
   );
 };
 
