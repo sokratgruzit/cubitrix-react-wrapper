@@ -278,7 +278,30 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
-    // const buyAmount = (amount - 1) / 2;
+    const buyAmount = (Number(amount) - 1) / 2;
+
+    if (buyAmount < 100) {
+      toast.error("Minimum amount is 100", { autoClose: 8000 });
+      setStakingLoading(false);
+      return;
+    }
+    if (buyAmount > 500000) {
+      toast.error("Maximum amount is 500000", { autoClose: 8000 });
+      setStakingLoading(false);
+      return;
+    }
+
+    if (
+      (buyAmount > 500 && buyAmount < 5000) ||
+      (buyAmount > 500 && buyAmount % 5000 !== 0)
+    ) {
+      toast.error("Amount higher than 500 should be multiple of 5000", {
+        autoClose: 8000,
+      });
+      setStakingLoading(false);
+      return;
+    }
+
     setCoinbaseLoading(true);
 
     axios
