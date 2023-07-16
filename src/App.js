@@ -386,6 +386,7 @@ function App() {
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
+
         <Header
           title={
             <svg
