@@ -295,7 +295,7 @@ const Staking = () => {
                 address: account,
               },
               {
-                timeout: 60000,
+                timeout: 120000,
               },
             )
             .then((res) => {

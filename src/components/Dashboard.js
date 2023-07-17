@@ -20,6 +20,7 @@ const Dashboard = () => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const accountsData = useSelector((state) => state.appState?.accountsData);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
+  const userData = useSelector((state) => state.appState?.userData);
   const dashboardTransactionsDataReload = useSelector(
     (state) => state.appState?.dashboardTransactionsDataReload,
   );
@@ -396,6 +397,7 @@ const Dashboard = () => {
       handleWithdraw={(a, b) => handleSidebarOpen("withdraw", b)}
       handleTransfer={() => handleSidebarOpen("transfer")}
       referralHistoryButtonsRight={referralHistoryRightButtons}
+      tier={userData?.tier?.value}
     />
   );
 };
