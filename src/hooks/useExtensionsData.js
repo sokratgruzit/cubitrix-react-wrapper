@@ -16,6 +16,7 @@ export const useExtensionsData = () => {
   const isActive = appState.userData?.active;
   const [extsActive, setExtsActive] = useState({});
   const userBalances = useSelector((state) => state.appState.accountsData);
+  const accountType = useSelector((state) => state.appState?.dashboardAccountType);
 
   const generateAccountsData = async () => {
     try {
@@ -57,6 +58,14 @@ export const useExtensionsData = () => {
             payload: res.data.account.extensions,
           });
         }
+        if (accountType !== "main" && activeExtensions?.[accountType] === "true") {
+          if (res.data.account.extensions?.[accountType] === "false") {
+            dispatch({
+              type: "SET_DASHBOARD_ACCOUNT_TYPE",
+              payload: "main",
+            });
+          }
+        }
         setExtsActive(res.data.account.extensions);
         generateAccountsData();
       })
@@ -79,12 +88,20 @@ export const useExtensionsData = () => {
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
       handleSwitch: (title, value) => {
-        if (title === "trade" && (!isActive || !emailVerified)) return;
+        if (!isActive || !emailVerified) return;
 
         if (!userBalances.find((item) => item.account_category === "trade") && value) {
           dispatch({
             type: "SET_FEE_WARN_TYPE",
             payload: "trade",
+          });
+          return;
+        }
+
+        if (!userBalances.find((item) => item.account_category === "loan") && value) {
+          dispatch({
+            type: "SET_FEE_WARN_TYPE",
+            payload: "loan",
           });
           return;
         }
@@ -112,7 +129,19 @@ export const useExtensionsData = () => {
       description:
         "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
       hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
+      handleSwitch: (title, value) => {
+        if (!isActive || !emailVerified) return;
+
+        if (!userBalances.find((item) => item.account_category === "loan") && value) {
+          dispatch({
+            type: "SET_FEE_WARN_TYPE",
+            payload: "loan",
+          });
+          return;
+        }
+
+        handleChangeExtension(title.toLowerCase(), value);
+      },
       active: extsActive.loan === "true" ? true : false,
       disabled: !(isActive && emailVerified),
     },

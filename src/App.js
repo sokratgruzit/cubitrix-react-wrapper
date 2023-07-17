@@ -356,7 +356,7 @@ function App() {
           payload: { dashboard: "false" },
         });
         getBalance().then((balance) => {
-          if (balance > 200) {
+          if (balance >= 100) {
             setStep(4);
           } else {
             setStep(systemAcc.step);
