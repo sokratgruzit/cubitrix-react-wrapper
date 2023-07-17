@@ -15,7 +15,7 @@ import contentBg1 from "../assets/img/landing/contentBg1.png"
 import contentBg2 from "../assets/img/landing/contentBg2.png"
 import contentBg3 from "../assets/img/landing/contentBg3.png"
 import footerBg from "../assets/img/landing/footerBg.png"
-import { MiniChart,CopyrightStyles } from "react-ts-tradingview-widgets";
+import { MiniChart } from "react-tradingview-widget-components";
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   const account = useSelector((state) => state.connect.account);
 
@@ -287,17 +287,17 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingLatestPricesItems">
               <div className="landingLatestPricesItem">
-
+                <MiniChart width="100%" symbol="BTCUSD"></MiniChart>
               </div>
-              {/*<div className="landingLatestPricesItem">*/}
-              {/*  <MiniChart isTransparent='true' width="100%"></MiniChart>*/}
-              {/*</div>*/}
-              {/*<div className="landingLatestPricesItem">*/}
-              {/*  <MiniChart isTransparent='true' width="100%"></MiniChart>*/}
-              {/*</div>*/}
-              {/*<div className="landingLatestPricesItem">*/}
-              {/*  <MiniChart isTransparent='true' width="100%"></MiniChart>*/}
-              {/*</div>*/}
+              <div className="landingLatestPricesItem">
+                <MiniChart width="100%" symbol="ETHUSD"></MiniChart>
+              </div>
+              <div className="landingLatestPricesItem">
+                <MiniChart width="100%" symbol="USDTUSD"></MiniChart>
+              </div>
+              <div className="landingLatestPricesItem">
+                <MiniChart width="100%"></MiniChart>
+              </div>
             </div>
           </div>
           <div className="landingContentContainer">
@@ -386,12 +386,12 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
 
           <div className="landingFooter">
 
-            </div>
             <div>© 2023 All rights reserved</div>
             <div className="landingFooterNav">
               <a href="##">Privacy Policy</a>
               <a href="##">Terms and Conditions</a>
             </div>
+          </div>
         </Scroll.Section>
       </Scroll.Container>
       {/*<LandingMain*/}
