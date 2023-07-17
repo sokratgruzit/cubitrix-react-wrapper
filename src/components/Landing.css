@@ -67,7 +67,7 @@
     padding-top: 30px;
 }
 body {
-    background: #0E2225;
+    background: #0E2225!important;
 }
 .patternBg {
     position: absolute;
@@ -302,6 +302,15 @@ body {
     .landingCardLtls .landingCard img {
         width: 250px;
     }
+    .landingLatestPricesDescr h2 {
+        font-size: 40px;
+    }
+    .landingLatestPricesDescr p {
+        font-size: 20px;
+    }
+    .landingLatestPricesDescr {
+        padding-left: 50px;
+    }
 }
 @media only screen and (max-width: 1360px) {
     .landingSlideContainerTitle h1 {
@@ -333,6 +342,18 @@ body {
     }
 }
 @media only screen and (max-width: 767px) {
+    .landingLatestPrices {
+        flex-direction: column;
+    }
+    .landingLatestPricesDescr {
+        width: 100%;
+        padding: 0px 15px;
+        margin-bottom: 30px;
+        margin-top: 30px;
+    }
+    .landingLatestPricesItems {
+        width: 100%;
+    }
     .landingSlideContainerTitle h1 {
         font-size: 35px;
     }
@@ -346,7 +367,7 @@ body {
         width: 100%;
     }
     .landingSlideContainerSecond svg {
-        transform: scale(.6);
+        transform: scale(.5);
     }
     .landingSlideContainerSecond p {
         font-size: 20px;
