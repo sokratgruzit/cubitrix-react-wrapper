@@ -19,6 +19,7 @@ const Transactions = () => {
     time: "",
   });
   const [loading, setLoading] = useState(false);
+  const [itemsLimit, setItemsLimit] = useState();
 
   const [transactionsPaginationTotal, setTransactionsPaginationTotal] = useState(1);
   const [transactionsCurrentPage, setTransactionsCurrentPage] = useState(1);
@@ -43,15 +44,15 @@ const Transactions = () => {
 
       const requestBody = {
         address: account?.toLowerCase(),
-        limit: 5,
+        limit: itemsLimit,
         page: transactionsCurrentPage,
         ...filterObject,
         account: filterObject?.account === "main" ? "main" : filterObject?.account,
         time:
           time instanceof Date
             ? `${year}-${(month + 1).toString().padStart(2, "0")}-${day
-                .toString()
-                .padStart(2, "0")}`
+              .toString()
+              .padStart(2, "0")}`
             : filterObject?.time,
       };
 
@@ -74,7 +75,7 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    if (account && active && triedReconnect) {
+    if (account && active && triedReconnect && itemsLimit) {
       generateTransactionsData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,6 +87,7 @@ const Transactions = () => {
     account,
     active,
     triedReconnect,
+    itemsLimit
   ]);
 
   const transactionHeader = [
@@ -224,6 +226,22 @@ const Transactions = () => {
           ...prev,
           [e.target.name]: e.target.value,
         })),
+    },
+    {
+      title: "Choose Items To Show",
+      name: "type",
+      type: "lable-input-select",
+      options: [
+        { name: "5", value: "5" },
+        { name: "10", value: "10" },
+        { name: "15", value: "15" },
+        { name: "20", value: "20" },
+        { name: "25", value: "25" },
+        { name: "30", value: "30" },
+        { name: "35", value: "35" },
+      ],
+      defaultAny: 5,
+      onChange: (e) => setItemsLimit(e.target.value)
     },
   ];
 
