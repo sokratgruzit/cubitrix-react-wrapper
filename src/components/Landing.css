@@ -173,6 +173,7 @@ body {
     font-size: 60px;
     line-height: 130%;
     margin-bottom: 30px;
+    color: rgba(87,171,277);
 }
 .landingContentHalf p {
     font-size: 30px;
@@ -272,10 +273,18 @@ body {
     font-size: 30px;
     line-height: 150%;
 }
+.landingLatestPricesDescr h3,.landingContentDescription h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+.landingContentDescription h3 span {
+    color: #C38C5C;
+}
 .landingLatestPrices h2 {
     font-size: 60px;
     line-height: 130%;
     margin-bottom: 30px;
+    color: rgba(87,171,277);
 }
 .landingLatestPricesItems {
     display: flex;
@@ -285,11 +294,75 @@ body {
 .landingLatestPricesItem {
     width: 50%;
 }
-
+.landingContentDescription li {
+    font-size: 20px;
+    line-height: 150%;
+    padding-left: 20px;
+    position: relative;
+    margin-top: 10px;
+}
+.landingContentDescription li:after {
+    content: '';
+    height: 8px;
+    width: 8px;
+    background: #C38C5C;
+    border-radius: 50%;
+    position: absolute;
+    left: 0px;
+    top: 12px;
+}
+.landingContentDescription ul {
+    margin-top: 20px;
+}
+.landingColumns {
+    display: flex;
+    width: 100%;
+    padding: 0px 100px;
+    gap: 30px;
+    margin: 100px 0px;
+}
+.landingColumn {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    background: #10282B;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    padding: 20px;
+}
+.landingColumn h3 {
+    font-size: 35px;
+    line-height: 130%;
+    color: #C38C5C;
+}
+.landingColumn h4 {
+    color: rgba(87,171,277);
+    font-size: 20px;
+    margin-bottom: 30px;
+    color: rgba(87,171,277);
+}
+.landingContentContainerTxt .landingContentDescription{
+    justify-content: flex-start;
+    padding: 0px 50px;
+}
+.landingContentContainerTxt .landingContentHalf:nth-child(1) {
+    border-right: 2px solid rgba(195, 140, 92, 1);
+}
+.landingContentContainer.landingContentContainerTxt {
+    padding: 0px 100px;
+    padding-bottom: 50px;
+}
 /*#tradingview_widget_wrapper > div:nth-child(2) {*/
 /*    display: none;*/
 /*}*/
 @media only screen and (max-width: 1680px){
+    .landingContentContainer.landingContentContainerTxt {
+        padding: 0px 50px;
+        padding-bottom: 50px;
+    }
+    .landingColumns {
+        padding: 0px 50px;
+    }
     .landingContentHalf h2 {
         font-size: 40px;
     }
@@ -313,6 +386,27 @@ body {
     }
 }
 @media only screen and (max-width: 1360px) {
+    .landingColumn {
+        width: 100%;
+    }
+    .landingColumns {
+        flex-direction: column;
+    }
+    .landingContentContainerTxt .landingContentDescription{
+        padding: 0px;
+    }
+    .landingContentContainerTxt .landingContentHalf:nth-child(1) {
+        border-right: 0px;
+        border-bottom: 2px solid rgba(195, 140, 92, 1);
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+    }
+    .landingContentContainerTxt {
+        flex-direction: column;
+    }
+    .landingContentContainerTxt .landingContentHalf{
+        width: 100%;
+    }
     .landingSlideContainerTitle h1 {
         font-size: 70px;
     }
@@ -421,6 +515,21 @@ body {
     .landingFooterNav {
         margin-bottom: 30px;
         margin-top: 15px;
+    }
+    .landingContentContainer.landingContentContainerTxt {
+        padding: 0px 15px;
+        padding-bottom: 10px;
+        flex-direction: column;
+    }
+    .landingColumns {
+        margin: 50px 0px;
+        padding: 0px 15px;
+    }
+    .landingContentHalf h2 {
+        font-size: 25px;
+    }
+    .landingContentHalf p,.landingContentDescription li {
+        font-size: 16px;
     }
 }
 

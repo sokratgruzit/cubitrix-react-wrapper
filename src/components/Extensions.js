@@ -21,7 +21,12 @@ const Extensions = () => {
           popUpElement={
             <FeeWarning
               handleProceed={() => {
-                handleChangeExtension("trade", true);
+                if (appState.feeWarnAccountType === "loan") {
+                  handleChangeExtension("loan", true);
+                }
+                if (appState.feeWarnAccountType === "trade") {
+                  handleChangeExtension("trade", true);
+                }
                 dispatch({ type: "SET_FEE_WARN_TYPE", payload: null });
               }}
               handleCancel={() => dispatch({ type: "SET_FEE_WARN_TYPE", payload: null })}

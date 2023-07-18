@@ -3,10 +3,19 @@
   <component name="ChangeListManager">
     <list default="true" id="e2f8ef4d-a3e7-4950-a9be-d510410b884f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Extensions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Extensions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Landing.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Landing.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Landing.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Landing.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LandingRegistration.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LandingRegistration.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TopUp/TopUp.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TopUp/TopUp.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/connector.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/connector.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +73,9 @@
       <workItem from="1688635093234" duration="34098000" />
       <workItem from="1689065248277" duration="31450000" />
       <workItem from="1689321415472" duration="41416000" />
-      <workItem from="1689667573120" duration="2139000" />
+      <workItem from="1689667573120" duration="3160000" />
+      <workItem from="1689683213267" duration="124000" />
+      <workItem from="1689684590864" duration="6502000" />
     </task>
     <servers />
   </component>

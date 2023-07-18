@@ -94,7 +94,7 @@ function App() {
     // eslint-disable-next-line
   }, [account, triedReconnect, active, depositAmount]);
 
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(6);
   const [initialRegister, setInitialRegister] = useState(true);
 
   const updateState = () => {
@@ -341,7 +341,7 @@ function App() {
         systemAcc.active &&
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
-        setStep(5);
+        setStep(6);
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
           payload: { dashboard: "true" },
@@ -356,8 +356,8 @@ function App() {
           payload: { dashboard: "false" },
         });
         getBalance().then((balance) => {
-          if (balance > 200) {
-            setStep(4);
+          if (balance >= 100) {
+            setStep(systemAcc.step > 4 ? systemAcc.step : 4);
           } else {
             setStep(systemAcc.step);
           }
@@ -386,7 +386,6 @@ function App() {
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
-
         <Header
           title={
             <svg
@@ -412,10 +411,10 @@ function App() {
           handleNotifications={handleNotifications}
           verified={emailVerified}
           amount={balance ?? 0}
-          initialRegister={step < 5}
+          initialRegister={step < 6}
           setInitialRegister={setInitialRegister}
         />
-        {initialRegister && step < 5 && (
+        {initialRegister && step < 6 && (
           <LandingRegistration
             step={step}
             setStep={setStep}

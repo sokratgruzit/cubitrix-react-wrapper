@@ -15,8 +15,10 @@ const Dashboard = () => {
   const [totalTransactions, setTotalTransactions] = useState({});
 
   const [totalReferralData, setTotalReferralData] = useState(false);
+
   const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
+  const extensions = useSelector((state) => state.extensions.activeExtensions);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const accountsData = useSelector((state) => state.appState?.accountsData);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
@@ -297,7 +299,6 @@ const Dashboard = () => {
           },
         )
         .then((res) => {
-          console.log(res.data.transaction);
           setRebatesTableData(res.data.transaction);
           setReferralHistoryTableLoading(false);
         })
@@ -331,49 +332,6 @@ const Dashboard = () => {
     </div>
   );
 
-  let referralHistoryThUni = [
-    {
-      name: "User Address",
-      width: 15,
-      mobileWidth: 45,
-      id: 0,
-    },
-    {
-      name: "User Level",
-      width: 15,
-      id: 1,
-    },
-    {
-      name: "Amount",
-      width: 15,
-      id: 2,
-    },
-    {
-      name: "Date",
-      width: 15,
-      mobileWidth: 45,
-      id: 3,
-    },
-  ];
-  let referralHistoryThBinary = [
-    {
-      name: "Amount",
-      width: 15,
-      mobileWidth: 45,
-      id: 0,
-    },
-    {
-      name: "Position",
-      width: 15,
-      id: 1,
-    },
-    {
-      name: "Date",
-      width: 15,
-      id: 2,
-    },
-  ];
-
   return (
     <DashboardUI
       accountType={accountType}
@@ -398,6 +356,7 @@ const Dashboard = () => {
       handleTransfer={() => handleSidebarOpen("transfer")}
       referralHistoryButtonsRight={referralHistoryRightButtons}
       tier={userData?.tier?.value}
+      extensions={extensions}
     />
   );
 };
