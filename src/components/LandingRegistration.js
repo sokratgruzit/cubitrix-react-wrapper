@@ -377,7 +377,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             axios
               .post("/api/accounts/handle-step", { step: 4, address: account })
               .then((e) => {
-                setStep(4);
+                setStep(appState?.userData?.step > 4 ? appState?.userData?.step : 4);
                 setRegistrationState({
                   ...registrationState,
                   loading: false,
@@ -560,7 +560,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             setStep(5);
             axios
               .post("/api/accounts/handle-step", {
-                active: true,
                 address: account,
                 step: 5,
               })
@@ -603,7 +602,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                     type: "SET_SYSTEM_ACCOUNT_DATA",
                     payload: res.data.account,
                   });
-                  generateAccountsData();
                   setTimeout(() => {
                     setCurrentObject((prev) => ({ ...prev, amount: "0" }));
                     handleDepositAmount(0);
@@ -624,14 +622,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               .catch((err) => {
                 console.error(err);
               });
-            updateState();
             setStakingLoading(false);
             toast.success("Staked successfully", { autoClose: 8000 });
             handleDepositAmount("");
             handleTimePeriod(0);
-            setTimeout(() => {
-              navigate("/dashboard");
-            }, 3000);
           },
           () => {
             setStakingLoading(false);
@@ -690,6 +684,29 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         coinbaseLoading={coinbaseLoading}
         referralState={referralState}
         setReferralState={setReferralState}
+        handleFinish={() => {
+          axios
+            .post("/api/accounts/handle-step", {
+              active: true,
+              address: account,
+              step: 6,
+            })
+            .then((res) => {
+              dispatch({
+                type: "UPDATE_ACTIVE_EXTENSIONS",
+                payload: { dashboard: "true" },
+              });
+              setStep(6);
+              generateAccountsData();
+              updateState();
+              setTimeout(() => {
+                navigate("/dashboard");
+              }, 3000);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }}
       />
     </>
   );
