@@ -186,7 +186,7 @@ const Dashboard = () => {
       name: "Status",
       width: 16.6,
       mobileWidth: width >= 500 ? 45 : false,
-      id: 4,
+      id: 5,
       height: "40px",
       icon: (
         <svg
