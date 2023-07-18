@@ -246,7 +246,7 @@ const Dashboard = () => {
     atar: "/img/dashboard/atar.png",
     btc: "/img/dashboard/btc.png",
     eth: "/img/dashboard/eth.png",
-    usdt: "/img/dashboard/usdt.png",
+    usdc: "/img/dashboard/usdc.png",
     gold: "/img/dashboard/gold.png",
     platinum: "/img/dashboard/platinum.png",
   };

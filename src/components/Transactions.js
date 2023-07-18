@@ -19,7 +19,7 @@ const Transactions = () => {
     time: "",
   });
   const [loading, setLoading] = useState(false);
-  const [itemsLimit, setItemsLimit] = useState();
+  const [itemsLimit, setItemsLimit] = useState("5");
 
   const [transactionsPaginationTotal, setTransactionsPaginationTotal] = useState(1);
   const [transactionsCurrentPage, setTransactionsCurrentPage] = useState(1);
@@ -51,8 +51,8 @@ const Transactions = () => {
         time:
           time instanceof Date
             ? `${year}-${(month + 1).toString().padStart(2, "0")}-${day
-              .toString()
-              .padStart(2, "0")}`
+                .toString()
+                .padStart(2, "0")}`
             : filterObject?.time,
       };
 
@@ -87,7 +87,7 @@ const Transactions = () => {
     account,
     active,
     triedReconnect,
-    itemsLimit
+    itemsLimit,
   ]);
 
   const transactionHeader = [
@@ -241,7 +241,7 @@ const Transactions = () => {
         { name: "35", value: "35" },
       ],
       defaultAny: 5,
-      onChange: (e) => setItemsLimit(e.target.value)
+      onChange: (e) => setItemsLimit(e.target.value),
     },
   ];
 
