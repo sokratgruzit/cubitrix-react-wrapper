@@ -19,7 +19,7 @@ const Transactions = () => {
     time: "",
   });
   const [loading, setLoading] = useState(false);
-  const [itemsLimit, setItemsLimit] = useState();
+  const [itemsLimit, setItemsLimit] = useState(5);
 
   const [transactionsPaginationTotal, setTransactionsPaginationTotal] = useState(1);
   const [transactionsCurrentPage, setTransactionsCurrentPage] = useState(1);
@@ -94,26 +94,26 @@ const Transactions = () => {
     {
       name: "From",
       mobileWidth: width >= 500 ? 45 : 100,
-      width: 20,
+      width: 16.6,
       id: 0,
       height: "40px",
     },
     {
       name: "To",
-      width: 20,
+      width: 16.6,
       // mobileWidth: 45,
       id: 1,
       height: "40px",
     },
     {
       name: "Type",
-      width: 20,
+      width: 16.6,
       id: 2,
       height: "40px",
     },
     {
       name: "Time",
-      width: 20,
+      width: 16.6,
       id: 3,
       height: "40px",
       icon: (
@@ -137,7 +137,7 @@ const Transactions = () => {
     },
     {
       name: "Amount",
-      width: 20,
+      width: 16.6,
       mobileWidth: width >= 500 ? 45 : false,
       id: 4,
       height: "40px",
@@ -159,6 +159,13 @@ const Transactions = () => {
           />
         </svg>
       ),
+    },
+    {
+      name: "Status",
+      width: 16.6,
+      mobileWidth: width >= 500 ? 45 : false,
+      id: 5,
+      height: "40px",
     },
   ];
 
@@ -249,6 +256,7 @@ const Transactions = () => {
     label: "No Transaction History",
     icon: <NoHistoryIcon />,
   };
+  console.log(transactionsData)
   return (
     <TransactionsUI
       header={"Transactions"}
