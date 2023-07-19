@@ -326,10 +326,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   }
 
-  const [currentObject, setCurrentObject] = useState({
-    amount: "",
-  });
-
   const { durationOptions } = useTableParameters("staking");
 
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -352,13 +348,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       placeholder: "0",
       onChange: (e) => {
         handleDepositAmount(e.target.value);
-        setCurrentObject((prev) => ({
-          ...prev,
-          [e.target.name]: e.target.value,
-        }));
       },
     },
   ];
+
+  function amountProgressOnchange(e) {
+    handleDepositAmount(e.target.value);
+  }
+
+  const [progressValue, setProgressValue] = useState(300);
 
   useEffect(() => {
     if (step !== 3) {
@@ -603,7 +601,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                     payload: res.data.account,
                   });
                   setTimeout(() => {
-                    setCurrentObject((prev) => ({ ...prev, amount: "0" }));
                     handleDepositAmount(0);
                   }, 3000);
                 }
@@ -675,7 +672,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
         handleSubmit={() => handleDepositSubmit()}
         inputs={inputs}
-        currentObject={currentObject}
         stakingLoading={stakingLoading}
         approveResonse={approveResonse}
         isAllowance={isAllowance}
@@ -684,6 +680,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         coinbaseLoading={coinbaseLoading}
         referralState={referralState}
         setReferralState={setReferralState}
+        amountProgressOnchange={amountProgressOnchange}
         handleFinish={() => {
           axios
             .post("/api/accounts/handle-step", {
