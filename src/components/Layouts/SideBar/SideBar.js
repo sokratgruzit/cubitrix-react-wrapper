@@ -683,174 +683,176 @@ const SideBarRight = () => {
 
   const [depositLoading, setDepositLoading] = useState(false);
   const handleDepositSubmit = async () => {
-    if (!account) {
-      toast.error("Please connect your wallet.", { autoClose: 8000 });
-      return;
-    }
-
     setDepositLoading(true);
 
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+    if (!account) {
+      toast.error("Please connect your wallet.", { autoClose: 8000 });
+      await delay;
+      setDepositLoading(false);
+      return;
+    }
 
-    let errorMsg = null;
+    const web3 = library;
+    const fromAddress = account;
 
-    try {
-      const web3 = library;
-      const fromAddress = account;
+    const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
 
-      const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
+    const toAddress = userBalances?.find(
+      (item) => item?.account_category === "system",
+    )?.address;
 
-      const toAddress = userBalances?.find(
-        (item) => item?.account_category === "system",
-      )?.address;
+    const amount = web3.utils.toBN(
+      web3.utils.toWei(currentObject.amount.toString(), "ether"),
+    );
 
-      const amount = web3.utils.toBN(
-        web3.utils.toWei(currentObject.amount.toString(), "ether"),
-      );
+    const gasPrice = await web3.eth.getGasPrice();
 
-      const gasPrice = await web3.eth.getGasPrice();
+    const transferData = tokenContract.methods
+      .transfer(toAddress, amount.toString())
+      .encodeABI();
 
-      const transferData = tokenContract.methods
-        .transfer(toAddress, amount.toString())
-        .encodeABI();
+    const transactionObject = {
+      from: fromAddress,
+      to: tokenAddress,
+      data: transferData,
+      gasPrice,
+    };
 
-      const transactionObject = {
-        from: fromAddress,
-        to: tokenAddress,
-        data: transferData,
-        gasPrice,
-      };
-
-      const receipt = await web3.eth.sendTransaction(transactionObject);
-
-      const res = await axios.post("/api/transactions/direct_deposit", {
-        address: account,
-        hash: receipt.transactionHash,
+    web3.eth
+      .sendTransaction(transactionObject)
+      .then((receipt) => {
+        axios
+          .post("/api/transactions/direct_deposit", {
+            address: account,
+            hash: receipt.transactionHash,
+          })
+          .then(async (res) => {
+            if (res?.data?.updatedAccount) {
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.updatedAccount,
+              });
+              dispatch({
+                type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+                payload: {},
+              });
+              toast.success("Amount deposited successfully.", { autoClose: 8000 });
+            }
+            await delay;
+            setDepositLoading(false);
+          })
+          .catch(async (e) => {
+            console.log(e);
+            toast.error("Transaction could not be registered.", { autoClose: 8000 });
+            await delay;
+            setDepositLoading(false);
+          });
+      })
+      .catch(async (error) => {
+        if (error.message.includes("User denied transaction signature")) {
+          toast.error("Transaction rejected.", { autoClose: 8000 });
+          await delay;
+          setDepositLoading(false);
+          return;
+        }
+        toast.error("Transaction failed.", { autoClose: 8000 });
+        await delay;
+        setDepositLoading(false);
       });
-
-      if (res?.data?.updatedAccount) {
-        dispatch({
-          type: "SET_SYSTEM_ACCOUNT_DATA",
-          payload: res.data.updatedAccount,
-        });
-        dispatch({
-          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-          payload: {},
-        });
-
-        toast.success("Amount deposited successfully.", { autoClose: 8000 });
-      }
-    } catch (error) {
-      if (error.message.includes("User denied transaction signature")) {
-        errorMsg = "Transaction rejected.";
-      } else {
-        errorMsg = "Transaction failed.";
-      }
-    }
-
-    await delay;
-
-    setDepositLoading(false);
-
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
   };
 
   const [withdrawSubmitLoading, setWithdrawSubmitLoading] = useState(false);
   const handleWithdrawSubmit = async () => {
-    setWithdrawSubmitLoading(true);
-
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (!account) {
-      await delay;
       toast.error("Please connect your wallet.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (!currentObject.address) {
-      await delay;
       toast.error("Please enter address.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (currentObject?.address?.length < 42) {
-      await delay;
       toast.error("Please enter a valid address.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (isNaN(currentObject.amount)) {
-      await delay;
       toast.error("Please enter a valid amount.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (Number(currentObject.amount) <= 0) {
-      await delay;
       toast.error("Incorrect amount", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
-    let errorMsg = null;
-
-    try {
-      const [res, mindelay] = await Promise.all([
-        axios.post("/api/transactions/make_withdrawal", {
-          address: account,
-          address_to: currentObject.address,
-          amount: currentObject.amount,
-          accountType: exchangeAccountType,
-          rate: rates[exchangeAccountType].usd,
-        }),
-        delay,
-      ]);
-
-      toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
-
-      if (res.data?.result) {
-        generateAccountsData();
-        dispatch({
-          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-          payload: {},
-        });
-      }
-    } catch (e) {
-      if (e.response?.data?.message === "insufficient funds") {
-        errorMsg = "Insufficient balance";
-      } else {
-        errorMsg = "Withdrawal failed.";
-      }
-      console.log(e);
-    }
-
-    setWithdrawSubmitLoading(false);
-
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
+    setWithdrawSubmitLoading(true);
+    axios
+      .post("/api/transactions/make_withdrawal", {
+        address: account,
+        address_to: currentObject.address,
+        amount: currentObject.amount,
+        accountType: exchangeAccountType,
+        rate: rates[exchangeAccountType].usd,
+      })
+      .then(async (res) => {
+        toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
+        if (res.data?.result) {
+          generateAccountsData();
+          dispatch({
+            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+            payload: {},
+          });
+        }
+        await delay;
+        setWithdrawSubmitLoading(false);
+      })
+      .catch(async (e) => {
+        let error;
+        if (e.response?.data?.message === "insufficient funds") {
+          error = "Insufficient balance";
+        }
+        toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+        await delay;
+        setWithdrawSubmitLoading(false);
+      });
   };
 
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
   const handleTransferSubmit = async () => {
     setTransferSubmitLoading(true);
 
-    // Create a promise that resolves after one second
-    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+    const delay = new Promise((resolve) => setTimeout(resolve, 3000));
 
     let errorMsg = null;
-
     if (Number(currentObject.amount) <= 0) {
       errorMsg = "Incorrect amount";
-    } else if (currentObject.transferType === "external") {
-      try {
-        const res = await axios.post("/api/transactions/make_transfer", {
+      toast.error(errorMsg, { autoClose: 8000 });
+      await delay;
+      setTransferSubmitLoading(false);
+      return;
+    }
+
+    try {
+      let transferPromise;
+
+      if (currentObject.transferType === "external") {
+        transferPromise = axios.post("/api/transactions/make_transfer", {
           from: account,
           to: currentObject.transferAddress,
           amount: currentObject.amount,
@@ -858,8 +860,22 @@ const SideBarRight = () => {
           account_category_from: "main",
           account_category_to: "main",
         });
+      } else if (currentObject.transferType === "internal") {
+        transferPromise = axios.post("/api/transactions/make_transfer", {
+          from: account,
+          to: account,
+          amount: currentObject.amount,
+          tx_currency: "ether",
+          account_category_from: accountType,
+          account_category_to: currentObject.account,
+          tx_type: "internal_transfer",
+        });
+      }
 
-        if (res.data?.data?.updatedAcc) {
+      const [res] = await Promise.all([transferPromise]);
+
+      if (res.data?.data?.updatedAcc) {
+        if (currentObject.transferType === "external") {
           dispatch({
             type: "SET_SYSTEM_ACCOUNT_DATA",
             payload: res.data.data.updatedAcc,
@@ -880,30 +896,7 @@ const SideBarRight = () => {
               transferAddress: "",
             }));
           }, 3000);
-        }
-      } catch (e) {
-        if (e?.response?.data === "we dont have such address registered in our system.") {
-          errorMsg = "Incorrect to address";
-        } else if (e?.response?.data === "Cannot transfer to this account") {
-          errorMsg = "Recipient has not activated account";
-        } else if (e?.response?.data === "Insufficient funds") {
-          errorMsg = "Insufficient funds";
-        }
-        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
-      }
-    } else if (currentObject.transferType === "internal") {
-      try {
-        const res = await axios.post("/api/transactions/make_transfer", {
-          from: account,
-          to: account,
-          amount: currentObject.amount,
-          tx_currency: "ether",
-          account_category_from: accountType,
-          account_category_to: currentObject.account,
-          tx_type: "internal_transfer",
-        });
-
-        if (res.data?.data?.updatedAcc) {
+        } else if (currentObject.transferType === "internal") {
           generateAccountsData();
           dispatch({
             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
@@ -921,27 +914,21 @@ const SideBarRight = () => {
             }));
           }, 3000);
         }
-      } catch (e) {
-        if (e?.response?.data === "we dont have such address registered in our system.") {
-          errorMsg = "Incorrect to address";
-        } else if (e?.response?.data === "Cannot transfer to this account") {
-          errorMsg = "Recipient has not activated account";
-        } else if (e?.response?.data === "Insufficient funds") {
-          errorMsg = "Insufficient funds";
-        }
-        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
       }
-    }
+    } catch (e) {
+      if (e?.response?.data === "we dont have such address registered in our system.") {
+        errorMsg = "Incorrect to address";
+      } else if (e?.response?.data === "Cannot transfer to this account") {
+        errorMsg = "Recipient has not activated account";
+      } else if (e?.response?.data === "Insufficient funds") {
+        errorMsg = "Insufficient funds";
+      }
 
-    // Wait for delay promise to resolve before setting loading state to false
+      toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
+    }
     await delay;
 
     setTransferSubmitLoading(false);
-
-    // If there was an error, display it now
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
   };
 
   const [chosenAccount, setChosenAccount] = useState({});
@@ -1381,42 +1368,35 @@ const SideBarRight = () => {
   }, [card, exchangeAccountType, ratedExchange]);
 
   const [exchangeLoading, setExchangeLoading] = useState(false);
-  const handleExchangeSubmit = async () => {
-    setExchangeLoading(true);
 
+  const handleExchangeSubmit = async () => {
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
-    let errorMsg = null;
-
-    try {
-      const res = await axios.post("/api/transactions/exchange", {
+    setExchangeLoading(true);
+    await axios
+      .post("/api/transactions/exchange", {
         address: account,
         fromAccType: exchangeAccountType,
         fromAmount: Number(currentObject.transfer_amount),
         toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
         toAmount: Number(currentObject.receive_amount),
+      })
+      .then(async (res) => {
+        generateAccountsData();
+        dispatch({
+          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+          payload: {},
+        });
+        toast.success("Exchange successful.", { autoClose: 8000 });
+        await delay;
+        setExchangeLoading(false);
+      })
+      .catch(async (e) => {
+        toast.error("Exchange failed.", { autoClose: 8000 });
+        await delay;
+        setExchangeLoading(false);
+        console.log(e);
       });
-
-      generateAccountsData();
-
-      dispatch({
-        type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-        payload: {},
-      });
-
-      toast.success("Exchange successful.", { autoClose: 8000 });
-    } catch (e) {
-      errorMsg = "Exchange failed.";
-      console.log(e);
-    }
-
-    await delay;
-
-    setExchangeLoading(false);
-
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
   };
 
   return (

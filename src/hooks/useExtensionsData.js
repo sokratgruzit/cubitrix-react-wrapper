@@ -292,7 +292,14 @@ export const useExtensionsData = () => {
     }
 
     return arr;
-  }, [appState?.userData?.tier, extsActive, isActive, emailVerified, userBalances]);
+  }, [
+    appState?.userData?.tier,
+    extsActive,
+    isActive,
+    emailVerified,
+    userBalances,
+    activeExtensions,
+  ]);
 
   return {
     handleChangeExtension,
