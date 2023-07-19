@@ -69,6 +69,16 @@ export const useExtensionsData = () => {
             });
           }
         }
+        if (
+          res?.data?.account?.extensions?.notifyAdmin === "false" ||
+          res?.data?.account?.extensions?.notify === "false"
+        ) {
+          dispatch({
+            type: "SET_SIDE_BAR",
+            payload: { sideBarOpen: false },
+          });
+        }
+
         setExtsActive(res.data.account.extensions);
         generateAccountsData();
       })
@@ -280,8 +290,6 @@ export const useExtensionsData = () => {
         disabled: !emailVerified,
       });
     }
-
-    console.log(activeExtensions);
 
     return arr;
   }, [appState?.userData?.tier, extsActive, isActive, emailVerified, userBalances]);
