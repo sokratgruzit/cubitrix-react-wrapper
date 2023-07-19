@@ -1461,7 +1461,13 @@ const SideBarRight = () => {
             warning={!appState.emailVerified}
             completeAccount={handleUserAccount}
             sideBarClose={handleClose}
-            disconnect={disconnect}
+            disconnect={() => {
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBarOpen: false },
+              });
+              disconnect();
+            }}
             userAccount={handleUserAccount}
             account={account}
             mainAccount={mainAccount?.address}

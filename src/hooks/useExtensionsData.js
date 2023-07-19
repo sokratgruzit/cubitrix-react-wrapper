@@ -6,6 +6,7 @@ import { StakingIcon } from "../assets/svg";
 // api
 import axios from "../api/axios";
 import { useEffect, useState, useMemo } from "react";
+import { toast } from "react-toastify";
 
 export const useExtensionsData = () => {
   const account = useSelector((state) => state.connect.account);
@@ -73,6 +74,7 @@ export const useExtensionsData = () => {
       })
       .catch((e) => {
         console.log(e.response);
+        toast.error(e.response?.data?.message || "Could not activate extension");
         setExtsActive({ ...extsActive, [title]: !value ? "true" : "false" });
       });
   };

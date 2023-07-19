@@ -158,6 +158,10 @@ function App() {
           .catch((err) => {});
       };
       fetchData();
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: false },
+      });
     }
   }, [account, triedReconnect, active]);
 
