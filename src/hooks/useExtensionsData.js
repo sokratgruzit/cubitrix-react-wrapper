@@ -172,8 +172,10 @@ export const useExtensionsData = () => {
   // ];
 
   const extensionsCardsData = useMemo(() => {
-    let arr = [
-      {
+    let arr = [];
+
+    if (activeExtensions?.tradeAdmin === "true") {
+      arr.push({
         icon: <StakingIcon className={"other-extensions-card-icon"} />,
         title: "Trade",
         value: "trade",
@@ -203,8 +205,11 @@ export const useExtensionsData = () => {
         },
         active: extsActive.trade === "true" ? true : false,
         disabled: !(isActive && emailVerified),
-      },
-      {
+      });
+    }
+
+    if (activeExtensions?.stakingAdmin === "true") {
+      arr.push({
         icon: <StakingIcon className={"other-extensions-card-icon"} />,
         title: "Staking",
         value: "staking",
@@ -214,8 +219,11 @@ export const useExtensionsData = () => {
         handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
         active: extsActive.staking === "true" ? true : false,
         disabled: !emailVerified,
-      },
-      {
+      });
+    }
+
+    if (activeExtensions?.loanAdmin === "true") {
+      arr.push({
         icon: <StakingIcon className={"other-extensions-card-icon"} />,
         title: "Loan",
         value: "loan",
@@ -237,9 +245,28 @@ export const useExtensionsData = () => {
         },
         active: extsActive.loan === "true" ? true : false,
         disabled: !(isActive && emailVerified),
-      },
+      });
+    }
 
-      {
+    if (
+      activeExtensions?.referralAdmin === "true" &&
+      !(!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic")
+    ) {
+      arr.push({
+        icon: <StakingIcon className={"other-extensions-card-icon"} />,
+        title: "Referral",
+        value: "referral",
+        description:
+          "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+        hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+        handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
+        active: extsActive.referral === "true" ? true : false,
+        disabled: !emailVerified,
+      });
+    }
+
+    if (activeExtensions?.notifyAdmin === "true") {
+      arr.push({
         icon: <StakingIcon className={"other-extensions-card-icon"} />,
         title: "Notifications",
         value: "notify",
@@ -249,25 +276,11 @@ export const useExtensionsData = () => {
         handleSwitch: (title, value) => handleChangeExtension("notify", value),
         active: extsActive.notify === "true" ? true : false,
         disabled: !emailVerified,
-      },
-    ];
-
-    const referralObj = {
-      icon: <StakingIcon className={"other-extensions-card-icon"} />,
-      title: "Referral",
-      value: "referral",
-      description:
-        "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
-      hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
-      active: extsActive.referral === "true" ? true : false,
-      disabled: !emailVerified,
-    };
-
-    if (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic") {
-    } else {
-      arr.splice(3, 0, referralObj);
+      });
     }
+
+    console.log(activeExtensions);
+
     return arr;
   }, [appState?.userData?.tier, extsActive, isActive, emailVerified, userBalances]);
 
