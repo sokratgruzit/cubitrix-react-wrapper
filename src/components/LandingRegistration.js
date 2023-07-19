@@ -681,6 +681,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         referralState={referralState}
         setReferralState={setReferralState}
         amountProgressOnchange={amountProgressOnchange}
+        amountProgressValue={depositAmount}
         handleFinish={() => {
           axios
             .post("/api/accounts/handle-step", {
