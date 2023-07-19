@@ -504,12 +504,12 @@ const SideBarRight = () => {
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
                       xmlns="http://www.w3.org/2000/svg">
-                      <g clip-path="url(#clip0_40_6461)">
+                      <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
                         <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
@@ -537,9 +537,9 @@ const SideBarRight = () => {
                       <path
                         d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
                         stroke="#C38C5C"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
@@ -552,9 +552,9 @@ const SideBarRight = () => {
                       <path
                         d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
                         stroke="#C38C5C"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                   ),
@@ -571,12 +571,12 @@ const SideBarRight = () => {
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
                       xmlns="http://www.w3.org/2000/svg">
-                      <g clip-path="url(#clip0_40_6461)">
+                      <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
                         <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
@@ -606,9 +606,9 @@ const SideBarRight = () => {
                     <path
                       d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
                       stroke="#C38C5C"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                     <path
                       d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
@@ -621,9 +621,9 @@ const SideBarRight = () => {
                     <path
                       d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
                       stroke="#C38C5C"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 ),
@@ -683,174 +683,176 @@ const SideBarRight = () => {
 
   const [depositLoading, setDepositLoading] = useState(false);
   const handleDepositSubmit = async () => {
-    if (!account) {
-      toast.error("Please connect your wallet.", { autoClose: 8000 });
-      return;
-    }
-
     setDepositLoading(true);
 
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+    if (!account) {
+      toast.error("Please connect your wallet.", { autoClose: 8000 });
+      await delay;
+      setDepositLoading(false);
+      return;
+    }
 
-    let errorMsg = null;
+    const web3 = library;
+    const fromAddress = account;
 
-    try {
-      const web3 = library;
-      const fromAddress = account;
+    const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
 
-      const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
+    const toAddress = userBalances?.find(
+      (item) => item?.account_category === "system",
+    )?.address;
 
-      const toAddress = userBalances?.find(
-        (item) => item?.account_category === "system",
-      )?.address;
+    const amount = web3.utils.toBN(
+      web3.utils.toWei(currentObject.amount.toString(), "ether"),
+    );
 
-      const amount = web3.utils.toBN(
-        web3.utils.toWei(currentObject.amount.toString(), "ether"),
-      );
+    const gasPrice = await web3.eth.getGasPrice();
 
-      const gasPrice = await web3.eth.getGasPrice();
+    const transferData = tokenContract.methods
+      .transfer(toAddress, amount.toString())
+      .encodeABI();
 
-      const transferData = tokenContract.methods
-        .transfer(toAddress, amount.toString())
-        .encodeABI();
+    const transactionObject = {
+      from: fromAddress,
+      to: tokenAddress,
+      data: transferData,
+      gasPrice,
+    };
 
-      const transactionObject = {
-        from: fromAddress,
-        to: tokenAddress,
-        data: transferData,
-        gasPrice,
-      };
-
-      const receipt = await web3.eth.sendTransaction(transactionObject);
-
-      const res = await axios.post("/api/transactions/direct_deposit", {
-        address: account,
-        hash: receipt.transactionHash,
+    web3.eth
+      .sendTransaction(transactionObject)
+      .then((receipt) => {
+        axios
+          .post("/api/transactions/direct_deposit", {
+            address: account,
+            hash: receipt.transactionHash,
+          })
+          .then(async (res) => {
+            if (res?.data?.updatedAccount) {
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.updatedAccount,
+              });
+              dispatch({
+                type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+                payload: {},
+              });
+              toast.success("Amount deposited successfully.", { autoClose: 8000 });
+            }
+            await delay;
+            setDepositLoading(false);
+          })
+          .catch(async (e) => {
+            console.log(e);
+            toast.error("Transaction could not be registered.", { autoClose: 8000 });
+            await delay;
+            setDepositLoading(false);
+          });
+      })
+      .catch(async (error) => {
+        if (error.message.includes("User denied transaction signature")) {
+          toast.error("Transaction rejected.", { autoClose: 8000 });
+          await delay;
+          setDepositLoading(false);
+          return;
+        }
+        toast.error("Transaction failed.", { autoClose: 8000 });
+        await delay;
+        setDepositLoading(false);
       });
-
-      if (res?.data?.updatedAccount) {
-        dispatch({
-          type: "SET_SYSTEM_ACCOUNT_DATA",
-          payload: res.data.updatedAccount,
-        });
-        dispatch({
-          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-          payload: {},
-        });
-
-        toast.success("Amount deposited successfully.", { autoClose: 8000 });
-      }
-    } catch (error) {
-      if (error.message.includes("User denied transaction signature")) {
-        errorMsg = "Transaction rejected.";
-      } else {
-        errorMsg = "Transaction failed.";
-      }
-    }
-
-    await delay;
-
-    setDepositLoading(false);
-
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
   };
 
   const [withdrawSubmitLoading, setWithdrawSubmitLoading] = useState(false);
   const handleWithdrawSubmit = async () => {
-    setWithdrawSubmitLoading(true);
-
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (!account) {
-      await delay;
       toast.error("Please connect your wallet.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (!currentObject.address) {
-      await delay;
       toast.error("Please enter address.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (currentObject?.address?.length < 42) {
-      await delay;
       toast.error("Please enter a valid address.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (isNaN(currentObject.amount)) {
-      await delay;
       toast.error("Please enter a valid amount.", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (Number(currentObject.amount) <= 0) {
-      await delay;
       toast.error("Incorrect amount", { autoClose: 8000 });
+      await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
-    let errorMsg = null;
-
-    try {
-      const [res, mindelay] = await Promise.all([
-        axios.post("/api/transactions/make_withdrawal", {
-          address: account,
-          address_to: currentObject.address,
-          amount: currentObject.amount,
-          accountType: exchangeAccountType,
-          rate: rates[exchangeAccountType].usd,
-        }),
-        delay,
-      ]);
-
-      toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
-
-      if (res.data?.result) {
-        generateAccountsData();
-        dispatch({
-          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-          payload: {},
-        });
-      }
-    } catch (e) {
-      if (e.response?.data?.message === "insufficient funds") {
-        errorMsg = "Insufficient balance";
-      } else {
-        errorMsg = "Withdrawal failed.";
-      }
-      console.log(e);
-    }
-
-    setWithdrawSubmitLoading(false);
-
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
+    setWithdrawSubmitLoading(true);
+    axios
+      .post("/api/transactions/make_withdrawal", {
+        address: account,
+        address_to: currentObject.address,
+        amount: currentObject.amount,
+        accountType: exchangeAccountType,
+        rate: rates[exchangeAccountType].usd,
+      })
+      .then(async (res) => {
+        toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
+        if (res.data?.result) {
+          generateAccountsData();
+          dispatch({
+            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+            payload: {},
+          });
+        }
+        await delay;
+        setWithdrawSubmitLoading(false);
+      })
+      .catch(async (e) => {
+        let error;
+        if (e.response?.data?.message === "insufficient funds") {
+          error = "Insufficient balance";
+        }
+        toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+        await delay;
+        setWithdrawSubmitLoading(false);
+      });
   };
 
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
   const handleTransferSubmit = async () => {
     setTransferSubmitLoading(true);
 
-    // Create a promise that resolves after one second
-    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+    const delay = new Promise((resolve) => setTimeout(resolve, 3000));
 
     let errorMsg = null;
-
     if (Number(currentObject.amount) <= 0) {
       errorMsg = "Incorrect amount";
-    } else if (currentObject.transferType === "external") {
-      try {
-        const res = await axios.post("/api/transactions/make_transfer", {
+      toast.error(errorMsg, { autoClose: 8000 });
+      await delay;
+      setTransferSubmitLoading(false);
+      return;
+    }
+
+    try {
+      let transferPromise;
+
+      if (currentObject.transferType === "external") {
+        transferPromise = axios.post("/api/transactions/make_transfer", {
           from: account,
           to: currentObject.transferAddress,
           amount: currentObject.amount,
@@ -858,8 +860,22 @@ const SideBarRight = () => {
           account_category_from: "main",
           account_category_to: "main",
         });
+      } else if (currentObject.transferType === "internal") {
+        transferPromise = axios.post("/api/transactions/make_transfer", {
+          from: account,
+          to: account,
+          amount: currentObject.amount,
+          tx_currency: "ether",
+          account_category_from: accountType,
+          account_category_to: currentObject.account,
+          tx_type: "internal_transfer",
+        });
+      }
 
-        if (res.data?.data?.updatedAcc) {
+      const [res] = await Promise.all([transferPromise]);
+
+      if (res.data?.data?.updatedAcc) {
+        if (currentObject.transferType === "external") {
           dispatch({
             type: "SET_SYSTEM_ACCOUNT_DATA",
             payload: res.data.data.updatedAcc,
@@ -880,30 +896,7 @@ const SideBarRight = () => {
               transferAddress: "",
             }));
           }, 3000);
-        }
-      } catch (e) {
-        if (e?.response?.data === "we dont have such address registered in our system.") {
-          errorMsg = "Incorrect to address";
-        } else if (e?.response?.data === "Cannot transfer to this account") {
-          errorMsg = "Recipient has not activated account";
-        } else if (e?.response?.data === "Insufficient funds") {
-          errorMsg = "Insufficient funds";
-        }
-        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
-      }
-    } else if (currentObject.transferType === "internal") {
-      try {
-        const res = await axios.post("/api/transactions/make_transfer", {
-          from: account,
-          to: account,
-          amount: currentObject.amount,
-          tx_currency: "ether",
-          account_category_from: accountType,
-          account_category_to: currentObject.account,
-          tx_type: "internal_transfer",
-        });
-
-        if (res.data?.data?.updatedAcc) {
+        } else if (currentObject.transferType === "internal") {
           generateAccountsData();
           dispatch({
             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
@@ -921,27 +914,21 @@ const SideBarRight = () => {
             }));
           }, 3000);
         }
-      } catch (e) {
-        if (e?.response?.data === "we dont have such address registered in our system.") {
-          errorMsg = "Incorrect to address";
-        } else if (e?.response?.data === "Cannot transfer to this account") {
-          errorMsg = "Recipient has not activated account";
-        } else if (e?.response?.data === "Insufficient funds") {
-          errorMsg = "Insufficient funds";
-        }
-        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
       }
-    }
+    } catch (e) {
+      if (e?.response?.data === "we dont have such address registered in our system.") {
+        errorMsg = "Incorrect to address";
+      } else if (e?.response?.data === "Cannot transfer to this account") {
+        errorMsg = "Recipient has not activated account";
+      } else if (e?.response?.data === "Insufficient funds") {
+        errorMsg = "Insufficient funds";
+      }
 
-    // Wait for delay promise to resolve before setting loading state to false
+      toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
+    }
     await delay;
 
     setTransferSubmitLoading(false);
-
-    // If there was an error, display it now
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
   };
 
   const [chosenAccount, setChosenAccount] = useState({});
@@ -1381,42 +1368,35 @@ const SideBarRight = () => {
   }, [card, exchangeAccountType, ratedExchange]);
 
   const [exchangeLoading, setExchangeLoading] = useState(false);
-  const handleExchangeSubmit = async () => {
-    setExchangeLoading(true);
 
+  const handleExchangeSubmit = async () => {
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
-    let errorMsg = null;
-
-    try {
-      const res = await axios.post("/api/transactions/exchange", {
+    setExchangeLoading(true);
+    await axios
+      .post("/api/transactions/exchange", {
         address: account,
         fromAccType: exchangeAccountType,
         fromAmount: Number(currentObject.transfer_amount),
         toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
         toAmount: Number(currentObject.receive_amount),
+      })
+      .then(async (res) => {
+        generateAccountsData();
+        dispatch({
+          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+          payload: {},
+        });
+        toast.success("Exchange successful.", { autoClose: 8000 });
+        await delay;
+        setExchangeLoading(false);
+      })
+      .catch(async (e) => {
+        toast.error("Exchange failed.", { autoClose: 8000 });
+        await delay;
+        setExchangeLoading(false);
+        console.log(e);
       });
-
-      generateAccountsData();
-
-      dispatch({
-        type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-        payload: {},
-      });
-
-      toast.success("Exchange successful.", { autoClose: 8000 });
-    } catch (e) {
-      errorMsg = "Exchange failed.";
-      console.log(e);
-    }
-
-    await delay;
-
-    setExchangeLoading(false);
-
-    if (errorMsg !== null) {
-      toast.error(errorMsg, { autoClose: 8000 });
-    }
   };
 
   return (
@@ -1461,7 +1441,13 @@ const SideBarRight = () => {
             warning={!appState.emailVerified}
             completeAccount={handleUserAccount}
             sideBarClose={handleClose}
-            disconnect={disconnect}
+            disconnect={() => {
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBarOpen: false },
+              });
+              disconnect();
+            }}
             userAccount={handleUserAccount}
             account={account}
             mainAccount={mainAccount?.address}
