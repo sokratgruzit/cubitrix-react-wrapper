@@ -88,11 +88,11 @@ function App() {
   const { depositAmount } = useSelector((state) => state.stake);
 
   useEffect(() => {
-    if (account && triedReconnect && active) {
+    if (account && triedReconnect && active && library) {
       checkAllowance();
     }
     // eslint-disable-next-line
-  }, [account, triedReconnect, active, depositAmount]);
+  }, [account, triedReconnect, active, depositAmount, library]);
 
   const [step, setStep] = useState(6);
   const [initialRegister, setInitialRegister] = useState(true);
@@ -383,6 +383,15 @@ function App() {
 
     return balanceInEth;
   }
+
+  // console.log(
+  //   isExtensionsLoaded &&
+  //     activeExtensions.referral === "false" &&
+  //     (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic"),
+  //   isExtensionsLoaded,
+  //   activeExtensions.referral === "false",
+  //   !appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic",
+  // );
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
@@ -480,7 +489,10 @@ function App() {
           <Route
             path="/referral"
             element={
-              isExtensionsLoaded && activeExtensions.referral === "false" ? (
+              isExtensionsLoaded &&
+              activeExtensions.referral === "false" &&
+              (!appState?.userData?.tier?.value ||
+                appState?.userData?.tier?.value === "basic") ? (
                 <Navigate to="/" />
               ) : (
                 <Referral />

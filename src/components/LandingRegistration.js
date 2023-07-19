@@ -575,7 +575,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             axios
               .post("/api/accounts/manage_extensions", {
                 address: account,
-                extensions: { staking: "true", referral: "true" },
+                extensions: { staking: "true" },
               })
               .then((res) => {
                 if (res?.data?.account) {
@@ -692,9 +692,18 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               step: 6,
             })
             .then((res) => {
+              let sendObj = { dashboard: "true" };
+
+              if (
+                res?.data?.account?.tier?.value !== "basic" &&
+                !res?.data?.account?.tier?.value
+              ) {
+                sendObj.referral = "true";
+              }
+
               dispatch({
                 type: "UPDATE_ACTIVE_EXTENSIONS",
-                payload: { dashboard: "true" },
+                payload: sendObj,
               });
               setStep(6);
               generateAccountsData();
