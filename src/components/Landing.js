@@ -276,14 +276,12 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               </div>
             </Scroll.Item>
           </div>
-          <div className="landingLatestPrices">
+          <div className="landingLatestPrices landingLatestPricesReverse">
             <div className="landingLatestPricesDescr">
-              <h3 className='ttl'>Embark on a</h3>
               <h2 className='ttl'>
-                Limitless Trading <br/>
-                Adventure
+                Latest Market <br/>Prices
               </h2>
-              <p>Our platform is your steadfast companion, seamlessly supporting all of your deFi demands from staking, cryptocurrency to forex, gold, and stocks.</p>
+              <p>Our platform provides you with market intelligence and live pricing on thousands of global assets.</p>
             </div>
             <div className="landingLatestPricesItems">
               <div className="landingLatestPricesItem">
@@ -297,6 +295,43 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               </div>
               <div className="landingLatestPricesItem">
                 <MiniChart width="100%"></MiniChart>
+              </div>
+            </div>
+          </div>
+          <div className="landingLatestPrices landingLatestPricesColumn">
+            <div className="landingLatestPricesDescr">
+              <h3 className='ttl'>Embark on a</h3>
+              <h2 className='ttl'>
+                Limitless Trading <br/>
+                Adventure
+              </h2>
+              <p>Our platform is your steadfast companion, seamlessly supporting all of your deFi demands from staking, cryptocurrency to forex, gold, and stocks.</p>
+            </div>
+            <div className="landingLatestPricesItems">
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="XAUUSD"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="TSLA"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="NDX"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="BTCUSD"></MiniChart>
+                </div>
               </div>
             </div>
           </div>

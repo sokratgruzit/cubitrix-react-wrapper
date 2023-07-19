@@ -45,3 +45,6 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #47f4ea;
 }
+#mini-symbol-overview-chart {
+  display: none!important;
+}

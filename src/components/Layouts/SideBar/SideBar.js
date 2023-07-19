@@ -1105,11 +1105,11 @@ const SideBarRight = () => {
             </defs>
           </svg>
         ),
-        title: "USDT",
+        title: "USDC",
         price:
-          mainAccount?.assets?.["usdt"] === undefined
+          mainAccount?.assets?.["usdc"] === undefined
             ? undefined
-            : mainAccount?.assets?.["usdt"],
+            : mainAccount?.assets?.["usdc"],
       },
       {
         svg: (

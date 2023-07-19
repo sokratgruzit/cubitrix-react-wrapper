@@ -116,26 +116,26 @@ const Dashboard = () => {
     {
       name: "From",
       mobileWidth: width >= 500 ? 45 : 100,
-      width: 20,
+      width: 16.6,
       id: 0,
       height: "40px",
     },
     {
       name: "To",
-      width: 20,
+      width: 16.6,
       // mobileWidth: 45,
       id: 1,
       height: "40px",
     },
     {
       name: "Type",
-      width: 20,
+      width: 16.6,
       id: 2,
       height: "40px",
     },
     {
       name: "Time",
-      width: 20,
+      width: 16.6,
       id: 3,
       height: "40px",
       icon: (
@@ -159,9 +159,34 @@ const Dashboard = () => {
     },
     {
       name: "Amount",
-      width: 20,
+      width: 16.6,
       mobileWidth: width >= 500 ? 45 : false,
       id: 4,
+      height: "40px",
+      icon: (
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ marginLeft: "2px" }}>
+          <path
+            d="M7.78064 2.4178L6.44314 1.0803L5.62647 0.259469C5.46007 0.0933205 5.23453 0 4.99939 0C4.76424 0 4.5387 0.0933205 4.3723 0.259469L2.21397 2.4178C1.93064 2.70114 2.1348 3.18447 2.53064 3.18447H7.46397C7.86397 3.18447 8.06397 2.70114 7.78064 2.4178Z"
+            fill="white"
+          />
+          <path
+            d="M7.78259 7.5822L6.44509 8.9197L5.62842 9.74053C5.46202 9.90668 5.23649 10 5.00134 10C4.76619 10 4.54066 9.90668 4.37426 9.74053L2.21592 7.5822C1.93259 7.29886 2.13676 6.81553 2.53259 6.81553H7.46592C7.86592 6.81553 8.06592 7.29886 7.78259 7.5822Z"
+            fill="white"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: "Status",
+      width: 16.6,
+      mobileWidth: width >= 500 ? 45 : false,
+      id: 5,
       height: "40px",
       icon: (
         <svg
@@ -246,7 +271,7 @@ const Dashboard = () => {
     atar: "/img/dashboard/atar.png",
     btc: "/img/dashboard/btc.png",
     eth: "/img/dashboard/eth.png",
-    usdt: "/img/dashboard/usdt.png",
+    usdc: "/img/dashboard/usdc.png",
     gold: "/img/dashboard/gold.png",
     platinum: "/img/dashboard/platinum.png",
   };

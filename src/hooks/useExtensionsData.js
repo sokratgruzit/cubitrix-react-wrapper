@@ -5,7 +5,7 @@ import { StakingIcon } from "../assets/svg";
 
 // api
 import axios from "../api/axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export const useExtensionsData = () => {
   const account = useSelector((state) => state.connect.account);
@@ -13,10 +13,12 @@ export const useExtensionsData = () => {
   const { activeExtensions } = useSelector((state) => state.extensions);
   const appState = useSelector((state) => state.appState);
   const emailVerified = appState.emailVerified;
-  const isActive = appState.userData?.active;
+  const isActive = appState?.userData?.active;
   const [extsActive, setExtsActive] = useState({});
   const userBalances = useSelector((state) => state.appState.accountsData);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
+
+  // console.log(appState.userData.tier.value, "shiiiiiiiiiit");
 
   const generateAccountsData = async () => {
     try {
@@ -79,73 +81,178 @@ export const useExtensionsData = () => {
     setExtsActive(activeExtensions);
   }, [activeExtensions]);
 
-  const extensionsCardsData = [
-    {
-      icon: <StakingIcon className={"other-extensions-card-icon"} />,
-      title: "Trade",
-      value: "trade",
-      description:
-        "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
-      hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => {
-        if (!isActive || !emailVerified) return;
+  // const extensionsCardsData = [
+  //   {
+  //     icon: <StakingIcon className={"other-extensions-card-icon"} />,
+  //     title: "Trade",
+  //     value: "trade",
+  //     description:
+  //       "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+  //     hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+  //     handleSwitch: (title, value) => {
+  //       if (!isActive || !emailVerified) return;
 
-        if (!userBalances.find((item) => item.account_category === "trade") && value) {
-          dispatch({
-            type: "SET_FEE_WARN_TYPE",
-            payload: "trade",
-          });
-          return;
-        }
+  //       if (!userBalances.find((item) => item.account_category === "trade") && value) {
+  //         dispatch({
+  //           type: "SET_FEE_WARN_TYPE",
+  //           payload: "trade",
+  //         });
+  //         return;
+  //       }
 
-        if (!userBalances.find((item) => item.account_category === "loan") && value) {
-          dispatch({
-            type: "SET_FEE_WARN_TYPE",
-            payload: "loan",
-          });
-          return;
-        }
+  //       if (!userBalances.find((item) => item.account_category === "loan") && value) {
+  //         dispatch({
+  //           type: "SET_FEE_WARN_TYPE",
+  //           payload: "loan",
+  //         });
+  //         return;
+  //       }
 
-        handleChangeExtension(title.toLowerCase(), value);
+  //       handleChangeExtension(title.toLowerCase(), value);
+  //     },
+  //     active: extsActive.trade === "true" ? true : false,
+  //     disabled: !(isActive && emailVerified),
+  //   },
+  //   {
+  //     icon: <StakingIcon className={"other-extensions-card-icon"} />,
+  //     title: "Staking",
+  //     value: "staking",
+  //     description:
+  //       "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+  //     hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+  //     handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
+  //     active: extsActive.staking === "true" ? true : false,
+  //     disabled: !emailVerified,
+  //   },
+  //   {
+  //     icon: <StakingIcon className={"other-extensions-card-icon"} />,
+  //     title: "Loan",
+  //     value: "loan",
+  //     description:
+  //       "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+  //     hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+  //     handleSwitch: (title, value) => {
+  //       if (!isActive || !emailVerified) return;
+
+  //       if (!userBalances.find((item) => item.account_category === "loan") && value) {
+  //         dispatch({
+  //           type: "SET_FEE_WARN_TYPE",
+  //           payload: "loan",
+  //         });
+  //         return;
+  //       }
+
+  //       handleChangeExtension(title.toLowerCase(), value);
+  //     },
+  //     active: extsActive.loan === "true" ? true : false,
+  //     disabled: !(isActive && emailVerified),
+  //   },
+  //   {
+  //     icon: <StakingIcon className={"other-extensions-card-icon"} />,
+  //     title: "Referral",
+  //     value: "referral",
+  //     description:
+  //       "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+  //     hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+  //     handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
+  //     active: extsActive.referral === "true" ? true : false,
+  //     disabled: !emailVerified,
+  //   },
+  //   {
+  //     icon: <StakingIcon className={"other-extensions-card-icon"} />,
+  //     title: "Notifications",
+  //     value: "notify",
+  //     description:
+  //       "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+  //     hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+  //     handleSwitch: (title, value) => handleChangeExtension("notify", value),
+  //     active: extsActive.notify === "true" ? true : false,
+  //     disabled: !emailVerified,
+  //   },
+  // ];
+
+  const extensionsCardsData = useMemo(() => {
+    let arr = [
+      {
+        icon: <StakingIcon className={"other-extensions-card-icon"} />,
+        title: "Trade",
+        value: "trade",
+        description:
+          "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+        hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+        handleSwitch: (title, value) => {
+          if (!isActive || !emailVerified) return;
+
+          if (!userBalances.find((item) => item.account_category === "trade") && value) {
+            dispatch({
+              type: "SET_FEE_WARN_TYPE",
+              payload: "trade",
+            });
+            return;
+          }
+
+          if (!userBalances.find((item) => item.account_category === "loan") && value) {
+            dispatch({
+              type: "SET_FEE_WARN_TYPE",
+              payload: "loan",
+            });
+            return;
+          }
+
+          handleChangeExtension(title.toLowerCase(), value);
+        },
+        active: extsActive.trade === "true" ? true : false,
+        disabled: !(isActive && emailVerified),
       },
-      active: extsActive.trade === "true" ? true : false,
-      disabled: !(isActive && emailVerified),
-    },
-    {
-      icon: <StakingIcon className={"other-extensions-card-icon"} />,
-      title: "Staking",
-      value: "staking",
-      description:
-        "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
-      hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
-      active: extsActive.staking === "true" ? true : false,
-      disabled: !emailVerified,
-    },
-    {
-      icon: <StakingIcon className={"other-extensions-card-icon"} />,
-      title: "Loan",
-      value: "loan",
-      description:
-        "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
-      hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => {
-        if (!isActive || !emailVerified) return;
-
-        if (!userBalances.find((item) => item.account_category === "loan") && value) {
-          dispatch({
-            type: "SET_FEE_WARN_TYPE",
-            payload: "loan",
-          });
-          return;
-        }
-
-        handleChangeExtension(title.toLowerCase(), value);
+      {
+        icon: <StakingIcon className={"other-extensions-card-icon"} />,
+        title: "Staking",
+        value: "staking",
+        description:
+          "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+        hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+        handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
+        active: extsActive.staking === "true" ? true : false,
+        disabled: !emailVerified,
       },
-      active: extsActive.loan === "true" ? true : false,
-      disabled: !(isActive && emailVerified),
-    },
-    {
+      {
+        icon: <StakingIcon className={"other-extensions-card-icon"} />,
+        title: "Loan",
+        value: "loan",
+        description:
+          "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+        hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+        handleSwitch: (title, value) => {
+          if (!isActive || !emailVerified) return;
+
+          if (!userBalances.find((item) => item.account_category === "loan") && value) {
+            dispatch({
+              type: "SET_FEE_WARN_TYPE",
+              payload: "loan",
+            });
+            return;
+          }
+
+          handleChangeExtension(title.toLowerCase(), value);
+        },
+        active: extsActive.loan === "true" ? true : false,
+        disabled: !(isActive && emailVerified),
+      },
+
+      {
+        icon: <StakingIcon className={"other-extensions-card-icon"} />,
+        title: "Notifications",
+        value: "notify",
+        description:
+          "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
+        hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
+        handleSwitch: (title, value) => handleChangeExtension("notify", value),
+        active: extsActive.notify === "true" ? true : false,
+        disabled: !emailVerified,
+      },
+    ];
+
+    const referralObj = {
       icon: <StakingIcon className={"other-extensions-card-icon"} />,
       title: "Referral",
       value: "referral",
@@ -155,19 +262,14 @@ export const useExtensionsData = () => {
       handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
       active: extsActive.referral === "true" ? true : false,
       disabled: !emailVerified,
-    },
-    {
-      icon: <StakingIcon className={"other-extensions-card-icon"} />,
-      title: "Notifications",
-      value: "notify",
-      description:
-        "Crust pencil novel colours drift unfamed, oft line balls instructed sociis.",
-      hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
-      handleSwitch: (title, value) => handleChangeExtension("notify", value),
-      active: extsActive.notify === "true" ? true : false,
-      disabled: !emailVerified,
-    },
-  ];
+    };
+
+    if (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic") {
+    } else {
+      arr.splice(3, 0, referralObj);
+    }
+    return arr;
+  }, [appState?.userData?.tier, extsActive, isActive, emailVerified, userBalances]);
 
   return {
     handleChangeExtension,

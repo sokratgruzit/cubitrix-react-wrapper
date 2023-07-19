@@ -262,6 +262,32 @@ body {
     max-width: 1920px;
     width: 100%;
 }
+.landingLatestPrices.landingLatestPricesReverse {
+    flex-direction: row-reverse;
+    margin-bottom: 100px;
+}
+.landingLatestPricesReverse .landingLatestPricesItems {
+    padding-left: 100px;
+}
+.heightOv {
+    height: 85px;
+    overflow: hidden;
+}
+.landingLatestPricesColumn .landingLatestPricesItem{
+    width: 100%;
+    background: #10282B;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+.landingLatestPricesColumn {
+    justify-content: space-between;
+}
+.landingLatestPricesColumn .landingLatestPricesItems {
+    width: 500px;
+    margin-right: 100px;
+}
 .landingLatestPricesDescr {
     flex-direction: column;
     display: flex;
@@ -356,6 +382,12 @@ body {
 /*    display: none;*/
 /*}*/
 @media only screen and (max-width: 1680px){
+    .landingLatestPricesColumn .landingLatestPricesItems {
+        margin-right: 50px;
+    }
+    .landingLatestPricesReverse .landingLatestPricesItems {
+        padding-left: 50px;
+    }
     .landingContentContainer.landingContentContainerTxt {
         padding: 0px 50px;
         padding-bottom: 50px;
@@ -386,6 +418,9 @@ body {
     }
 }
 @media only screen and (max-width: 1360px) {
+    .landingLatestPricesColumn .landingLatestPricesItems {
+        width: 50%;
+    }
     .landingColumn {
         width: 100%;
     }
@@ -436,6 +471,19 @@ body {
     }
 }
 @media only screen and (max-width: 767px) {
+    .landingLatestPrices.landingLatestPricesReverse {
+        margin-bottom: 50px;
+    }
+    .landingLatestPricesReverse .landingLatestPricesItems {
+        padding-left: 0px;
+    }
+    .landingLatestPrices.landingLatestPricesReverse {
+        flex-direction: column;
+    }
+    .landingLatestPricesColumn .landingLatestPricesItems {
+        width: 100%;
+        padding: 0px 15px;
+    }
     .landingLatestPrices {
         flex-direction: column;
     }
