@@ -42,17 +42,17 @@ a {
   background-color: #ff0c46 !important;
 }
 @font-face {
-  font-family: 'Sainte Colombe';
-  src: url('assets/fonts/SainteColombe/SainteColombe-Regular.eot');
-  src: url('assets/fonts/SainteColombe/SainteColombe-Regular.eot?#iefix') format('embedded-opentype'),
-  url('assets/fonts/SainteColombe/SainteColombe-Regular.woff2') format('woff2'),
-  url('assets/fonts/SainteColombe/SainteColombe-Regular.woff') format('woff'),
-  url('assets/fonts/SainteColombe/SainteColombe-Regular.ttf') format('truetype'),
-  url('assets/fonts/SainteColombe/SainteColombe-Regular.svg#SainteColombe-Regular') format('svg');
+  font-family: 'Marcellus';
+  src: url('assets/fonts/Marcellus/Marcellus-Regular.eot');
+  src: url('assets/fonts/Marcellus/Marcellus-Regular.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.woff2') format('woff2'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.woff') format('woff'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.ttf') format('truetype'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.svg#Marcellus-Regular') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 .ttl {
-  font-family: 'Sainte Colombe'!important;
+  font-family: 'Marcellus'!important;
 }

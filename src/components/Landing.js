@@ -163,46 +163,44 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
       },
     },
     zoomOut1: {
-      1400: {
+      3000: {
         scale: 1.2,
         opacity: 0,
       },
-      1600: {
+      3200: {
         scale: 1,
         opacity: 1,
       },
     },
     zoomOut2: {
-      2000: {
+      3400: {
         scale: 1.2,
         opacity: 0,
       },
-      2200: {
+      3600: {
         scale: 1,
         opacity: 1,
       },
     },
     zoomOut3: {
-      2400: {
+      3800: {
         scale: 1.2,
         opacity: 0,
       },
-      2600: {
+      4000: {
         scale: 1,
         opacity: 1,
       },
     },
-  };
-  const styles: CopyrightStyles = {
-    parent: {
-      fontSize: "24px",
-      color: "red",
-    },
-    link: {
-      textDecoration: "line-trough",
-    },
-    span: {
-      color: "darkblue",
+    zoomOut4: {
+      4200: {
+        scale: 1.2,
+        opacity: 0,
+      },
+      4400: {
+        scale: 1,
+        opacity: 1,
+      },
     },
   };
   return (
@@ -278,7 +276,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               </div>
             </Scroll.Item>
           </div>
-          <div className="landingLatestPrices">
+          <div className="landingLatestPrices landingLatestPricesReverse">
             <div className="landingLatestPricesDescr">
               <h2 className='ttl'>
                 Latest Market <br/>Prices
@@ -293,11 +291,99 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                 <MiniChart width="100%" symbol="ETHUSD"></MiniChart>
               </div>
               <div className="landingLatestPricesItem">
-                <MiniChart width="100%" symbol="USDTUSD"></MiniChart>
+                <MiniChart width="100%" symbol="XAUUSD"></MiniChart>
               </div>
               <div className="landingLatestPricesItem">
                 <MiniChart width="100%"></MiniChart>
               </div>
+            </div>
+          </div>
+          <div className="landingLatestPrices landingLatestPricesColumn">
+            <div className="landingLatestPricesDescr">
+              <h3 className='ttl'>Embark on a</h3>
+              <h2 className='ttl'>
+                Limitless Trading <br/>
+                Adventure
+              </h2>
+              <p>Our platform is your steadfast companion, seamlessly supporting all of your deFi demands from staking, cryptocurrency to forex, gold, and stocks.</p>
+            </div>
+            <div className="landingLatestPricesItems">
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="XAUUSD"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="TSLA"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="NDX"></MiniChart>
+                </div>
+              </div>
+              <div className="landingLatestPricesItem">
+                <div className="heightOv">
+                  <MiniChart width="100%" symbol="BTCUSD"></MiniChart>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="landingContentContainer landingContentContainerTxt">
+            <div className="landingContentHalf">
+              <div className="landingContentDescription">
+                <h2 className="ttl">Welcome to a new era of seemingly infinite financial opportunities!</h2>
+                <p>
+                  We represent a movement dedicated to democratizing financial markets and reimagining finance's future.
+                  Borders are eliminated, and tradition limitations are lifted. We cater to both seasoned traders and newbies with our arsenal of features, making your trading adventure as easy as possible.
+                  We welcome you to join us in dreaming big and achieving even more. Join our worldwide marketplace and embark on a journey of limitless opportunities.
+                </p>
+              </div>
+            </div>
+            <div className="landingContentHalf">
+              <div className="landingContentDescription">
+                <h2 className="ttl">Erase Boundaries, Embrace DeFi</h2>
+                <p>
+                  With our Decentralized Finance (DeFi) platform, you can achieve infinite financial autonomy. Embrace a world of openness, involvement, and increased security instead of traditional centralized methods. Our DeFi Platform empowers you to take charge of your financial future by erasing the lines and breaking down obstacles. Navigate through a wide range of financial instruments, from staking to trading, loans, and incentives, all in a trustless, permission-less environment.
+                  Join us and discover DeFi's enormous potential as your doorway to financial emancipation. Begin your journey to ultimate financial freedom right now.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="landingColumns">
+            <div className="landingColumn">
+              <h3 className='ttl'>Novice Navigator</h3>
+              <h4 className='ttl'>Entry-Level Efficiency</h4>
+              <p>
+                This account is crafted for beginners. It offers a safe platform to learn, explore, and initiate your journey into the world of trading, with minimal risks and affordable fees & commissions.
+              </p>
+            </div>
+            <div className="landingColumn">
+              <h3 className='ttl'>Stellar Standard</h3>
+              <h4 className='ttl'>Balance & Brilliance</h4>
+              <p>
+                The Stellar Standard account is the industry classic. It strikes a perfect balance of affordability and functionality, providing a stable market execution with nominal fees & commissions.
+              </p>
+            </div>
+            <div className="landingColumn">
+              <h3 className='ttl'>Expert Edge</h3>
+              <h4 className='ttl'>Professional Prowess</h4>
+              <p>
+                This account caters to the needs of professional traders. It provides high-frequency trading, advanced technical analysis capabilities, and lower latency. Expert Edge is perfect for those seeking to optimize their trading strategies.
+              </p>
+            </div>
+            <div className="landingColumn">
+              <h3 className='ttl'>Platinum Privilege</h3>
+              <h4 className='ttl'>VIP Versatility</h4>
+              <p>
+                Platinum Privilege, our VIP account, offers the utmost in trading flexibility and exclusivity. With the lowest fees and commissions, priority access to new features, and a dedicated account manager, it is designed for high volume, sophisticated traders who demand the best.
+              </p>
             </div>
           </div>
           <div className="landingContentContainer">
@@ -311,9 +397,11 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h2 className="ttl">We Believe in Endless
-                  Possibilities </h2>
-                <p>Access the world’s most popular instruments, ranging from forex pairs to CFDs on stocks, indices, commodities, and cryptocurrencies - all at the palm of your hand.</p>
+                <h3 className="ttl">Discover the power of <span>Staking</span></h3>
+                <h2 className="ttl">Elevate Your Earnings</h2>
+                <p>
+                  Make your assets work for you even when you're not actively trading. Simply lock-up your tokens in our secure on-chain Vault and enjoy a consistent, real-time passive income. It's an efficient and straightforward way to maximize your investment returns.
+                  While your primary focus remains on market maneuvers, staking ensures your portfolio continues to grow passively. Let your tokens deliver the performance you desire with “XXX” Staking – a smart investment strategy for today's proactive trader.</p>
               </div>
             </div>
           </div>
@@ -327,8 +415,11 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h2 className="ttl">Great Trading Conditions</h2>
-                <p>Hedging is allowed, without any restrictions on short selling and scalping. We provide fast and reliable order execution, as well as ultra-low spreads.</p>
+                <h3 className="ttl">Achieve More with <span>Margin Trading</span></h3>
+                <h2 className="ttl">Maximize Your Market Moves:</h2>
+                <p>
+                  Empower your financial journey with the dynamic capabilities of Margin Trading. With Margin Trading, you can effectively enhance your buying power, making larger trades a reality. This allows you to seize timely investment opportunities without causing any disruption to your existing financial portfolio. But the benefits don't end there.
+                  Margin Trading also offers you unprecedented liquidity. Enjoy the unparalleled flexibility of accessing additional capital without the need to sell off your valuable investments. This feature ensures that you can keep your strategic market positions unscathed while promptly addressing any immediate financial requirements. Experience the revolutionized trading environment that margin trading offers, and optimize your financial success.</p>
               </div>
             </div>
           </div>
@@ -342,9 +433,35 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h2 className="ttl">We Believe You Deserve
-                  The Best </h2>
-                <p>Take advantage of our Expert Advisors, Copy Trading platforms and 24/7 crypto trading. Try our unique risk management tool AvaProtectTM, or utilise the Trading Central automated analysis add-on.</p>
+                <h2 className="ttl">Trade
+                  (Gold/Stocks/Crypto/Forex)
+                  Without Borders</h2>
+                <p>Hybrid exchange where you can trade multiple asset classes all from one account.</p>
+              </div>
+            </div>
+          </div>
+          <div className="landingContentContainer rightImg">
+            <div className="landingContentHalf image">
+              <Scroll.Item keyframes={keyframes.zoomOut4}>
+                <div className="landingContentHalfImg">
+                  <img src={contentBg3} alt="contentBg1"/>
+                </div>
+              </Scroll.Item>
+            </div>
+            <div className="landingContentHalf">
+              <div className="landingContentDescription">
+                <h2 className="ttl">Seamless Trading - Unrestricted by
+                  by Time-Zones or Distance</h2>
+                <p>Crafted by market professionals for fellow traders, our platform empowers you with unprecedented access to global markets. Engage in trading at your convenience, equipped with our cutting-edge trading tools, competitive leverage, and minimized trading fees.
+                 <br/>
+                  Unmatched Features for a Streamlined Trading Experience:</p>
+                <ul>
+                  <li>Competitive low trading fees and tight spreads</li>
+                  <li>Cutting-edge, low latency for ultra-fast order execution</li>
+                  <li>Exceptional leverage ratio up to 20:1</li>
+                  <li>Robust and user-friendly trading interfaces</li>
+                  <li>Swift and secure deposit and withdrawal process</li>
+                </ul>
               </div>
             </div>
           </div>

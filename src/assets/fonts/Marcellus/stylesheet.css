@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Marcellus';
+    src: url('Marcellus-Regular.eot');
+    src: url('Marcellus-Regular.eot?#iefix') format('embedded-opentype'),
+        url('Marcellus-Regular.woff2') format('woff2'),
+        url('Marcellus-Regular.woff') format('woff'),
+        url('Marcellus-Regular.ttf') format('truetype'),
+        url('Marcellus-Regular.svg#Marcellus-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
