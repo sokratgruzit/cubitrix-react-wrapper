@@ -466,6 +466,7 @@ function App() {
                 <Navigate to="/" />
               ) : (
                 <Loan />
+                // <Trade />
               )
             }
           />
