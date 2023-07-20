@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { TopUp as TopUpUI } from "@cubitrix/cubitrix-react-ui-module";
+import { TopUpDashboard } from "@cubitrix/cubitrix-react-ui-module";
 import QRCode from "qrcode";
 import axios from "../../api/axios";
 import { useSelector, useDispatch } from "react-redux";
 
 const methods = [
-  {
-    id: "USDT",
-    title: "USDT",
-    logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
-  },
+  // {
+  //   id: "Manual",
+  //   title: "Manual",
+  //   logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
+  // },
   {
     id: "Coinbase",
     title: "Coinbase",
@@ -18,11 +18,11 @@ const methods = [
 ];
 
 const paymentTypes = [
-  {
-    id: 1,
-    title: "Pay via Crypto",
-    logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-  },
+  // {
+  //   id: 1,
+  //   title: "Pay via Crypto",
+  //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
+  // },
   {
     id: 2,
     title: "Pay with CoinBase",
@@ -34,6 +34,7 @@ const TopUp = () => {
   const account = useSelector((state) => state.connect.account);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [hostedUrl, setHostedUrl] = useState("");
+  const dispatch = useDispatch();
 
   const [receivePaymentAddress, setReceivePaymentAddress] = useState("0xouraddress");
 
@@ -70,35 +71,45 @@ const TopUp = () => {
       });
   }
 
+  const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
+    setCoinbaseLoading(true);
     axios
       .post("api/transactions/coinbase_deposit_transaction", {
         from: account,
         amount,
       })
       .then((res) => {
+        setCoinbaseLoading(false);
         setHostedUrl(res?.data?.responseData?.hosted_url);
       })
       .catch((err) => {
+        setCoinbaseLoading(false);
         console.error(err);
       });
+  }
+
+  async function handlePurchase(method, tokenAmount) {
+    if (method === "Coinbase") {
+      handleCoindbasePayment(tokenAmount);
+    }
   }
   return (
     <div
       style={{
         display: "flex",
         gap: "30px",
-        paddingTop: "40px",
         height: "calc(100vh)",
-      }}
-    >
-      <TopUpUI
+      }}>
+      <TopUpDashboard
         receivePaymentAddress={receivePaymentAddress}
         methods={methods}
-        qrcode={qrCodeUrl}
-        handlePaymentConfirm={handlePaymentConfirm}
-        handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
         paymentTypes={paymentTypes}
+        qrcode={qrCodeUrl}
+        handlePurchaseEvent={handlePurchase}
+        exchangeRate={2}
+        tranasctionFee={1}
+        coinbaseLoading={coinbaseLoading}
       />
     </div>
   );

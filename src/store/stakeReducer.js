@@ -15,7 +15,7 @@ export const INIT_STATE = {
     alreadyExists: false,
   },
   depositAmount: "",
-  timeperiod: 0,
+  timeperiod: 4,
   balance: 0,
   stakersRecord: [],
   isAllowance: false,

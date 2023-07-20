@@ -5,11 +5,12 @@ import storage from "redux-persist/lib/storage";
 
 import extensionsReducer from "./extensionsReducer";
 import { connectReducer, stakeReducer } from "@cubitrix/cubitrix-react-connect-module";
+// import { connectReducer } from "./connectReducer";
+// import { stakeReducer } from "./stakeReducer";
 import appStateReducer from "./appStateReducer";
-// import {stakeReducer} from "./stakeReducer";
 
-const persistConfig = {
-  key: "root",
+const connectPersistConfig = {
+  key: "connect",
   storage,
   stateReconciler: autoMergeLevel2,
 };
@@ -17,8 +18,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   extensions: extensionsReducer,
   appState: appStateReducer,
-  connect: persistReducer(persistConfig, connectReducer),
-  stake: persistReducer(persistConfig, stakeReducer),
+  connect: persistReducer(connectPersistConfig, connectReducer),
+  stake: stakeReducer,
 });
 
 const store = configureStore({

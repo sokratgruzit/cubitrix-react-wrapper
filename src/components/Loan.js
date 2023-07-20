@@ -4,7 +4,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 
 import { Loan as LoanTest } from "@cubitrix/cubitrix-react-ui-module";
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import Body from "./Layouts/Body/Body";
 // import { injected } from "../connector";
 
 const Loan = () => {
@@ -393,18 +393,19 @@ const Loan = () => {
   //   </div>
   // );
   return (
-    <LoanTest
-      account={account}
-      allLoanOffers={allLoanOffers}
-      yourLending={yourLending}
-      yourBorrowing={yourBorrowing}
-      createNewLoanOffering={handleCreateNewLoanOffering}
-      handleDeleteLoanOffer={handleDeleteLoanOffer}
-      handleTakeLoan={handleTakeLoan}
-      handleRepayLoan={handleRepayLoan}
-      makeOffer={handleMakeOffer}
-      rescindOffer={handleRescindOffer}
-    />
+    // <LoanTest
+    //   account={account}
+    //   allLoanOffers={allLoanOffers}
+    //   yourLending={yourLending}
+    //   yourBorrowing={yourBorrowing}
+    //   createNewLoanOffering={handleCreateNewLoanOffering}
+    //   handleDeleteLoanOffer={handleDeleteLoanOffer}
+    //   handleTakeLoan={handleTakeLoan}
+    //   handleRepayLoan={handleRepayLoan}
+    //   makeOffer={handleMakeOffer}
+    //   rescindOffer={handleRescindOffer}
+    // />
+    <Body side="Side loan" main="Main loan" />
   );
 };
 

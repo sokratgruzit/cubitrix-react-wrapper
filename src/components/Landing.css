@@ -1,0 +1,583 @@
+.landingSlideContainer {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 5;
+}
+.landingSlideContainerInner {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 2;
+}
+.landingSlideContainerLogoBg {
+    pointer-events: none;
+}
+.landingSlideContainerTitle {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+}
+.landingSlideContainerTitle h1{
+    font-size: 110px;
+    line-height: 110%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.landingSlideContainerBtn {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    height: 80px;
+    width: 260px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 140px;
+    margin-bottom: 50px;
+    cursor: pointer;
+}
+.landingSlideContainerBtn g{
+    transition: .6s cubic-bezier(.79,.01,.15,.99);
+}
+.landingSlideContainerBtn:hover g {
+    transform: translate(10px, 10px);
+}
+.landingSlideContainerSecond {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+.landingSlideContainerSecond p {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0px;
+    font-size: 30px;
+    line-height: 130%;
+    padding-top: 30px;
+}
+body {
+    background: #0E2225!important;
+}
+.patternBg {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.landingCardBig.landingCard {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.landingCardLtls {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.landingCardLtls .landingCard {
+    width: 33.33%;
+    display: flex;
+    justify-content: center;
+}
+.landingCardsContainer {
+    padding: 100px 0px;
+}
+.landingCardBig.landingCard {
+    animation: float3 2s ease-in-out infinite 2s;
+}
+.landingCardLtls .landingCard:nth-child(1) {
+    animation: float1 3s ease-in-out infinite 2s;
+}
+.landingCardLtls .landingCard:nth-child(2) {
+    animation: float2 3s ease-in-out infinite 2s;
+}
+.landingCardLtls .landingCard:nth-child(3) {
+    animation: float3 3s ease-in-out infinite 2s;
+}
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+@keyframes float2 {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes float3 {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+.landingContentContainer {
+    width: 100%;
+    display: flex;
+    max-width: 1920px;
+    margin: 0px auto;
+    margin-top: 100px;
+    position: relative;
+}
+.landingContentContainer.rightImg {
+    flex-direction: row-reverse;
+}
+.landingContentHalf {
+    width: 50%;
+}
+.landingContentHalf.image {
+    overflow: hidden;
+}
+.landingContentHalfImg {
+    width: 100%;
+    position: relative;
+    padding-top: 60%;
+    overflow: hidden;
+}
+.landingContentHalfImg img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    left: 0px;
+    top: 0px;
+}
+.landingContentHalf h2 {
+    font-size: 60px;
+    line-height: 130%;
+    margin-bottom: 30px;
+    color: rgba(87,171,277);
+}
+.landingContentHalf p {
+    font-size: 30px;
+    line-height: 150%;
+}
+.landingContentDescription {
+    display: flex;
+    flex-direction: column;
+    padding-left: 50px;
+    padding-right: 100px;
+    height: 100%;
+    justify-content: center;
+}
+.rightImg .landingContentDescription {
+    padding-left: 100px;
+    padding-right: 50px;
+}
+.patternBg2 {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+.landingJoinContainer {
+    display: flex;
+    width: 100%;
+    max-width: 1920px;
+    padding: 200px 100px;
+}
+.landingJoinContainerHalf h3 {
+    font-size: 100px;
+    line-height: 130%;
+}
+.landingJoinContainerHalf {
+    width: 50%;
+    display: flex;
+    position: relative;
+    z-index: 3;
+}
+.landingJoinContainerHalf .landingSlideContainerBtn {
+    margin-right: 0px;
+}
+.footerBg {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    padding-top: 33%;
+}
+.footerBg img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    top: 0px;
+    left: 0px;
+}
+.footerBg:after{
+    content: '';
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    z-index: 2;
+    background: linear-gradient(180deg, #0E2225 0%, rgba(22, 35, 33, 0.80) 46.70%, rgba(87, 62, 25, 0.50) 100%);
+}
+.landingFooter {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 100px;
+    height: 80px;
+    align-items: center;
+}
+.landingFooterNav a {
+    margin-left: 30px;
+    transition: .6s cubic-bezier(.79,.01,.15,.99);
+}
+.landingFooterNav a:hover {
+    color: #c38c5c;
+}
+.landingLatestPrices {
+    display: flex;
+    max-width: 1920px;
+    width: 100%;
+}
+.landingLatestPrices.landingLatestPricesReverse {
+    flex-direction: row-reverse;
+    margin-bottom: 100px;
+}
+.landingLatestPricesReverse .landingLatestPricesItems {
+    padding-left: 100px;
+}
+.heightOv {
+    height: 85px;
+    overflow: hidden;
+}
+.landingLatestPricesColumn .landingLatestPricesItem{
+    width: 100%;
+    background: #10282B;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+.landingLatestPricesColumn {
+    justify-content: space-between;
+}
+.landingLatestPricesColumn .landingLatestPricesItems {
+    width: 500px;
+    margin-right: 100px;
+}
+.landingLatestPricesDescr {
+    flex-direction: column;
+    display: flex;
+    width: 50%;
+    padding-left: 100px;
+    padding-right: 50px;
+}
+.landingLatestPricesDescr p {
+    font-size: 30px;
+    line-height: 150%;
+}
+.landingLatestPricesDescr h3,.landingContentDescription h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+.landingContentDescription h3 span {
+    color: #C38C5C;
+}
+.landingLatestPrices h2 {
+    font-size: 60px;
+    line-height: 130%;
+    margin-bottom: 30px;
+    color: rgba(87,171,277);
+}
+.landingLatestPricesItems {
+    display: flex;
+    flex-wrap: wrap;
+    width: 50%;
+}
+.landingLatestPricesItem {
+    width: 50%;
+}
+.landingContentDescription li {
+    font-size: 20px;
+    line-height: 150%;
+    padding-left: 20px;
+    position: relative;
+    margin-top: 10px;
+}
+.landingContentDescription li:after {
+    content: '';
+    height: 8px;
+    width: 8px;
+    background: #C38C5C;
+    border-radius: 50%;
+    position: absolute;
+    left: 0px;
+    top: 12px;
+}
+.landingContentDescription ul {
+    margin-top: 20px;
+}
+.landingColumns {
+    display: flex;
+    width: 100%;
+    padding: 0px 100px;
+    gap: 30px;
+    margin: 100px 0px;
+}
+.landingColumn {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    background: #10282B;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    padding: 20px;
+}
+.landingColumn h3 {
+    font-size: 35px;
+    line-height: 130%;
+    color: #C38C5C;
+}
+.landingColumn h4 {
+    color: rgba(87,171,277);
+    font-size: 20px;
+    margin-bottom: 30px;
+    color: rgba(87,171,277);
+}
+.landingContentContainerTxt .landingContentDescription{
+    justify-content: flex-start;
+    padding: 0px 50px;
+}
+.landingContentContainerTxt .landingContentHalf:nth-child(1) {
+    border-right: 2px solid rgba(195, 140, 92, 1);
+}
+.landingContentContainer.landingContentContainerTxt {
+    padding: 0px 100px;
+    padding-bottom: 50px;
+}
+/*#tradingview_widget_wrapper > div:nth-child(2) {*/
+/*    display: none;*/
+/*}*/
+@media only screen and (max-width: 1680px){
+    .landingLatestPricesColumn .landingLatestPricesItems {
+        margin-right: 50px;
+    }
+    .landingLatestPricesReverse .landingLatestPricesItems {
+        padding-left: 50px;
+    }
+    .landingContentContainer.landingContentContainerTxt {
+        padding: 0px 50px;
+        padding-bottom: 50px;
+    }
+    .landingColumns {
+        padding: 0px 50px;
+    }
+    .landingContentHalf h2 {
+        font-size: 40px;
+    }
+    .landingContentHalf p {
+        font-size: 25px;
+    }
+    .landingCard.landingCardBig img {
+        width: 280px;
+    }
+    .landingCardLtls .landingCard img {
+        width: 250px;
+    }
+    .landingLatestPricesDescr h2 {
+        font-size: 40px;
+    }
+    .landingLatestPricesDescr p {
+        font-size: 20px;
+    }
+    .landingLatestPricesDescr {
+        padding-left: 50px;
+    }
+}
+@media only screen and (max-width: 1360px) {
+    .landingLatestPricesColumn .landingLatestPricesItems {
+        width: 50%;
+    }
+    .landingColumn {
+        width: 100%;
+    }
+    .landingColumns {
+        flex-direction: column;
+    }
+    .landingContentContainerTxt .landingContentDescription{
+        padding: 0px;
+    }
+    .landingContentContainerTxt .landingContentHalf:nth-child(1) {
+        border-right: 0px;
+        border-bottom: 2px solid rgba(195, 140, 92, 1);
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+    }
+    .landingContentContainerTxt {
+        flex-direction: column;
+    }
+    .landingContentContainerTxt .landingContentHalf{
+        width: 100%;
+    }
+    .landingSlideContainerTitle h1 {
+        font-size: 70px;
+    }
+    .landingSlideContainerBtn {
+        margin-top: 60px;
+    }
+    .landingContentDescription {
+        padding-left: 20px;
+        padding-right: 50px;
+    }
+    .rightImg .landingContentDescription {
+        padding-left: 50px;
+        padding-right: 20px;
+    }
+    .landingContentHalf p {
+        font-size: 20px;
+    }
+    .landingJoinContainerHalf h3 {
+        font-size: 70px;
+        line-height: 130%;
+    }
+    .landingJoinContainer {
+        padding: 100px 50px;
+    }
+    .landingFooter {
+        padding: 0px 50px;
+    }
+}
+@media only screen and (max-width: 767px) {
+    .landingLatestPrices.landingLatestPricesReverse {
+        margin-bottom: 50px;
+    }
+    .landingLatestPricesReverse .landingLatestPricesItems {
+        padding-left: 0px;
+    }
+    .landingLatestPrices.landingLatestPricesReverse {
+        flex-direction: column;
+    }
+    .landingLatestPricesColumn .landingLatestPricesItems {
+        width: 100%;
+        padding: 0px 15px;
+    }
+    .landingLatestPrices {
+        flex-direction: column;
+    }
+    .landingLatestPricesDescr {
+        width: 100%;
+        padding: 0px 15px;
+        margin-bottom: 30px;
+        margin-top: 30px;
+    }
+    .landingLatestPricesItems {
+        width: 100%;
+    }
+    .landingSlideContainerTitle h1 {
+        font-size: 35px;
+    }
+    .landingSlideContainerBtn svg {
+        transform: scale(.7);
+    }
+    .landingSlideContainerBtn {
+        margin-top: 30px;
+    }
+    .landingSlideContainerLogoBg img {
+        width: 100%;
+    }
+    .landingSlideContainerSecond svg {
+        transform: scale(.5);
+    }
+    .landingSlideContainerSecond p {
+        font-size: 20px;
+        padding-top: 12px;
+    }
+    .landingCardsContainer {
+        padding: 0px;
+    }
+    .patternBg {
+        width: 100%;
+    }
+    .landingCardLtls .landingCard img {
+        width: 120px;
+    }
+    .landingCard.landingCardBig img {
+        width: 180px;
+    }
+    .landingContentContainer,.landingContentContainer.rightImg{
+        flex-direction: column-reverse;
+    }
+    .landingContentHalf {
+        width: 100%;
+    }
+    .landingContentDescription {
+        padding: 0px 15px;
+        margin-bottom: 50px;
+    }
+    .rightImg .landingContentDescription {
+        padding: 0px 15px;
+    }
+    .landingJoinContainer {
+        /*flex-direction: column;*/
+        padding: 50px 15px;
+    }
+    .landingJoinContainerHalf h3 {
+        font-size: 35px;
+        width: 100%;
+    }
+    .landingJoinContainerHalf .landingSlideContainerBtn {
+        margin-right: 0px;
+        transform: translateX(-50px);
+        margin-top: 0px;
+    }
+    .landingFooter {
+        padding: 0px 15px;
+        flex-direction: column;
+    }
+    .landingFooterNav a {
+        margin: 0px 15px;
+    }
+    .landingFooterNav {
+        margin-bottom: 30px;
+        margin-top: 15px;
+    }
+    .landingContentContainer.landingContentContainerTxt {
+        padding: 0px 15px;
+        padding-bottom: 10px;
+        flex-direction: column;
+    }
+    .landingColumns {
+        margin: 50px 0px;
+        padding: 0px 15px;
+    }
+    .landingContentHalf h2 {
+        font-size: 25px;
+    }
+    .landingContentHalf p,.landingContentDescription li {
+        font-size: 16px;
+    }
+}
+

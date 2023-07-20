@@ -11,10 +11,17 @@ import {
   AddSquareIcon,
 } from "../assets/svg";
 
-import { useStake } from "@cubitrix/cubitrix-react-connect-module";
-
 // hooks
+import {
+  // useStake,
+  STAKE_INIT_STATE,
+  useConnect,
+} from "@cubitrix/cubitrix-react-connect-module";
+import { useStake } from "../hooks/use-stake";
+
 import { useTableParameters } from "../hooks/useTableParameters";
+import { useMobileWidth } from "../hooks/useMobileWidth";
+import { useOnScreen } from "../hooks/useOnScreen";
 
 // UI
 import {
@@ -26,10 +33,20 @@ import {
 
 // api
 import axios from "../api/axios";
+import { useEffect } from "react";
+import { createRef } from "react";
+import { toast } from "react-toastify";
 
 const Staking = () => {
   const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false);
   const [approveResonse, setApproveResonse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchCount, setFetchCount] = useState(0);
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const { active, account } = useConnect();
+  const hasMoreData = useSelector((state) => state.stake.hasMoreData);
+
+  const { width } = useMobileWidth();
 
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
@@ -43,7 +60,8 @@ const Staking = () => {
     handleTimeperiodDate,
     handleDepositAmount,
     handleTimePeriod,
-    account,
+    getStackerInfo,
+    checkAllowance,
   } = useStake({ Router, tokenAddress });
 
   const dispatch = useDispatch();
@@ -56,9 +74,58 @@ const Staking = () => {
     timeperiod,
     stakersRecord,
     isAllowance,
-    loading,
     timeperiodDate,
   } = useSelector((state) => state.stake);
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      getStackerInfo(0 + 5 * fetchCount, 10 + 5 * fetchCount)
+        .then(() => {
+          setIsFetching(false);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setIsFetching(false);
+          setLoading(false);
+        });
+    }
+  }, [account, triedReconnect, active, fetchCount]);
+
+  async function refetchStakersRecord() {
+    try {
+      dispatch({
+        type: "UPDATE_STAKE_STATE",
+        payload: {
+          stakersRecord: [],
+        },
+      });
+      setLoading(true);
+      setIsFetching(false);
+      await getStackerInfo(0, 10 + 5 * fetchCount);
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      checkAllowance();
+    }
+    // eslint-disable-next-line
+  }, [account, triedReconnect, active, depositAmount]);
+
+  useEffect(() => {
+    if (!account && triedReconnect && !active) {
+      dispatch({
+        type: "UPDATE_STAKE_STATE",
+        payload: {
+          ...STAKE_INIT_STATE,
+        },
+      });
+    }
+    // eslint-disable-next-line
+  }, [account, triedReconnect, active]);
 
   const handleConnect = () => {
     if (sideBarOpen) {
@@ -78,32 +145,29 @@ const Staking = () => {
     setCreateStakingPopUpActive(true);
   };
 
+  const [unstakeLoading, setUnstakeLoading] = useState(false);
+  const [harvestLoading, setHarvestLoading] = useState(false);
   const th = [
     {
       name: "Staked Amount",
-      width: 15,
-      mobileWidth: 45,
+      width: 25,
+      mobileWidth: width > 400 ? 45 : 100,
       id: 0,
     },
     {
-      name: "Stake Date ",
-      width: 15,
+      name: "Stake Date",
+      width: 25,
       id: 1,
     },
     {
       name: "Unstake Date",
-      width: 15,
+      width: 25,
       id: 2,
     },
     {
-      name: "Earn Reward",
-      width: 15,
-      id: 3,
-    },
-    {
       name: "Harvest",
-      width: 15,
-      mobileWidth: 45,
+      width: 25,
+      mobileWidth: width > 400 ? 45 : false,
       id: 4,
     },
     {
@@ -111,18 +175,50 @@ const Staking = () => {
       width: 10,
       id: 5,
       mobileWidth: 35,
-      position: "right",
-      className: "buttons-th",
-      onClick: (index) => unstake(index),
+      className: "table-button-none",
+      onClick: (index) => {
+        setUnstakeLoading(true);
+        unstake(
+          index,
+          () => {
+            setUnstakeLoading(false);
+            axios
+              .post("api/transactions/unstake_transaction", {
+                address: account,
+                index,
+              })
+              .then((res) => {
+                refetchStakersRecord();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          },
+          () => {
+            setUnstakeLoading(false);
+          },
+        );
+      },
     },
     {
       name: "",
       width: 7,
       id: 6,
       mobileWidth: 20,
-      position: "right",
-      className: "buttons-th",
-      onClick: (index) => harvest(index),
+      className: "table-button-none",
+      onClick: (index) => {
+        setHarvestLoading(true);
+        harvest(
+          index,
+          () => {
+            setHarvestLoading(false);
+            refetchStakersRecord();
+          },
+          () => {
+            setHarvestLoading(false);
+          },
+        );
+      },
     },
   ];
 
@@ -133,69 +229,102 @@ const Staking = () => {
       {
         icon: <CurrentStake />,
         title: "Current Stake",
-        value: parseFloat(stakersInfo.currentStaked).toFixed(5),
+        value: stakersInfo.currentStaked,
       },
       {
         icon: <Earn />,
         title: "Earn",
-        value: parseFloat(stakersInfo.realtimeReward).toFixed(10),
+        value: stakersInfo.realtimeReward,
       },
       {
         icon: <ClaimedReward />,
         title: "Claimed Reward",
-        value: parseFloat(stakersInfo.totalClaimedRewardTokenUser).toFixed(5),
+        value: stakersInfo.totalClaimedRewardTokenUser,
       },
     ],
     [
       {
         icon: <WalletBalance />,
         title: "Your Wallet Balance",
-        value: balance.toFixed(5),
+        value: balance,
       },
       {
         icon: <TotalStaked />,
         title: "Total Staked",
-        value: parseFloat(stakersInfo.totalStakedTokenUser).toFixed(5),
+        value: stakersInfo.totalStakedTokenUser,
       },
       {
         icon: <TotalUnstaked />,
         title: "Total Unstaked",
-        value: parseFloat(stakersInfo.totalUnstakedTokenUser).toFixed(5),
+        value: stakersInfo.totalUnstakedTokenUser,
       },
     ],
   ];
 
+  const [stakingLoading, setStakingLoading] = useState(false);
   const handleCalculatorSubmit = async () => {
     setApproveResonse(null);
     if (!account) {
       handleConnect();
     }
 
+    setStakingLoading(true);
     if (account && isAllowance) {
-      approve(() => {
-        setApproveResonse({
-          status: "success",
-          message: "Approved successfully, please stake desired amount.",
-        });
-      });
+      approve(
+        () => {
+          setStakingLoading(false);
+          toast.success("Approved successfully, please stake desired amount.", {
+            autoClose: 8000,
+          });
+        },
+        () => {
+          setStakingLoading(false);
+          toast.error("Approval failed, please try again.", {
+            autoClose: 8000,
+          });
+        },
+      );
     }
     if (account && !isAllowance) {
-      stake(async () => {
-        await axios
-          .post("/api/accounts/activate-account", {
-            address: account,
-          })
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-            }
-          })
-          .catch((e) => {});
-        setCreateStakingPopUpActive(false);
-      });
+      stake(
+        async () => {
+          await axios
+            .post(
+              "/api/accounts/activate-account",
+              {
+                address: account,
+              },
+              {
+                timeout: 120000,
+              },
+            )
+            .then((res) => {
+              if (res.data?.account) {
+                dispatch({
+                  type: "SET_SYSTEM_ACCOUNT_DATA",
+                  payload: res.data.account,
+                });
+              }
+            })
+            .catch((e) => {});
+          setStakingLoading(false);
+          refetchStakersRecord();
+          toast.success("Staked successfully.", {
+            autoClose: 8000,
+          });
+          handleDepositAmount("");
+          handleTimePeriod(0);
+          setTimeout(() => {
+            setCreateStakingPopUpActive(false);
+          }, 3000);
+        },
+        () => {
+          setStakingLoading(false);
+          toast.error("Staking failed, please try again.", {
+            autoClose: 8000,
+          });
+        },
+      );
     }
   };
 
@@ -205,14 +334,35 @@ const Staking = () => {
       <Button
         element={"referral-button"}
         label={"Create Staking"}
-        icon={<AddSquareIcon color={`#00C6FF`} />}
+        icon={<AddSquareIcon />}
         onClick={handlePopUpOpen}
+        customStyles={{ height: "44px", flexDirection: "row" }}
       />
     ),
   };
 
+  const handleClose = () => {
+    handleTimePeriod(0);
+    handleDepositAmount("");
+    setCreateStakingPopUpActive(false);
+  };
+
+  const infiniteScrollRef = createRef();
+  const isLoadMoreButtonOnScreen = useOnScreen(infiniteScrollRef);
+
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    if (isLoadMoreButtonOnScreen) {
+      setIsFetching(true);
+      setFetchCount((prevCount) => prevCount + 1);
+    }
+  }, [isLoadMoreButtonOnScreen]);
+
   return (
     <>
+      <input 
+      />
       <StakingUI
         account={account}
         stackContractInfo={stackContractInfo}
@@ -222,6 +372,11 @@ const Staking = () => {
         stakersRecord={stakersRecord}
         tableEmptyData={tableEmptyData}
         handlePopUpOpen={handlePopUpOpen}
+        hasMoreData={hasMoreData}
+        infiniteScrollRef={infiniteScrollRef}
+        isFetching={isFetching}
+        unstakeLoading={unstakeLoading}
+        harvestLoading={harvestLoading}
       />
       {createStakingPopUpActive && (
         <Popup
@@ -240,14 +395,14 @@ const Staking = () => {
                 handleDepositAmount,
                 timeperiodDate,
                 handleTimeperiodDate,
+                stakingLoading,
               }}
               approveResonse={approveResonse}
             />
           }
           label={"Staking Calculator"}
-          handlePopUpClose={() => setCreateStakingPopUpActive(false)}
+          handlePopUpClose={handleClose}
           description={"Stake Complend to earn Complend reward"}
-          headerCustomStyles={{ background: "#272C57" }}
         />
       )}
     </>
