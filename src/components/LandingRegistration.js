@@ -1,17 +1,16 @@
 import { HelpText, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-// import {
-//   useConnect,
-//   //  useStake
-// } from "@cubitrix/cubitrix-react-connect-module";
+import {
+  useConnect,
+  //  useStake
+} from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "../hooks/use-connect";
 
 import { WalletConnectV2Connector } from "../utils/walletconnectV2Connector";
 
-import { useConnect } from "../hooks/use-connect";
-
 import { useStake } from "../hooks/use-stake";
-import { injected, walletConnect } from "../connector";
+import { injected } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

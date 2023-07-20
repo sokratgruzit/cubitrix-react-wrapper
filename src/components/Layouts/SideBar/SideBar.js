@@ -19,9 +19,11 @@ import {
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
+import { WalletConnectV2Connector } from "../../../utils/walletconnectV2Connector";
+
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { injected, walletConnect } from "../../../connector";
+import { injected } from "../../../connector";
 
 import { useEffect, useState, useMemo } from "react";
 import QRCode from "qrcode";
@@ -1428,7 +1430,17 @@ const SideBarRight = () => {
               {
                 label: "ConnectWallet",
                 svg: <WalletConnect />,
-                connect: () => connect("walletConnect", walletConnect),
+                connect: async () => {
+                  const walletConnect = new WalletConnectV2Connector({
+                    projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+                    showQrModal: true,
+                    chains: [97],
+                    rpcMap: {
+                      97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    },
+                  });
+                  await connect("walletConnect", walletConnect);
+                },
               },
             ]}
             signIn={handleSignInBar}
