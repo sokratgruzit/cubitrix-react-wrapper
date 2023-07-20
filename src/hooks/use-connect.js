@@ -75,8 +75,8 @@ export const useConnect = (props) => {
               chainId: "0x61", // ChainID for the Binance Smart Chain Testnet
               chainName: "BSC Testnet",
               nativeCurrency: {
-                name: "BNB",
-                symbol: "bnb",
+                name: "tBNB",
+                symbol: "tBNB",
                 decimals: 18,
               },
               rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
@@ -122,12 +122,14 @@ export const useConnect = (props) => {
             isConnected: true,
             providerType,
           });
-          console.log("connect success");
         })
         .catch((e) => {
-          console.log(e, "connect failed");
           dispatch({ type: "UPDATE_STATE", account: "", isConnected: false });
-          if (e.toString().startsWith("UnsupportedChainIdError")) {
+
+          if (
+            e.toString().startsWith("UnsupportedChainIdError") ||
+            e.toString().startsWith("t: Unsupported chain id")
+          ) {
             dispatch({
               type: "CONNECTION_ERROR",
               payload: "Please switch your network in wallet",
@@ -136,6 +138,7 @@ export const useConnect = (props) => {
               injected.walletConnectProvider = undefined;
             }
           }
+          console.log(e);
         })
         .finally(() => {
           setTimeout(() => {
@@ -166,7 +169,7 @@ export const useConnect = (props) => {
 
   const values = useMemo(
     () => ({
-      account,
+      account: account ?? "",
       active,
       connect,
       disconnect,

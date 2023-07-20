@@ -1,10 +1,14 @@
 import { HelpText, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
-import {
-  useConnect,
-  //  useStake
-} from "@cubitrix/cubitrix-react-connect-module";
+// import {
+//   useConnect,
+//   //  useStake
+// } from "@cubitrix/cubitrix-react-connect-module";
+
+import { WalletConnectV2Connector } from "../utils/walletconnectV2Connector";
+
+import { useConnect } from "../hooks/use-connect";
 
 import { useStake } from "../hooks/use-stake";
 import { injected, walletConnect } from "../connector";
@@ -642,6 +646,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           await connect("metaMask", injected);
         }}
         handleWalletConnect={async () => {
+          const walletConnect = new WalletConnectV2Connector({
+            projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+            showQrModal: true,
+            chains: [97],
+            rpcMap: {
+              97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+            },
+          });
+
           await connect("walletConnect", walletConnect);
         }}
         connectionLoading={connectionLoading}
@@ -658,7 +671,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         formData={formData}
         setFormData={setFormData}
         resendEmail={resendEmail}
-        disconnect={disconnect}
+        disconnect={() => {
+          disconnect();
+          localStorage.removeItem("walletconnect");
+        }}
         closeLandingSteps={() => setInitialRegister(false)}
         qrcode={qrCodeUrl}
         handlePurchaseEvent={handlePurchaseEvent}

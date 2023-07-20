@@ -23,7 +23,8 @@ import {
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "./hooks/use-connect";
 
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -52,7 +53,6 @@ function App() {
   const sideBar = useSelector((state) => state.appState?.sideBar);
   const emailVerified = useSelector((state) => state.appState?.emailVerified);
   const exts = useSelector((state) => state.extensions?.activeExtensions);
-  const chainId = useSelector((state) => state.connect.chainId);
   const providerType = useSelector((state) => state.connect.providerType);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const balance = useSelector((state) => state.appState.userData?.balance);
@@ -70,6 +70,7 @@ function App() {
     account,
     MetaMaskEagerlyConnect,
     WalletConnectEagerly,
+    chainId,
   } = useConnect();
 
   useEffect(() => {
@@ -80,6 +81,16 @@ function App() {
     }
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (chainId && chainId !== 97) {
+      localStorage.removeItem("walletconnect");
+      dispatch({
+        type: "CONNECTION_ERROR",
+        payload: "Please switch your network in wallet",
+      });
+    }
+  }, [chainId]);
 
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";

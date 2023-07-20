@@ -1447,6 +1447,7 @@ const SideBarRight = () => {
                 payload: { sideBarOpen: false },
               });
               disconnect();
+              localStorage.removeItem("walletconnect");
             }}
             userAccount={handleUserAccount}
             account={account}
