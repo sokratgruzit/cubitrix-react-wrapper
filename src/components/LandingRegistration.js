@@ -602,6 +602,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               .post("/api/accounts/manage_extensions", {
                 address: account,
                 extensions: { staking: "true", trade: "true" },
+                setup: true,
               })
               .then((res) => {
                 if (res?.data?.account) {
@@ -717,7 +718,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               console.log("before finish", res?.data?.account?.tier?.value);
               if (
                 res?.data?.account?.tier?.value !== "basic" &&
-                !res?.data?.account?.tier?.value
+                res?.data?.account?.tier?.value
               ) {
                 sendObj.referral = "true";
               }

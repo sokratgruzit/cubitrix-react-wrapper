@@ -26,13 +26,12 @@ const Dashboard = () => {
   const dashboardTransactionsDataReload = useSelector(
     (state) => state.appState?.dashboardTransactionsDataReload,
   );
-  const userBalances = useSelector((state) => state.appState.accountsData);
 
   const [referralHistoryType, setReferralHistoryType] = useState("uni");
 
   const mainAccount = useMemo(
-    () => userBalances.find((acc) => acc.account_category === "main"),
-    [userBalances],
+    () => accountsData.find((acc) => acc.account_category === "main"),
+    [accountsData],
   );
 
   const { account, active } = useConnect();
@@ -403,6 +402,7 @@ const Dashboard = () => {
       referralHistoryButtonsRight={referralHistoryRightButtons}
       tier={userData?.tier?.value}
       extensions={extensions}
+      stakedTotal={userData?.stakedTotal}
     />
   );
 };
