@@ -357,6 +357,27 @@ const Dashboard = () => {
     </div>
   );
 
+  // useEffect(() => {
+  //   axios
+  //     .post("/api/accounts/manage_extensions", {
+  //       address: account,
+  //       extensions: { staking: "true", trade: "true" },
+  //     })
+  //     .then((res) => {
+  //       if (res?.data?.account) {
+  //         dispatch({
+  //           type: "UPDATE_ACTIVE_EXTENSIONS",
+  //           payload: res.data.account.extensions,
+  //         });
+  //       }
+  //       // activateAccount();
+  //     })
+  //     .catch((e) => {
+  //       // activateAccount();
+  //       console.log(e.response);
+  //     });
+  // }, []);
+
   return (
     <DashboardUI
       accountType={accountType}

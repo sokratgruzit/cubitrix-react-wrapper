@@ -438,6 +438,31 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     status: "",
   });
 
+  async function activateAccount() {
+    axios
+      .post(
+        "/api/accounts/activate-account",
+        {
+          address: account,
+        },
+        {
+          timeout: 120000,
+        },
+      )
+      .then((res) => {
+        if (res.data?.account) {
+          dispatch({
+            type: "SET_SYSTEM_ACCOUNT_DATA",
+            payload: res.data.account,
+          });
+          setTimeout(() => {
+            handleDepositAmount(0);
+          }, 3000);
+        }
+      })
+      .catch((e) => {});
+  }
+
   const updateState = () => {
     dispatch({
       type: "SET_USER_DATA",
@@ -576,7 +601,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             axios
               .post("/api/accounts/manage_extensions", {
                 address: account,
-                extensions: { staking: "true" },
+                extensions: { staking: "true", trade: "true" },
               })
               .then((res) => {
                 if (res?.data?.account) {
@@ -585,30 +610,13 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                     payload: res.data.account.extensions,
                   });
                 }
+                activateAccount();
               })
-              .catch((e) => console.log(e.response));
-            axios
-              .post(
-                "/api/accounts/activate-account",
-                {
-                  address: account,
-                },
-                {
-                  timeout: 120000,
-                },
-              )
-              .then((res) => {
-                if (res.data?.account) {
-                  dispatch({
-                    type: "SET_SYSTEM_ACCOUNT_DATA",
-                    payload: res.data.account,
-                  });
-                  setTimeout(() => {
-                    handleDepositAmount(0);
-                  }, 3000);
-                }
-              })
-              .catch((e) => {});
+              .catch((e) => {
+                activateAccount();
+                console.log(e.response);
+              });
+
             axios
               .post("/api/accounts/get_account_balances", {
                 address: account?.toLowerCase(),
@@ -706,7 +714,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             })
             .then((res) => {
               let sendObj = { dashboard: "true" };
-
+              console.log("before finish", res?.data?.account?.tier?.value);
               if (
                 res?.data?.account?.tier?.value !== "basic" &&
                 !res?.data?.account?.tier?.value
