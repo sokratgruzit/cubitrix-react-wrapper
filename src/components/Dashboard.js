@@ -26,13 +26,12 @@ const Dashboard = () => {
   const dashboardTransactionsDataReload = useSelector(
     (state) => state.appState?.dashboardTransactionsDataReload,
   );
-  const userBalances = useSelector((state) => state.appState.accountsData);
 
   const [referralHistoryType, setReferralHistoryType] = useState("uni");
 
   const mainAccount = useMemo(
-    () => userBalances.find((acc) => acc.account_category === "main"),
-    [userBalances],
+    () => accountsData.find((acc) => acc.account_category === "main"),
+    [accountsData],
   );
 
   const { account, active } = useConnect();
@@ -357,6 +356,27 @@ const Dashboard = () => {
     </div>
   );
 
+  // useEffect(() => {
+  //   axios
+  //     .post("/api/accounts/manage_extensions", {
+  //       address: account,
+  //       extensions: { staking: "true", trade: "true" },
+  //     })
+  //     .then((res) => {
+  //       if (res?.data?.account) {
+  //         dispatch({
+  //           type: "UPDATE_ACTIVE_EXTENSIONS",
+  //           payload: res.data.account.extensions,
+  //         });
+  //       }
+  //       // activateAccount();
+  //     })
+  //     .catch((e) => {
+  //       // activateAccount();
+  //       console.log(e.response);
+  //     });
+  // }, []);
+
   return (
     <DashboardUI
       accountType={accountType}
@@ -382,6 +402,7 @@ const Dashboard = () => {
       referralHistoryButtonsRight={referralHistoryRightButtons}
       tier={userData?.tier?.value}
       extensions={extensions}
+      stakedTotal={userData?.stakedTotal}
     />
   );
 };

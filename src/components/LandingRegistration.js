@@ -5,9 +5,12 @@ import {
   useConnect,
   //  useStake
 } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "../hooks/use-connect";
+
+import { WalletConnectV2Connector } from "../utils/walletconnectV2Connector";
 
 import { useStake } from "../hooks/use-stake";
-import { injected, walletConnect } from "../connector";
+import { injected } from "../connector";
 
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -435,6 +438,31 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     status: "",
   });
 
+  async function activateAccount() {
+    axios
+      .post(
+        "/api/accounts/activate-account",
+        {
+          address: account,
+        },
+        {
+          timeout: 120000,
+        },
+      )
+      .then((res) => {
+        if (res.data?.account) {
+          dispatch({
+            type: "SET_SYSTEM_ACCOUNT_DATA",
+            payload: res.data.account,
+          });
+          setTimeout(() => {
+            handleDepositAmount(0);
+          }, 3000);
+        }
+      })
+      .catch((e) => {});
+  }
+
   const updateState = () => {
     dispatch({
       type: "SET_USER_DATA",
@@ -573,7 +601,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             axios
               .post("/api/accounts/manage_extensions", {
                 address: account,
-                extensions: { staking: "true" },
+                extensions: { staking: "true", trade: "true" },
+                setup: true,
               })
               .then((res) => {
                 if (res?.data?.account) {
@@ -582,30 +611,13 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                     payload: res.data.account.extensions,
                   });
                 }
+                activateAccount();
               })
-              .catch((e) => console.log(e.response));
-            axios
-              .post(
-                "/api/accounts/activate-account",
-                {
-                  address: account,
-                },
-                {
-                  timeout: 120000,
-                },
-              )
-              .then((res) => {
-                if (res.data?.account) {
-                  dispatch({
-                    type: "SET_SYSTEM_ACCOUNT_DATA",
-                    payload: res.data.account,
-                  });
-                  setTimeout(() => {
-                    handleDepositAmount(0);
-                  }, 3000);
-                }
-              })
-              .catch((e) => {});
+              .catch((e) => {
+                activateAccount();
+                console.log(e.response);
+              });
+
             axios
               .post("/api/accounts/get_account_balances", {
                 address: account?.toLowerCase(),
@@ -642,6 +654,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           await connect("metaMask", injected);
         }}
         handleWalletConnect={async () => {
+          const walletConnect = new WalletConnectV2Connector({
+            projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+            showQrModal: true,
+            chains: [97],
+            rpcMap: {
+              97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+            },
+          });
+
           await connect("walletConnect", walletConnect);
         }}
         connectionLoading={connectionLoading}
@@ -658,7 +679,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         formData={formData}
         setFormData={setFormData}
         resendEmail={resendEmail}
-        disconnect={disconnect}
+        disconnect={() => {
+          disconnect();
+          localStorage.removeItem("walletconnect");
+        }}
         closeLandingSteps={() => setInitialRegister(false)}
         qrcode={qrCodeUrl}
         handlePurchaseEvent={handlePurchaseEvent}
@@ -691,10 +715,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             })
             .then((res) => {
               let sendObj = { dashboard: "true" };
-
+              console.log("before finish", res?.data?.account?.tier?.value);
               if (
                 res?.data?.account?.tier?.value !== "basic" &&
-                !res?.data?.account?.tier?.value
+                res?.data?.account?.tier?.value
               ) {
                 sendObj.referral = "true";
               }
