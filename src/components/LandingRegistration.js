@@ -727,7 +727,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               let sendObj = { dashboard: "true" };
               console.log("before finish", res?.data?.account?.tier?.value);
               if (
-                res?.data?.account?.tier?.value !== "basic" &&
+                res?.data?.account?.tier?.value !== "Novice Navigator" &&
                 res?.data?.account?.tier?.value
               ) {
                 sendObj.referral = "true";

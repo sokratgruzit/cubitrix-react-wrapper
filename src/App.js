@@ -402,10 +402,10 @@ function App() {
   // console.log(
   //   isExtensionsLoaded &&
   //     activeExtensions.referral === "false" &&
-  //     (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic"),
+  //     (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "Novice Navigator"),
   //   isExtensionsLoaded,
   //   activeExtensions.referral === "false",
-  //   !appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic",
+  //   !appState?.userData?.tier?.value || appState?.userData?.tier?.value === "Novice Navigator",
   // );
   return (
     <main>
@@ -508,7 +508,7 @@ function App() {
               isExtensionsLoaded &&
               activeExtensions.referral === "false" &&
               (!appState?.userData?.tier?.value ||
-                appState?.userData?.tier?.value === "basic") ? (
+                appState?.userData?.tier?.value === "Novice Navigator") ? (
                 <Navigate to="/" />
               ) : (
                 <Referral />
