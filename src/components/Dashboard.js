@@ -57,7 +57,6 @@ const Dashboard = () => {
       const data = response.data;
       const amountsToFrom = data?.amounts_to_from?.[0] || {};
       setTransactionsData(data);
-      console.log(amountsToFrom);
       setTotalTransactions({
         total_transaction: data?.total_transaction || 0,
         received: amountsToFrom.toSum || 0,
@@ -85,8 +84,6 @@ const Dashboard = () => {
       const { data } = await axios.post("/api/referral/get_referral_address", {
         address: account?.toLowerCase(),
       });
-      console.log(data, "asdasdasdasdad");
-
       getTotalData(data);
     } catch (err) {
       console.log(err);
@@ -276,8 +273,6 @@ const Dashboard = () => {
   };
 
   const handleSidebarOpen = (sideBar, accountType) => {
-    console.log(sideBar, accountType);
-
     if (sideBar === "exchange" && accountType) {
       dispatch({
         type: "SET_EXCHANGE_ACCOUNT_TYPE",

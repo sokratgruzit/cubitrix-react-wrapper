@@ -440,7 +440,8 @@ const SideBarRight = () => {
       title: "Transfer amount",
       name: "amount",
       type: "default",
-      rightText: "ATR",
+      rightText:
+        exchangeAccountType === "ATAR" ? "ATR" : exchangeAccountType?.toUpperCase(),
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -804,7 +805,6 @@ const SideBarRight = () => {
     }
 
     setWithdrawSubmitLoading(true);
-    console.log(exchangeAccountType, accountType);
     axios
       .post("/api/transactions/make_withdrawal", {
         address: account,
@@ -1002,7 +1002,7 @@ const SideBarRight = () => {
           </svg>
         ),
         title: "ATAR",
-        price: 2,
+        price: mainAccount?.balance,
       },
       {
         svg: (
@@ -1401,8 +1401,6 @@ const SideBarRight = () => {
         console.log(e);
       });
   };
-
-  console.log(exchangeAccountType, "exchange");
 
   return (
     <>

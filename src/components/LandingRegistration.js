@@ -645,6 +645,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   };
 
+  const [accountLoading, setaccountLoading] = useState(false);
+  useEffect(() => {
+    if (connectionLoading) {
+      setaccountLoading(true);
+    }
+    if (appState?.userData?.address) {
+      setaccountLoading(false);
+    }
+  }, [connectionLoading, appState?.userData?.address]);
+
   return (
     <>
       <LandingSteps
@@ -665,7 +675,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
           await connect("walletConnect", walletConnect);
         }}
-        connectionLoading={connectionLoading}
+        connectionLoading={accountLoading}
         step={step}
         setStep={setStep}
         initialLoading={false}
