@@ -804,13 +804,14 @@ const SideBarRight = () => {
     }
 
     setWithdrawSubmitLoading(true);
+    console.log(exchangeAccountType, accountType);
     axios
       .post("/api/transactions/make_withdrawal", {
         address: account,
         address_to: currentObject.address,
         amount: currentObject.amount,
         accountType: exchangeAccountType,
-        rate: rates[exchangeAccountType].usd,
+        rate: exchangeAccountType === "ATAR" ? 2 : rates?.[exchangeAccountType]?.usd,
       })
       .then(async (res) => {
         toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
@@ -1400,6 +1401,8 @@ const SideBarRight = () => {
         console.log(e);
       });
   };
+
+  console.log(exchangeAccountType, "exchange");
 
   return (
     <>

@@ -276,13 +276,14 @@ const Dashboard = () => {
   };
 
   const handleSidebarOpen = (sideBar, accountType) => {
+    console.log(sideBar, accountType);
+
     if (sideBar === "exchange" && accountType) {
       dispatch({
         type: "SET_EXCHANGE_ACCOUNT_TYPE",
         payload: accountType,
       });
     }
-    console.log(sideBar, accountType);
     if (sideBar === "withdraw" && accountType) {
       dispatch({
         type: "SET_EXCHANGE_ACCOUNT_TYPE",
