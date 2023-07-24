@@ -172,11 +172,11 @@ body {
 .landingContentHalf h2 {
     font-size: 60px;
     line-height: 130%;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     color: rgba(87,171,277);
 }
 .landingContentHalf p {
-    font-size: 30px;
+    font-size: 25px;
     line-height: 150%;
 }
 .landingContentDescription {
@@ -296,15 +296,16 @@ body {
     padding-right: 50px;
 }
 .landingLatestPricesDescr p {
-    font-size: 30px;
+    font-size: 25px;
     line-height: 150%;
 }
 .landingLatestPricesDescr h3,.landingContentDescription h3 {
     font-size: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
 }
-.landingContentDescription h3 span {
+.landingContentDescription h3 span,.landingContentDescription h2 span {
     color: #C38C5C;
+    font-family: inherit;
 }
 .landingLatestPrices h2 {
     font-size: 60px;
@@ -367,6 +368,9 @@ body {
     margin-bottom: 30px;
     color: rgba(87,171,277);
 }
+.landingColumn p {
+    font-size: 15px;
+}
 .landingContentContainerTxt .landingContentDescription{
     justify-content: flex-start;
     padding: 0px 50px;
@@ -381,7 +385,35 @@ body {
 /*#tradingview_widget_wrapper > div:nth-child(2) {*/
 /*    display: none;*/
 /*}*/
+.landingContentBordered.landingContentHalf {
+    width: 100%;
+    background: #10282B;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 20px;
+    padding: 50px 20px;
+    margin-bottom: 50px;
+    padding-right: 20%;
+}
+.borderedContainers {
+    flex-direction: column;
+}
+.landingContentContainerTxt .landingContentBordered.landingContentHalf:nth-child(1) {
+    border: none;
+}
+.landingContentBordered h3 {
+    color: #C38C5C;
+    font-size: 40px;
+    line-height: 150%;
+    margin-bottom: 10px;
+}
+.landingContentHalf.landingContentBordered h3 {
+    margin-top: 50px;
+}
+
 @media only screen and (max-width: 1680px){
+    .landingContentHalf.landingContentBordered h3 {
+        font-size: 28px;
+    }
     .landingLatestPricesColumn .landingLatestPricesItems {
         margin-right: 50px;
     }
@@ -399,7 +431,7 @@ body {
         font-size: 40px;
     }
     .landingContentHalf p {
-        font-size: 25px;
+        font-size: 16px;
     }
     .landingCard.landingCardBig img {
         width: 280px;
@@ -411,13 +443,29 @@ body {
         font-size: 40px;
     }
     .landingLatestPricesDescr p {
-        font-size: 20px;
+        font-size: 17px;
     }
     .landingLatestPricesDescr {
         padding-left: 50px;
     }
+    .landingContentDescription li {
+        font-size: 16px;
+    }
+    .landingJoinContainer {
+        padding: 100px 50px;
+    }
+    .landingFooter {
+        padding: 0px 50px;
+    }
 }
 @media only screen and (max-width: 1360px) {
+    .landingContentHalf.landingContentBordered h3 {
+        font-size: 22px;
+        margin-top: 30px;
+    }
+    .landingContentHalf h2 {
+        font-size: 30px;
+    }
     .landingLatestPricesColumn .landingLatestPricesItems {
         width: 50%;
     }
@@ -456,9 +504,6 @@ body {
         padding-left: 50px;
         padding-right: 20px;
     }
-    .landingContentHalf p {
-        font-size: 20px;
-    }
     .landingJoinContainerHalf h3 {
         font-size: 70px;
         line-height: 130%;
@@ -471,6 +516,9 @@ body {
     }
 }
 @media only screen and (max-width: 767px) {
+    .landingContentBordered.landingContentHalf {
+        padding: 20px 15px;
+    }
     .landingLatestPrices.landingLatestPricesReverse {
         margin-bottom: 50px;
     }
