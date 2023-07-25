@@ -213,7 +213,7 @@ const Transactions = () => {
         { name: "Deposit", value: "deposit" },
         { name: "Transfer", value: "transfer" },
         { name: "Internal Transfer", value: "internal_transfer" },
-        { name: "Withdrawal", value: "withdrawal" },
+        { name: "Withdraw", value: "withdraw" },
         { name: "Referral Bonus", value: "bonus" },
       ],
       defaultAny: "Any Type",
