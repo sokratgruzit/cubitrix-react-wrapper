@@ -19,9 +19,11 @@ import {
 
 import { MetaMask, WalletConnect } from "../../../assets/svg";
 
+import { WalletConnectV2Connector } from "../../../utils/walletconnectV2Connector";
+
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { injected, walletConnect } from "../../../connector";
+import { injected } from "../../../connector";
 
 import { useEffect, useState, useMemo } from "react";
 import QRCode from "qrcode";
@@ -438,7 +440,8 @@ const SideBarRight = () => {
       title: "Transfer amount",
       name: "amount",
       type: "default",
-      rightText: "ATR",
+      rightText:
+        exchangeAccountType === "ATAR" ? "ATR" : exchangeAccountType?.toUpperCase(),
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -808,7 +811,7 @@ const SideBarRight = () => {
         address_to: currentObject.address,
         amount: currentObject.amount,
         accountType: exchangeAccountType,
-        rate: rates[exchangeAccountType].usd,
+        rate: exchangeAccountType === "ATAR" ? 2 : rates?.[exchangeAccountType]?.usd,
       })
       .then(async (res) => {
         toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
@@ -999,7 +1002,7 @@ const SideBarRight = () => {
           </svg>
         ),
         title: "ATAR",
-        price: 2,
+        price: mainAccount?.balance,
       },
       {
         svg: (
@@ -1428,7 +1431,17 @@ const SideBarRight = () => {
               {
                 label: "ConnectWallet",
                 svg: <WalletConnect />,
-                connect: () => connect("walletConnect", walletConnect),
+                connect: async () => {
+                  const walletConnect = new WalletConnectV2Connector({
+                    projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+                    showQrModal: true,
+                    chains: [97],
+                    rpcMap: {
+                      97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    },
+                  });
+                  await connect("walletConnect", walletConnect);
+                },
               },
             ]}
             signIn={handleSignInBar}
@@ -1447,6 +1460,7 @@ const SideBarRight = () => {
                 payload: { sideBarOpen: false },
               });
               disconnect();
+              localStorage.removeItem("walletconnect");
             }}
             userAccount={handleUserAccount}
             account={account}

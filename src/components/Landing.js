@@ -340,9 +340,9 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               <div className="landingContentDescription">
                 <h2 className="ttl">Welcome to a new era of seemingly infinite financial opportunities!</h2>
                 <p>
-                  We represent a movement dedicated to democratizing financial markets and reimagining finance's future.
-                  Borders are eliminated, and tradition limitations are lifted. We cater to both seasoned traders and newbies with our arsenal of features, making your trading adventure as easy as possible.
-                  We welcome you to join us in dreaming big and achieving even more. Join our worldwide marketplace and embark on a journey of limitless opportunities.
+                    We represent a movement dedicated to democratizing financial markets and reimagining finance's future. <br/><br/>
+                    Borders are eliminated, and tradition limitations are lifted. We cater to both seasoned traders and newbies with our arsenal of features, making your trading adventure as easy as possible.<br/><br/>
+                    We welcome you to join us in dreaming big and achieving even more. Join our worldwide marketplace and embark on a journey of limitless opportunities.
                 </p>
               </div>
             </div>
@@ -350,7 +350,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               <div className="landingContentDescription">
                 <h2 className="ttl">Erase Boundaries, Embrace DeFi</h2>
                 <p>
-                  With our Decentralized Finance (DeFi) platform, you can achieve infinite financial autonomy. Embrace a world of openness, involvement, and increased security instead of traditional centralized methods. Our DeFi Platform empowers you to take charge of your financial future by erasing the lines and breaking down obstacles. Navigate through a wide range of financial instruments, from staking to trading, loans, and incentives, all in a trustless, permission-less environment.
+                  With our Decentralized Finance (DeFi) platform, you can achieve infinite financial autonomy. Embrace a world of openness, involvement, and increased security instead of traditional centralized methods. Our DeFi Platform empowers you to take charge of your financial future by erasing the lines and breaking down obstacles. Navigate through a wide range of financial instruments, from staking to trading, loans, and incentives, all in a trustless, permission-less environment. <br/><br/>
                   Join us and discover DeFi's enormous potential as your doorway to financial emancipation. Begin your journey to ultimate financial freedom right now.
                 </p>
               </div>
@@ -397,11 +397,12 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h3 className="ttl">Discover the power of <span>Staking</span></h3>
                 <h2 className="ttl">Elevate Your Earnings</h2>
+                <h3 className="ttl">Discover the power of <span>Staking</span></h3>
                 <p>
-                  Make your assets work for you even when you're not actively trading. Simply lock-up your tokens in our secure on-chain Vault and enjoy a consistent, real-time passive income. It's an efficient and straightforward way to maximize your investment returns.
-                  While your primary focus remains on market maneuvers, staking ensures your portfolio continues to grow passively. Let your tokens deliver the performance you desire with “XXX” Staking – a smart investment strategy for today's proactive trader.</p>
+                  Make your assets work for you even when you're not actively trading. Simply lock-up your tokens in our secure on-chain Vault and enjoy a consistent, real-time passive income. It's an efficient and straightforward way to maximize your investment returns. <br/>
+                  While your primary focus remains on market maneuvers, staking ensures your portfolio continues to grow passively. Let your tokens deliver the performance you desire with “"Atar"” Staking – a smart investment strategy for today's proactive trader.
+                </p>
               </div>
             </div>
           </div>
@@ -415,10 +416,10 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h3 className="ttl">Achieve More with <span>Margin Trading</span></h3>
                 <h2 className="ttl">Maximize Your Market Moves:</h2>
+                <h3 className="ttl">Achieve More with <span>Margin Trading</span></h3>
                 <p>
-                  Empower your financial journey with the dynamic capabilities of Margin Trading. With Margin Trading, you can effectively enhance your buying power, making larger trades a reality. This allows you to seize timely investment opportunities without causing any disruption to your existing financial portfolio. But the benefits don't end there.
+                  Empower your financial journey with the dynamic capabilities of Margin Trading. With Margin Trading, you can effectively enhance your buying power, making larger trades a reality. This allows you to seize timely investment opportunities without causing any disruption to your existing financial portfolio. But the benefits don't end there. <br/>
                   Margin Trading also offers you unprecedented liquidity. Enjoy the unparalleled flexibility of accessing additional capital without the need to sell off your valuable investments. This feature ensures that you can keep your strategic market positions unscathed while promptly addressing any immediate financial requirements. Experience the revolutionized trading environment that margin trading offers, and optimize your financial success.</p>
               </div>
             </div>
@@ -436,7 +437,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                 <h2 className="ttl">Trade
                   (Gold/Stocks/Crypto/Forex)
                   Without Borders</h2>
-                <p>Hybrid exchange where you can trade multiple asset classes all from one account.</p>
+                <p>Experience the potency of hybrid trade platform, designed for seamless cross-asset trading through one account.</p>
               </div>
             </div>
           </div>
@@ -450,19 +451,83 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h2 className="ttl">Seamless Trading - Unrestricted by
-                  by Time-Zones or Distance</h2>
-                <p>Crafted by market professionals for fellow traders, our platform empowers you with unprecedented access to global markets. Engage in trading at your convenience, equipped with our cutting-edge trading tools, competitive leverage, and minimized trading fees.
+                <h2 className="ttl">Hybrid Trading Platform</h2>
+                <h3 className="ttl">Beyond Space and Time</h3>
+                <p>
+                  Crafted by market professionals for fellow traders, our platform empowers you with unprecedented access to global markets. Engage in trading at your convenience, equipped with our cutting-edge trading tools, competitive leverage, and minimized trading fees.
                  <br/>
-                  Unmatched Features for a Streamlined Trading Experience:</p>
+                 <br/>
+                  Exceptional Features for a Streamlined Trading Experience:</p>
                 <ul>
                   <li>Competitive low trading fees and tight spreads</li>
                   <li>Cutting-edge, low latency for ultra-fast order execution</li>
-                  <li>Exceptional leverage ratio up to 20:1</li>
+                  <li>Exceptional leverage ratio</li>
                   <li>Robust and user-friendly trading interfaces</li>
                   <li>Swift and secure deposit and withdrawal process</li>
                 </ul>
               </div>
+            </div>
+          </div>
+          <div className="landingContentContainer">
+            <div className="landingContentHalf image">
+              <Scroll.Item keyframes={keyframes.zoomOut4}>
+                <div className="landingContentHalfImg">
+                  <img src={contentBg3} alt="contentBg1"/>
+                </div>
+              </Scroll.Item>
+            </div>
+            <div className="landingContentHalf">
+              <div className="landingContentDescription">
+                <h2 className="ttl"><span>100+</span> trading instruments</h2>
+                <ul>
+                  <li>Trade a Broad Spectrum of Assets: Commodities, Metals, Digital Currencies, Bonds, Forex and Indices to Shares and ETFs.</li>
+                  <li>Accurate and stable order execution</li>
+                  <li>No re-quotes.</li>
+                </ul>
+                <br/>
+                <br/>
+                <h2 className="ttl">Unified Trading Experience</h2>
+                <p>All Your Accounts through One Portal, Access and Trade in Stock & Metal Markets for Optimal Efficiency</p>
+              </div>
+            </div>
+          </div>
+          <div className="landingContentContainer landingContentContainerTxt borderedContainers">
+            <div className="landingContentBordered landingContentHalf">
+              <h2 className="ttl">Trading Mastery: Education for Every Trader</h2>
+              <h3 className="ttl">Daily Trading Insights:</h3>
+              <p>Acquire Valuable Tips for Enhanced Profitability in Trading.</p>
+              <h3>Comprehensive Learning Resources:</h3>
+              <p>Explore our Free Trading Basics Course. Benefit from Regular Webinars and Live Trading Sessions Tailored for Beginners and Pros Alike.</p>
+            </div>
+            <div className="landingContentBordered landingContentHalf">
+              <h2 className="ttl">Unleash the Power of Referrals</h2>
+              <p>Harness the potential to augment your earnings through our lucrative Referral Program.
+                By inviting other traders to join this platform, not only do you contribute to a growing community of like-minded individuals, but you also unlock the opportunity to earn more.
+                Our referral initiative is designed to reward you generously for each successful referral. The more traders you bring aboard, the higher the rewards you earn. It's a win-win - your referrals get to experience a robust and user-friendly trading platform, and you get to reap the benefits of your network. It's more than just a referral - it's an opportunity to thrive together in the dynamic world of trading.</p>
+            </div>
+            <div className="landingContentBordered landingContentHalf">
+              <h2 className="ttl">Peer-to-Peer Lending <br/>
+                Revolutionizing Financial Dynamics</h2>
+              <p>Our cutting-edge peer-to-peer lending platform serves as a streamlined medium, enabling smooth and efficient financial exchanges between individual lenders and borrowers.
+                It epitomizes the intersection of technological innovation and financial solutions, ensuring secure and profitable interactions for all parties involved.</p>
+              <h3 className="ttl">For Lenders: An Avenue for Optimized Capital Growth</h3>
+              <p>
+                Our platform serves as an innovative gateway for lenders to explore an array of investment opportunities, thereby diversifying and enriching their portfolios. By facilitating direct funding to borrowers, lenders stand to realize potentially appealing returns. In our endeavor to empower lenders, we provide the autonomy to stipulate lending terms, select borrowers, and monitor investments at your convenience. With our commitment to transparency and robust risk management strategies, we provide a secure and trustworthy environment for your active engagement in the P2P lending market.</p>
+              <h3 className="ttl">For Borrowers: Transforming Financial Ambitions into Reality</h3>
+              <p>For those requiring funds to actualize goals, our peer-to-peer lending platform emerges as the quintessential solution. Bypassing the labyrinthine procedures of traditional financial institutions, we present a more direct, user-friendly approach to lending. Our platform bestows numerous benefits such as swift loan approvals, competitive interest rates, and bespoke lending terms that acknowledge and adapt to your distinct financial context. By leveraging the combined prowess of our vast lending community, we endeavor to smooth your path towards financial self-sufficiency and the accomplishment of your aspirations.</p>
+            </div>
+            <div className="landingContentBordered landingContentHalf">
+              <h2 className="ttl">"Atar" Elite Membership :Unlock
+                the Vault of Prosperity</h2>
+              <p>Are you set to seize command of your financial voyage and unlock the full potential of your wealth? Then, "Atar" Elite is the ultimate resource you have been seeking. As a distinctive membership club, "Atar" Elite extends an assortment of unique tools and perks designed to turbocharge your financial maneuvers, all available for a reasonable fee of $20 monthly.</p>
+              <h3 className="ttl">Elevate Your Savings with Premium APY</h3>
+              <p>"Atar" Elite enriches your saving strategy by providing an additional 1.2% APY. This high yield is thoughtfully engineered to bolster your savings and exponentially grow your wealth over time.</p>
+              <h3 className="ttl">Exclusive Access to Premium Educational Content at Discounted
+                Rates</h3>
+              <p>"Atar" Elite is more than just a suite of financial tools and services. It's a hub for financial enlightenment. As a member, you reap the benefits of exclusive discounts on first-class educational content. This carefully curated assortment of financial literature and courses equips you with the knowledge to make astute financial decisions and enhance your investment strategies.</p>
+              <h3 className="ttl">Access to Members-Only Financial Seminars</h3>
+              <p>"Atar" Elite symbolizes a groundbreaking and empowering paradigm in personal finance. For a nominal $20 a month, you unlock access to a treasure trove of resources conceived to help you grow and govern your money more proficiently. With "Atar" Elite, your investment transcends beyond a mere membership, it becomes a stake in your financial future.
+                Sign up for "Atar" Elite today and escalate your financial prowess. Together, let's construct a more robust financial future.</p>
             </div>
           </div>
           <div className="landingJoinContainer">

@@ -19,8 +19,6 @@ export const useExtensionsData = () => {
   const userBalances = useSelector((state) => state.appState.accountsData);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
 
-  // console.log(appState.userData.tier.value, "shiiiiiiiiiit");
-
   const generateAccountsData = async () => {
     try {
       const apiUrl = "/api/accounts/get_account_balances";
@@ -197,21 +195,13 @@ export const useExtensionsData = () => {
         handleSwitch: (title, value) => {
           if (!isActive || !emailVerified) return;
 
-          if (!userBalances.find((item) => item.account_category === "trade") && value) {
-            dispatch({
-              type: "SET_FEE_WARN_TYPE",
-              payload: "trade",
-            });
-            return;
-          }
-
-          if (!userBalances.find((item) => item.account_category === "loan") && value) {
-            dispatch({
-              type: "SET_FEE_WARN_TYPE",
-              payload: "loan",
-            });
-            return;
-          }
+          // if (!userBalances.find((item) => item.account_category === "trade") && value) {
+          //   dispatch({
+          //     type: "SET_FEE_WARN_TYPE",
+          //     payload: "trade",
+          //   });
+          //   return;
+          // }
 
           handleChangeExtension(title.toLowerCase(), value);
         },
@@ -245,13 +235,13 @@ export const useExtensionsData = () => {
         handleSwitch: (title, value) => {
           if (!isActive || !emailVerified) return;
 
-          if (!userBalances.find((item) => item.account_category === "loan") && value) {
-            dispatch({
-              type: "SET_FEE_WARN_TYPE",
-              payload: "loan",
-            });
-            return;
-          }
+          // if (!userBalances.find((item) => item.account_category === "loan") && value) {
+          //   dispatch({
+          //     type: "SET_FEE_WARN_TYPE",
+          //     payload: "loan",
+          //   });
+          //   return;
+          // }
 
           handleChangeExtension(title.toLowerCase(), value);
         },
