@@ -48,3 +48,15 @@ body {
 #mini-symbol-overview-chart {
   display: none!important;
 }
+.confirm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  background: rgba(16, 40, 43, 1);
+  padding: 20px;
+}
+.confirm-list-item span:first-child {
+  color: #9c9da3;
+  margin-right: 10px;
+}
