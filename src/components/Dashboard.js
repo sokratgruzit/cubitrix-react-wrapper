@@ -79,6 +79,7 @@ const Dashboard = () => {
       console.log(err);
     }
   };
+  
   const generateTotalReferralData = async () => {
     try {
       const { data } = await axios.post("/api/referral/get_referral_address", {
