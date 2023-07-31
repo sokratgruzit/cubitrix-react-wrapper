@@ -213,7 +213,7 @@ const Transactions = () => {
         { name: "Deposit", value: "deposit" },
         { name: "Transfer", value: "transfer" },
         { name: "Internal Transfer", value: "internal_transfer" },
-        { name: "Withdrawal", value: "withdrawal" },
+        { name: "Withdrawal", value: "withdraw" },
         { name: "Referral Bonus", value: "bonus" },
       ],
       defaultAny: "Any Type",
@@ -256,7 +256,7 @@ const Transactions = () => {
     label: "No Transaction History",
     icon: <NoHistoryIcon />,
   };
-  console.log(transactionsData)
+  console.log(transactionsData);
   return (
     <TransactionsUI
       header={"Transactions"}
