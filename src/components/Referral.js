@@ -152,7 +152,7 @@ const Referral = () => {
     }
   };
   let referralTreeUserBackClick = async () => {
-    if (account !== activeTreeUser.user_address) {
+    if (activeTreeUser.user_address !== referralAddress) {
       setAnimateTree(false);
       try {
         try {
@@ -170,6 +170,8 @@ const Referral = () => {
       } catch (err) {
         console.log(err);
       }
+    } else {
+      return false
     }
   };
   let referralTreeUserClick = async (item) => {
@@ -272,7 +274,7 @@ const Referral = () => {
           id: 0,
         },
         {
-          name: "User Level / Position",
+          name: "User Level",
           width: 15,
           mobileWidth: 45,
           id: 1,
@@ -652,6 +654,7 @@ const Referral = () => {
         referralTreeData={referralTreeData}
         referralTreeUserClick={referralTreeUserClick}
         referralTreeUserBackClick={referralTreeUserBackClick}
+        referralBackActive={activeTreeUser.user_address !== referralAddress}
         referralTreeAddClick={referralTreeAdd}
         referralTreeTableHead={referralTreeTableTh}
         referralTreeTableData={referralTableData?.list}

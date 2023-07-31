@@ -7,6 +7,9 @@ import './Landing.css';
 import ABg from "../assets/img/landing/landingA.png"
 import patternBg from "../assets/img/landing/patternBg.svg"
 import patternBg2 from "../assets/img/landing/patternBg2.png"
+import patternBg3 from "../assets/img/landing/pattern3.png"
+import patternBg4 from "../assets/img/landing/pattern4.png"
+import patternBg5 from "../assets/img/landing/pattern5.png"
 import card1 from "../assets/img/landing/atr.svg"
 import card2 from "../assets/img/landing/eth.svg"
 import card3 from "../assets/img/landing/btc.svg"
@@ -14,6 +17,8 @@ import card4 from "../assets/img/landing/thr.svg"
 import contentBg1 from "../assets/img/landing/contentBg1.png"
 import contentBg2 from "../assets/img/landing/contentBg2.png"
 import contentBg3 from "../assets/img/landing/contentBg3.png"
+import contentBg4 from "../assets/img/landing/contentBg4.png"
+import contentBg5 from "../assets/img/landing/contentBg5.png"
 import footerBg from "../assets/img/landing/footerBg.png"
 import { MiniChart } from "react-tradingview-widget-components";
 const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
@@ -115,6 +120,24 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
   };
 
   const [animate, setAnimate] = useState(false);
+  const [activeFaq, setActiveFaq] = useState(null);
+  const [activeHowStart, setActiveHowStart] = useState(null);
+
+  let openHowStart = (index) => {
+    if(index !== activeHowStart){
+      setActiveHowStart(index)
+    } else {
+      setActiveHowStart(null)
+    }
+  }
+
+  let openFaq = (index) => {
+    if(index !== activeFaq){
+      setActiveFaq(index)
+    } else {
+      setActiveFaq(null)
+    }
+  }
 
   useEffect(() => {
     setAnimate(true);
@@ -203,6 +226,78 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
       },
     },
   };
+  const faq = [
+    {
+      question: 'What is this platform about?',
+      answer: '"Atar" is a unique trading platform that seamlessly merges the premier attributes of both centralized and decentralized platforms. It enables seamless trading across forex, stocks, commodities, and cryptocurrencies under one account, removing the burden of onerous KYC obligations. The platform aims to transcend borders, empowering everyone to shape their financial destiny.'
+    },
+    {
+      question: 'Who can use this platform?',
+      answer: 'Our platform caters to everyone interested in trading, regardless of their expertise level. Whether you\'re a seasoned trader or a beginner, you will find our platform user-friendly and supportive of all your trading needs.'
+    },
+    {
+      question: 'What kind of trading accounts do you offer?',
+      answer: 'We offer four types of accounts: Novice Navigator (for beginners), Stellar Standard (a balance of affordability and functionality), Expert Edge (for professional traders), and Platinum Privilege (VIP account for high-volume, sophisticated traders).'
+    },
+    {
+      question: 'What is Staking? How can I benefit from it?',
+      answer: 'Staking involves locking up your tokens in our secure on-chain Vault to earn a consistent, real- time passive income. While you focus on market maneuvers, staking ensures your portfolio continues to grow passively.'
+    },
+    {
+      question: 'Can you explain the concept of Margin Trading?',
+      answer: 'Margin Trading enhances your buying power, allowing you to make larger trades. This enables you to seize timely investment opportunities without disrupting your existing financial portfolio. It also offers unprecedented liquidity, allowing you to access additional capital without the need to sell off your valuable investments.'
+    },
+    {
+      question: 'What trading instruments are available on the platform?',
+      answer: 'Our platform offers over 100 trading instruments. You can trade a broad spectrum of assets including commodities, metals, digital currencies, bonds, forex, indices, shares, and ETFs.'
+    },
+    {
+      question: 'How do I get started on your platform?',
+      answer: 'Simply sign up using your email, link your crypto wallet, transfer necessary funds, stake your funds, receive trading credit, utilize leverage, and start trading. It\'s a straightforward process designed to make trading easy for you.'
+    },
+    {
+      question: 'Can I take loans from this platform?',
+      answer: 'Yes, we have a cutting-edge peer-to-peer lending platform that enables smooth and efficient financial exchanges between individual lenders and borrowers. It presents an array of investment opportunities for lenders and an accessible, user-friendly approach to lending for borrowers.'
+    },
+    {
+      question: 'What educational resources do you offer for traders?',
+      answer: 'We provide a comprehensive range of learning resources. These include daily trading insights, free trading basics courses, regular webinars, and live trading sessions tailored for beginners and professional traders alike.'
+    },
+    {
+      question: 'Do you have a referral program?',
+      answer: 'Yes, we have a lucrative Referral Program. By inviting other traders to join our platform, you unlock the opportunity to earn more. The more traders you bring aboard, the higher the rewards you earn.'
+    },
+    {
+      question: 'What is the "Atar" Elite Membership?',
+      answer: 'The "Atar" Elite Membership is a distinctive club that offers unique tools and perks to elevate your financial journey. These include an additional 1.2% APY on your savings, exclusive access to premium educational content at discounted rates, and access to members-only financial seminars. The membership is available at a reasonable fee of $20 monthly.'
+    }
+  ];
+  const howStart = [
+    {
+      question: '1. Sign Up',
+      answer: 'Creating your account is a breeze. Simply enter your email address to get started - it\'s quick and easy!'
+    },
+    {
+      question: '2. Link Wallet',
+      answer: 'Fund your trading account by depositing from a broad spectrum of accepted cryptocurrencies, including Bitcoin, Ethereum, BNB, Tron, and more.'
+    },
+    {
+      question: '3. Fund Your Account',
+      answer: 'Transfer the necessary funds to your account to prepare for staking.'
+    },
+    {
+      question: '4. Stake Your Funds',
+      answer: 'Lock your funds in staking, thereby activating your potential earnings.'
+    },
+    {
+      question: '5. Acquire Trading Credit',
+      answer: 'Receive trading credit equivalent to the value of your staked funds, further empowering your trading potential.'
+    },
+    {
+      question: '6. Utilize Leverage',
+      answer: 'Take advantage of leverage to magnify your trading capacity, and then you\'re all set to commence trading.'
+    }
+  ];
   return (
     <>
       <Scroll.Container style={{height: '100vh'}} scrollAxis="y" className="h-screen">
@@ -277,6 +372,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </Scroll.Item>
           </div>
           <div className="landingLatestPrices landingLatestPricesReverse">
+            <img src={patternBg4} alt="paternbg4" className="patternBg4"/>
             <div className="landingLatestPricesDescr">
               <h2 className='ttl'>
                 Latest Market <br/>Prices
@@ -357,6 +453,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
           </div>
           <div className="landingColumns">
+            <img src={patternBg3} alt="paternbg3" className="patternBg3"/>
             <div className="landingColumn">
               <h3 className='ttl'>Novice Navigator</h3>
               <h4 className='ttl'>Entry-Level Efficiency</h4>
@@ -445,7 +542,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             <div className="landingContentHalf image">
               <Scroll.Item keyframes={keyframes.zoomOut4}>
                 <div className="landingContentHalfImg">
-                  <img src={contentBg3} alt="contentBg1"/>
+                  <img src={contentBg4} alt="contentBg1"/>
                 </div>
               </Scroll.Item>
             </div>
@@ -472,7 +569,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             <div className="landingContentHalf image">
               <Scroll.Item keyframes={keyframes.zoomOut4}>
                 <div className="landingContentHalfImg">
-                  <img src={contentBg3} alt="contentBg1"/>
+                  <img src={contentBg5} alt="contentBg1"/>
                 </div>
               </Scroll.Item>
             </div>
@@ -488,6 +585,28 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                 <br/>
                 <h2 className="ttl">Unified Trading Experience</h2>
                 <p>All Your Accounts through One Portal, Access and Trade in Stock & Metal Markets for Optimal Efficiency</p>
+              </div>
+            </div>
+          </div>
+          <div className="landingContentContainer landingContentContainerTxt faqContainer">
+            <img src={patternBg5} alt="paternbg5" className="patternBg5"/>
+            <div className="landingContentHalf">
+              <h2 className="ttl">How to Get Started?</h2>
+            </div>
+            <div className="landingContentHalf">
+              <div className="faqElements">
+                {howStart.map((item, index) => {
+                  return(
+                      <div className={`faqElement ${activeHowStart == index ? 'active' : ''}`} onClick={() => {
+                        openHowStart(index)
+                      }}>
+                        <div className="ttl faqElementTtl">{item.question}</div>
+                        <div className="faqElementAnswer">
+                          {item.answer}
+                        </div>
+                      </div>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -528,6 +647,27 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               <h3 className="ttl">Access to Members-Only Financial Seminars</h3>
               <p>"Atar" Elite symbolizes a groundbreaking and empowering paradigm in personal finance. For a nominal $20 a month, you unlock access to a treasure trove of resources conceived to help you grow and govern your money more proficiently. With "Atar" Elite, your investment transcends beyond a mere membership, it becomes a stake in your financial future.
                 Sign up for "Atar" Elite today and escalate your financial prowess. Together, let's construct a more robust financial future.</p>
+            </div>
+          </div>
+          <div className="landingContentContainer landingContentContainerTxt faqContainer">
+            <div className="landingContentHalf">
+              <h2 className="ttl">Frequently Asked Questions</h2>
+            </div>
+            <div className="landingContentHalf">
+              <div className="faqElements">
+                {faq.map((item, index) => {
+                  return(
+                      <div className={`faqElement ${activeFaq == index ? 'active' : ''}`} onClick={() => {
+                        openFaq(index)
+                      }}>
+                        <div className="ttl faqElementTtl">{item.question}</div>
+                        <div className="faqElementAnswer">
+                          {item.answer}
+                        </div>
+                      </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
           <div className="landingJoinContainer">

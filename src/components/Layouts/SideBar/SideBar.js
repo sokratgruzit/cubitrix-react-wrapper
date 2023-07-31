@@ -14,10 +14,10 @@ import {
   TransferFromAcc,
   Exchange,
   Deposit,
-  FeeWarning,
+  FeeWarning, Button,
 } from "@cubitrix/cubitrix-react-ui-module";
 
-import { MetaMask, WalletConnect } from "../../../assets/svg";
+import {AddSquareIcon, MetaMask, WalletConnect} from "../../../assets/svg";
 
 import { WalletConnectV2Connector } from "../../../utils/walletconnectV2Connector";
 
@@ -41,6 +41,7 @@ const SideBarRight = () => {
   const { activeExtensions } = useSelector((state) => state.extensions);
 
   const [personalData, setPersonalData] = useState(null);
+  const [confirm, setConfirm] = useState(false);
   const { account, connect, disconnect, library } = useConnect();
 
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -805,35 +806,36 @@ const SideBarRight = () => {
     }
 
     setWithdrawSubmitLoading(true);
-    axios
-      .post("/api/transactions/make_withdrawal", {
-        address: account,
-        address_to: currentObject.address,
-        amount: currentObject.amount,
-        accountType: exchangeAccountType,
-        rate: exchangeAccountType === "ATAR" ? 2 : rates?.[exchangeAccountType]?.usd,
-      })
-      .then(async (res) => {
-        toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
-        if (res.data?.result) {
-          generateAccountsData();
-          dispatch({
-            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-            payload: {},
+    console.log(exchangeAccountType, accountType);
+      axios
+          .post("/api/transactions/make_withdrawal", {
+            address: account,
+            address_to: currentObject.address,
+            amount: currentObject.amount,
+            accountType: exchangeAccountType,
+            rate: exchangeAccountType === "ATAR" ? 2 : rates?.[exchangeAccountType]?.usd,
+          })
+          .then(async (res) => {
+            toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
+            if (res.data?.result) {
+              generateAccountsData();
+              dispatch({
+                type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+                payload: {},
+              });
+            }
+            await delay;
+            setWithdrawSubmitLoading(false);
+          })
+          .catch(async (e) => {
+            let error;
+            if (e.response?.data?.message === "insufficient funds") {
+              error = "Insufficient balance";
+            }
+            toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+            await delay;
+            setWithdrawSubmitLoading(false);
           });
-        }
-        await delay;
-        setWithdrawSubmitLoading(false);
-      })
-      .catch(async (e) => {
-        let error;
-        if (e.response?.data?.message === "insufficient funds") {
-          error = "Insufficient balance";
-        }
-        toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
-        await delay;
-        setWithdrawSubmitLoading(false);
-      });
   };
 
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
@@ -850,88 +852,92 @@ const SideBarRight = () => {
       setTransferSubmitLoading(false);
       return;
     }
+    if(confirm) {
+      try {
+        let transferPromise;
 
-    try {
-      let transferPromise;
-
-      if (currentObject.transferType === "external") {
-        transferPromise = axios.post("/api/transactions/make_transfer", {
-          from: account,
-          to: currentObject.transferAddress,
-          amount: currentObject.amount,
-          tx_currency: "ether",
-          account_category_from: "main",
-          account_category_to: "main",
-        });
-      } else if (currentObject.transferType === "internal") {
-        transferPromise = axios.post("/api/transactions/make_transfer", {
-          from: account,
-          to: account,
-          amount: currentObject.amount,
-          tx_currency: "ether",
-          account_category_from: accountType,
-          account_category_to: currentObject.account,
-          tx_type: "internal_transfer",
-        });
-      }
-
-      const [res] = await Promise.all([transferPromise]);
-
-      if (res.data?.data?.updatedAcc) {
         if (currentObject.transferType === "external") {
-          dispatch({
-            type: "SET_SYSTEM_ACCOUNT_DATA",
-            payload: res.data.data.updatedAcc,
+          transferPromise = axios.post("/api/transactions/make_transfer", {
+            from: account,
+            to: currentObject.transferAddress,
+            amount: currentObject.amount,
+            tx_currency: "ether",
+            account_category_from: "main",
+            account_category_to: "main",
           });
-          dispatch({
-            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-            payload: {},
-          });
-
-          toast.success("Transfer was successful.", { autoClose: 8000 });
-
-          setTimeout(() => {
-            setCurrentObject((prev) => ({
-              ...prev,
-              type: "",
-              account: "",
-              amount: "0",
-              transferAddress: "",
-            }));
-          }, 3000);
         } else if (currentObject.transferType === "internal") {
-          generateAccountsData();
-          dispatch({
-            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-            payload: {},
+          transferPromise = axios.post("/api/transactions/make_transfer", {
+            from: account,
+            to: account,
+            amount: currentObject.amount,
+            tx_currency: "ether",
+            account_category_from: accountType,
+            account_category_to: currentObject.account,
+            tx_type: "internal_transfer",
           });
-
-          toast.success("Transfer was successful.", { autoClose: 8000 });
-
-          setTimeout(() => {
-            setCurrentObject((prev) => ({
-              ...prev,
-              type: "",
-              amount: 0,
-              transferAddress: "",
-            }));
-          }, 3000);
         }
-      }
-    } catch (e) {
-      if (e?.response?.data === "we dont have such address registered in our system.") {
-        errorMsg = "Incorrect to address";
-      } else if (e?.response?.data === "Cannot transfer to this account") {
-        errorMsg = "Recipient has not activated account";
-      } else if (e?.response?.data === "Insufficient funds") {
-        errorMsg = "Insufficient funds";
-      }
 
-      toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
+        const [res] = await Promise.all([transferPromise]);
+
+        if (res.data?.data?.updatedAcc) {
+          if (currentObject.transferType === "external") {
+            dispatch({
+              type: "SET_SYSTEM_ACCOUNT_DATA",
+              payload: res.data.data.updatedAcc,
+            });
+            dispatch({
+              type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+              payload: {},
+            });
+
+            toast.success("Transfer was successful.", { autoClose: 8000 });
+
+            setTimeout(() => {
+              setCurrentObject((prev) => ({
+                ...prev,
+                type: "",
+                account: "",
+                amount: "0",
+                transferAddress: "",
+              }));
+            }, 3000);
+          } else if (currentObject.transferType === "internal") {
+            generateAccountsData();
+            dispatch({
+              type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+              payload: {},
+            });
+            setConfirm(false);
+            toast.success("Transfer was successful.", { autoClose: 8000 });
+
+            setTimeout(() => {
+              setCurrentObject((prev) => ({
+                ...prev,
+                type: "",
+                amount: 0,
+                transferAddress: "",
+              }));
+            }, 3000);
+          }
+        }
+      } catch (e) {
+        if (e?.response?.data === "we dont have such address registered in our system.") {
+          errorMsg = "Incorrect to address";
+        } else if (e?.response?.data === "Cannot transfer to this account") {
+          errorMsg = "Recipient has not activated account";
+        } else if (e?.response?.data === "Insufficient funds") {
+          errorMsg = "Insufficient funds";
+        }
+        setConfirm(false);
+
+        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
+      }
+      await delay;
+
+      setTransferSubmitLoading(false);
+    } else {
+      setConfirm(true)
     }
-    await delay;
-
-    setTransferSubmitLoading(false);
   };
 
   const [chosenAccount, setChosenAccount] = useState({});
@@ -1376,30 +1382,36 @@ const SideBarRight = () => {
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
     setExchangeLoading(true);
-    await axios
-      .post("/api/transactions/exchange", {
-        address: account,
-        fromAccType: exchangeAccountType,
-        fromAmount: Number(currentObject.transfer_amount),
-        toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
-        toAmount: Number(currentObject.receive_amount),
-      })
-      .then(async (res) => {
-        generateAccountsData();
-        dispatch({
-          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-          payload: {},
+    if(confirm) {
+      await axios
+        .post("/api/transactions/exchange", {
+          address: account,
+          fromAccType: exchangeAccountType,
+          fromAmount: Number(currentObject.transfer_amount),
+          toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
+          toAmount: Number(currentObject.receive_amount),
+        })
+        .then(async (res) => {
+          generateAccountsData();
+          dispatch({
+            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+            payload: {},
+          });
+          toast.success("Exchange successful.", { autoClose: 8000 });
+          await delay;
+          setExchangeLoading(false);
+          setConfirm(false);
+        })
+        .catch(async (e) => {
+          toast.error("Exchange failed.", { autoClose: 8000 });
+          await delay;
+          setExchangeLoading(false);
+          console.log(e);
+          setConfirm(false)
         });
-        toast.success("Exchange successful.", { autoClose: 8000 });
-        await delay;
-        setExchangeLoading(false);
-      })
-      .catch(async (e) => {
-        toast.error("Exchange failed.", { autoClose: 8000 });
-        await delay;
-        setExchangeLoading(false);
-        console.log(e);
-      });
+    } else {
+      setConfirm(true)
+    }
   };
 
   return (
@@ -1418,6 +1430,76 @@ const SideBarRight = () => {
           }
           handlePopUpClose={() => setTwoFactorAuth(false)}
         />
+      )}
+      {sideBar === "transfer" && confirm && (
+          <Popup
+              popUpElement={
+                <div className='confirm-list'>
+                  <div className='confirm-list-item'>
+                    <span>Transfer Type:</span>
+                    <span>{currentObject.transferType}</span>
+                  </div>
+                  <div className='confirm-list-item'>
+                    <span>To:</span>
+                    <span>{currentObject.transferType === 'external' ? currentObject.transferAddress : currentObject.account}</span>
+                  </div>
+                  <div className='confirm-list-item'>
+                    <span>Amount:</span>
+                    <span>{currentObject.amount}</span>
+                  </div>
+                  <Button
+                      element={"button"}
+                      size={"btn-lg"}
+                      type={"btn-primary"}
+                      label={"Confirm"}
+                      active={true}
+                      customStyles={{
+                        width: '100%'
+                      }}
+                      onClick={handleTransferSubmit}
+                  />
+                </div>
+              }
+              label={"Confirm your transaction"}
+              handlePopUpClose={() => (setConfirm(false),setTransferSubmitLoading(false))}
+          />
+      )}
+      {sideBar === "exchange" && confirm && (
+          <Popup
+              popUpElement={
+                <div className='confirm-list'>
+                  <div className='confirm-list-item'>
+                    <span>From Account:</span>
+                    <span>{exchangeAccountType}</span>
+                  </div>
+                  <div className='confirm-list-item'>
+                    <span>From Amount:</span>
+                    <span>{Number(currentObject.transfer_amount)}</span>
+                  </div>
+                  <div className='confirm-list-item'>
+                    <span>To Account:</span>
+                    <span>{ card.title === "ATAR" ? "ATAR" : card.title.toLowerCase()}</span>
+                  </div>
+                  <div className='confirm-list-item'>
+                    <span>To Amount:</span>
+                    <span>{Number(currentObject.receive_amount)}</span>
+                  </div>
+                  <Button
+                      element={"button"}
+                      size={"btn-lg"}
+                      type={"btn-primary"}
+                      label={"Confirm"}
+                      active={true}
+                      customStyles={{
+                        width: '100%'
+                      }}
+                      onClick={handleExchangeSubmit}
+                  />
+                </div>
+              }
+              label={"Confirm your transaction"}
+              handlePopUpClose={() => (setConfirm(false),setExchangeLoading(false))}
+          />
       )}
       <SideBar open={appState.sideBarOpen}>
         {sideBar === "connect" && !account && (

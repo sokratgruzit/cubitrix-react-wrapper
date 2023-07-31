@@ -74,6 +74,18 @@ body {
     left: 0px;
     top: 0px;
 }
+.patternBg4 {
+    position: absolute;
+    left: 0px;
+    bottom: -100%;
+    width: 100%;
+}
+.patternBg5 {
+    position: absolute;
+    left: 0px;
+    bottom: -100%;
+    width: 100%;
+}
 .landingCardBig.landingCard {
     display: flex;
     width: 100%;
@@ -151,6 +163,8 @@ body {
 }
 .landingContentHalf {
     width: 50%;
+    position: relative;
+    z-index: 2;
 }
 .landingContentHalf.image {
     overflow: hidden;
@@ -195,6 +209,12 @@ body {
     position: absolute;
     left: 0px;
     top: 0px;
+}
+.patternBg3 {
+    position: absolute;
+    bottom: -35%;
+    width: 100%;
+    object-fit: cover;
 }
 .landingJoinContainer {
     display: flex;
@@ -261,6 +281,7 @@ body {
     display: flex;
     max-width: 1920px;
     width: 100%;
+    position: relative;
 }
 .landingLatestPrices.landingLatestPricesReverse {
     flex-direction: row-reverse;
@@ -294,6 +315,8 @@ body {
     width: 50%;
     padding-left: 100px;
     padding-right: 50px;
+    position: relative;
+    z-index: 2;
 }
 .landingLatestPricesDescr p {
     font-size: 25px;
@@ -317,6 +340,8 @@ body {
     display: flex;
     flex-wrap: wrap;
     width: 50%;
+    position: relative;
+    z-index: 2;
 }
 .landingLatestPricesItem {
     width: 50%;
@@ -347,6 +372,7 @@ body {
     padding: 0px 100px;
     gap: 30px;
     margin: 100px 0px;
+    position: relative;
 }
 .landingColumn {
     display: flex;
@@ -356,6 +382,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.10);
     border-radius: 20px;
     padding: 20px;
+    position: relative;
+    z-index: 3;
 }
 .landingColumn h3 {
     font-size: 35px;
@@ -409,8 +437,66 @@ body {
 .landingContentHalf.landingContentBordered h3 {
     margin-top: 50px;
 }
-
+.landingContentContainerTxt.faqContainer .landingContentHalf {
+    border-right: 0px;
+}
+.faqElementAnswer {
+    overflow: hidden;
+    max-height: 0px;
+    transition: 1s linear;
+    font-size: 20px;
+    line-height: 150%;
+}
+.faqElement.active .faqElementAnswer {
+    max-height: 600px;
+}
+.faqElement {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+.faqElementTtl {
+    transition: .6s cubic-bezier(0.79, 0.01, 0.15, 0.99);
+    color: #C38C5C;
+    font-size: 30px;
+    line-height: 150%;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    position: relative;
+    margin-right: auto;
+    padding-bottom: 5px;
+}
+.faqElementTtl:after {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    background: #C38C5C;
+    width: 100%;
+    height: 1px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: .6s cubic-bezier(0.79, 0.01, 0.15, 0.99);
+}
+.faqElement:hover .faqElementTtl:after,.faqElement.active .faqElementTtl:after {
+    transform: scaleX(1);
+}
+.faqElement:hover .faqElementTtl,.faqElement.active .faqElementTtl {
+    color: rgba(87,171,277);
+}
+/*.faqElementTtl:after{*/
+/*    content: '';*/
+/*    width: 100%;*/
+/*    height: 2px;*/
+/*    position: absolute;*/
+/*    bottom: 0px;*/
+/*    left: 0px;*/
+/*    background: rgba(87,171,277);*/
+/*}*/
 @media only screen and (max-width: 1680px){
+    .faqElementAnswer {
+        font-size: 16px;
+    }
     .landingContentHalf.landingContentBordered h3 {
         font-size: 28px;
     }
@@ -459,6 +545,17 @@ body {
     }
 }
 @media only screen and (max-width: 1360px) {
+    .faqContainer.landingContentContainerTxt .landingContentHalf:nth-child(1){
+        border-bottom: 0px;
+        margin-bottom: 10px;
+        padding-bottom: 0px;
+    }
+    .faqElementTtl {
+        font-size: 22px;
+    }
+    .patternBg3{
+        bottom: 0px;
+    }
     .landingContentHalf.landingContentBordered h3 {
         font-size: 22px;
         margin-top: 30px;
@@ -620,12 +717,26 @@ body {
     .landingColumns {
         margin: 50px 0px;
         padding: 0px 15px;
+        overflow: hidden;
     }
     .landingContentHalf h2 {
         font-size: 25px;
     }
     .landingContentHalf p,.landingContentDescription li {
         font-size: 16px;
+    }
+    .patternBg3 {
+        bottom: -35%;
+        width: 400%;
+        transform: translateX(-45%);
+    }
+    .patternBg4 {
+        bottom: -35%;
+        height: 50vh;
+    }
+    .patternBg5 {
+        bottom: -35%;
+        height: 50vh;
     }
 }
 
