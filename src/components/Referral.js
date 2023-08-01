@@ -639,6 +639,8 @@ const Referral = () => {
     </div>
   );
 
+  console.log(referralTableData)
+
   return (
     <>
       <ReferralUI

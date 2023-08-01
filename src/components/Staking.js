@@ -361,6 +361,8 @@ const Staking = () => {
 
   return (
     <>
+      <input 
+      />
       <StakingUI
         account={account}
         stackContractInfo={stackContractInfo}
