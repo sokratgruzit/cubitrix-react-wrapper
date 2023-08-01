@@ -830,10 +830,11 @@ const SideBarRight = () => {
       })
       .catch(async (e) => {
         let error;
-        if (e.response?.data === "insufficient funds") {
+        if (e.response?.data?.message === "insufficient funds") {
           error = "Insufficient balance";
         } else if (
-          e.response?.data === "Withdrawal with this amount is not possible at the moment"
+          e.response?.data?.message ===
+          "Withdrawal with this amount is not possible at the moment"
         ) {
           error = "Withdrawal with this amount is not possible at this moment";
         }

@@ -252,7 +252,10 @@ export const useExtensionsData = () => {
 
     if (
       activeExtensions?.referralAdmin === "true" &&
-      !(!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "basic")
+      !(
+        !appState?.userData?.tier?.value ||
+        appState?.userData?.tier?.value === "Novice Navigator"
+      )
     ) {
       arr.push({
         icon: <StakingIcon className={"other-extensions-card-icon"} />,
