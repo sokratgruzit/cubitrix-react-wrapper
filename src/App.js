@@ -473,7 +473,9 @@ function App() {
           <Route
             path="/loan"
             element={
-              isExtensionsLoaded && activeExtensions.loan === "false" ? (
+              isExtensionsLoaded &&
+              activeExtensions.loan === "false" &&
+              activeExtensions?.loanAdmin === "false" ? (
                 <Navigate to="/" />
               ) : (
                 <Loan />
@@ -484,7 +486,9 @@ function App() {
           <Route
             path="/trade"
             element={
-              isExtensionsLoaded && activeExtensions.trade === "false" ? (
+              isExtensionsLoaded &&
+              activeExtensions.trade === "false" &&
+              activeExtensions?.tradeAdmin === "false" ? (
                 <Navigate to="/" />
               ) : (
                 <Trade />
@@ -493,20 +497,22 @@ function App() {
           />
           <Route
             path="/staking"
-            // element={
-            //   isExtensionsLoaded && activeExtensions.staking === "false" ? (
-            //     <Navigate to="/" />
-            //   ) : (
-            //     <Staking />
-            //   )
-            // }
-            element={<Staking />}
+            element={
+              isExtensionsLoaded &&
+              activeExtensions.staking === "false" &&
+              activeExtensions?.stakingAdmin === "false" ? (
+                <Navigate to="/" />
+              ) : (
+                <Staking />
+              )
+            }
           />
           <Route
             path="/referral"
             element={
               isExtensionsLoaded &&
               activeExtensions.referral === "false" &&
+              activeExtensions.referralAdmin === "false" &&
               (!appState?.userData?.tier?.value ||
                 appState?.userData?.tier?.value === "Novice Navigator") ? (
                 <Navigate to="/" />
