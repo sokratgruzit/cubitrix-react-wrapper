@@ -830,7 +830,9 @@ const SideBarRight = () => {
       })
       .catch(async (e) => {
         let error;
-        if (e.response?.data?.message === "insufficient funds") {
+        if (e?.response?.data?.message === "main account is not active") {
+          error = "This account is disabled. Please contact support.";
+        } else if (e.response?.data?.message === "insufficient funds") {
           error = "Insufficient balance";
         } else if (
           e.response?.data?.message ===
@@ -929,6 +931,8 @@ const SideBarRight = () => {
       } catch (e) {
         if (e?.response?.data === "we dont have such address registered in our system.") {
           errorMsg = "Incorrect to address";
+        } else if (e?.response?.data === "Cannot transfer from this account") {
+          errorMsg = "This account is disabled. Please contact support.";
         } else if (e?.response?.data === "Cannot transfer to this account") {
           errorMsg = "Recipient has not activated account";
         } else if (e?.response?.data === "Insufficient funds") {
@@ -1411,16 +1415,38 @@ const SideBarRight = () => {
           setConfirm(false);
         })
         .catch(async (e) => {
-          toast.error("Exchange failed.", { autoClose: 8000 });
+          let error;
+          if (e?.response?.data?.message === "main account is not active") {
+            error = "This account is disabled. Please contact support.";
+          } else if (e?.response?.data?.message === "insufficient balance") {
+            error = "Insufficient balance.";
+          }
+
+          toast.error(error ?? "Exchange failed.", { autoClose: 8000 });
           await delay;
           setExchangeLoading(false);
-          console.log(e);
           setConfirm(false);
         });
     } else {
       setConfirm(true);
     }
   };
+
+  const [recepientName, setRecepientName] = useState("");
+  useEffect(() => {
+    if (currentObject.transferAddress && currentObject.transferAddress.length > 41) {
+      axios
+        .post("/api/accounts/get_recepient_name", {
+          address: currentObject.transferAddress,
+        })
+        .then((res) => {
+          setRecepientName(res.data.name);
+        })
+        .catch((err) => {
+          setRecepientName("");
+        });
+    }
+  }, [currentObject.transferAddress]);
 
   return (
     <>
@@ -1447,6 +1473,12 @@ const SideBarRight = () => {
                 <span>Transfer Type:</span>
                 <span>{currentObject.transferType}</span>
               </div>
+              {currentObject.transferType === "external" && (
+                <div className="confirm-list-item">
+                  <span>Name:</span>
+                  <span>{recepientName ?? ""}</span>
+                </div>
+              )}
               <div className="confirm-list-item">
                 <span>To:</span>
                 <span>
@@ -1459,6 +1491,7 @@ const SideBarRight = () => {
                 <span>Amount:</span>
                 <span>{currentObject.amount}</span>
               </div>
+
               <Button
                 element={"button"}
                 size={"btn-lg"}

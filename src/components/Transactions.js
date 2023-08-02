@@ -256,7 +256,7 @@ const Transactions = () => {
     label: "No Transaction History",
     icon: <NoHistoryIcon />,
   };
-  console.log(transactionsData);
+  console.log(transactionsData?.transactions);
   return (
     <TransactionsUI
       header={"Transactions"}

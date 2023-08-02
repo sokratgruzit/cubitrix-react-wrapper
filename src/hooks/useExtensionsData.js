@@ -194,15 +194,6 @@ export const useExtensionsData = () => {
         hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
         handleSwitch: (title, value) => {
           if (!isActive || !emailVerified) return;
-
-          // if (!userBalances.find((item) => item.account_category === "trade") && value) {
-          //   dispatch({
-          //     type: "SET_FEE_WARN_TYPE",
-          //     payload: "trade",
-          //   });
-          //   return;
-          // }
-
           handleChangeExtension(title.toLowerCase(), value);
         },
         active: extsActive.trade === "true" ? true : false,
@@ -220,7 +211,7 @@ export const useExtensionsData = () => {
         hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
         handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
         active: extsActive.staking === "true" ? true : false,
-        disabled: !emailVerified,
+        disabled: !(isActive && emailVerified),
       });
     }
 
@@ -266,7 +257,7 @@ export const useExtensionsData = () => {
         hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
         handleSwitch: (title, value) => handleChangeExtension(title.toLowerCase(), value),
         active: extsActive.referral === "true" ? true : false,
-        disabled: !emailVerified,
+        disabled: !(isActive && emailVerified),
       });
     }
 
@@ -280,7 +271,7 @@ export const useExtensionsData = () => {
         hash: "0x74a81F84268744a40FEBc48f8b812a1f188D80C3",
         handleSwitch: (title, value) => handleChangeExtension("notify", value),
         active: extsActive.notify === "true" ? true : false,
-        disabled: !emailVerified,
+        disabled: !(isActive && emailVerified),
       });
     }
 

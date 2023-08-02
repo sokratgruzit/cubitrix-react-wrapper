@@ -50,6 +50,8 @@ const Referral = () => {
   const [rebatesCurrentPageUni, setRebatesCurrentPageUni] = useState(1);
   const [rebatesPaginationTotalUni, setRebatesPaginationTotalUni] = useState(1);
 
+  const isActive = useSelector((state) => state.appState?.userData?.active);
+
   // const [rebatesCurrentPage, setRebatesCurrentPage] = useState(1);
   // const [rebatesPaginationTotal, setRebatesPaginationTotal] = useState(1);
 
@@ -171,7 +173,7 @@ const Referral = () => {
         console.log(err);
       }
     } else {
-      return false
+      return false;
     }
   };
   let referralTreeUserClick = async (item) => {
@@ -639,7 +641,7 @@ const Referral = () => {
     </div>
   );
 
-  console.log(referralTableData)
+  console.log(referralTableData);
 
   return (
     <>
@@ -682,6 +684,7 @@ const Referral = () => {
         }}
         referralRebatesTotal={referralRebatesTotal}
         handleLevelSystem={handleLevelSystem}
+        isActive={isActive}
       />
       {createCodePopupActive && (
         <Popup

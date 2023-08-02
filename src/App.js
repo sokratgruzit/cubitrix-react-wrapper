@@ -353,7 +353,8 @@ function App() {
     } else if (account && triedReconnect && active) {
       if (
         systemAcc &&
-        systemAcc.active &&
+        systemAcc?.step > 5 &&
+        // systemAcc.active &&
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
         setStep(6);

@@ -42,9 +42,11 @@ const Staking = () => {
   const [approveResonse, setApproveResonse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchCount, setFetchCount] = useState(0);
+  const appState = useSelector((state) => state.appState);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const { active, account } = useConnect();
   const hasMoreData = useSelector((state) => state.stake.hasMoreData);
+  const isActive = appState?.userData?.active;
 
   const { width } = useMobileWidth();
 
@@ -361,8 +363,7 @@ const Staking = () => {
 
   return (
     <>
-      <input 
-      />
+      <input />
       <StakingUI
         account={account}
         stackContractInfo={stackContractInfo}
@@ -377,6 +378,7 @@ const Staking = () => {
         isFetching={isFetching}
         unstakeLoading={unstakeLoading}
         harvestLoading={harvestLoading}
+        isActive={isActive}
       />
       {createStakingPopUpActive && (
         <Popup
@@ -398,6 +400,7 @@ const Staking = () => {
                 stakingLoading,
               }}
               approveResonse={approveResonse}
+              isActive={isActive}
             />
           }
           label={"Staking Calculator"}
