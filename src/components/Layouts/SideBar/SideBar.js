@@ -1448,6 +1448,25 @@ const SideBarRight = () => {
     }
   }, [currentObject.transferAddress]);
 
+  async function getBalance() {
+    var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
+    var decimals = await tokenContract.methods.decimals().call();
+    var getBalance = await tokenContract.methods.balanceOf(account).call();
+
+    var pow = 10 ** decimals;
+    var balanceInEth = getBalance / pow;
+
+    return balanceInEth;
+  }
+
+  useEffect(() => {
+    if (library && account) {
+      getBalance().then((res) => {
+        console.log(res);
+      });
+    }
+  }, [library, account]);
+
   return (
     <>
       {twoFactorAuth && activated && (
@@ -1731,6 +1750,9 @@ const SideBarRight = () => {
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
             accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            library={library}
+            account={account}
+            getBalance={getBalance}
           />
         )}
         {sideBar === "transfer" && (
