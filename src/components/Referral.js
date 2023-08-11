@@ -340,6 +340,7 @@ const Referral = () => {
     }
   };
 
+  const [uniLVLData, setUniLVLData] = useState([]);
   const getOptions = async (type) => {
     setLvlData([]);
     try {
@@ -349,6 +350,7 @@ const Referral = () => {
 
       if (type == "Uni") {
         setLvlData(data.object_value.uniData.lvlOptions.maxCommPercentage);
+        setUniLVLData(data.object_value.uniData.lvlOptions.maxCommPercentage);
       }
       if (type == "Binary bv") {
         setLvlData(data.object_value.binaryData);
@@ -641,8 +643,6 @@ const Referral = () => {
     </div>
   );
 
-  console.log(referralTableData);
-
   return (
     <>
       <ReferralUI
@@ -685,6 +685,7 @@ const Referral = () => {
         referralRebatesTotal={referralRebatesTotal}
         handleLevelSystem={handleLevelSystem}
         isActive={isActive}
+        uniLVLData={uniLVLData}
       />
       {createCodePopupActive && (
         <Popup

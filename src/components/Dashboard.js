@@ -373,6 +373,7 @@ const Dashboard = () => {
   //     });
   // }, []);
 
+  console.log(accountsData);
   return (
     <DashboardUI
       accountType={accountType}
