@@ -461,15 +461,39 @@ function App() {
           />
           <Route
             path="/dashboard"
-            element={<DashboardSharedLayout links={links} children={<Dashboard />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<Dashboard />}
+              />
+            }
           />
           <Route
             path="/transactions"
-            element={<DashboardSharedLayout links={links} children={<Transactions />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<Transactions />}
+              />
+            }
           />
           <Route
             path="/top-up"
-            element={<DashboardSharedLayout links={links} children={<TopUp />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<TopUp />}
+              />
+            }
           />
           <Route
             path="/loan"
@@ -528,7 +552,15 @@ function App() {
           <Route path="/reset-password/:code" element={<ResetPassword />} />
           <Route
             path="/create-account"
-            element={<DashboardSharedLayout links={links} children={<CreateAccount />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<CreateAccount />}
+              />
+            }
           />
           <Route path="/test" element={<Test />} />
           <Route path="/deposit/:hash" element={<Success />} />

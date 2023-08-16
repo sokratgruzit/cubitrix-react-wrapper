@@ -19,6 +19,7 @@ import { StickyNoteIcon, AddSquareIcon, NoHistoryIcon } from "../assets/svg";
 import axios from "../api/axios";
 
 const Referral = () => {
+  const userData = useSelector((state) => state.appState?.userData);
   const [createCodePopupActive, setCreateCodePopupActive] = useState(false);
   const [levelSystemPopupActive, setLevelSystemPopupActive] = useState(false);
   const [createCodeObject, setCreateCodeObject] = useState({});
@@ -32,7 +33,9 @@ const Referral = () => {
   const [referralTableType, setReferralTableType] = useState("binary");
   const [referralTreeData, setReferralTreeData] = useState([]);
   const [referralTableData, setReferralTableData] = useState([]);
-  const [referralAddress, setReferralAddress] = useState(null);
+  // const [referralAddress, setReferralAddress] = useState(null);
+  function setReferralAddress() {}
+  let referralAddress = "0x06fc60f6da259409b1e164942a992a09eb21ce2e";
   const [animateTree, setAnimateTree] = useState(false);
   const [lvlType, setLvlType] = useState("uni");
   const [lvlData, setLvlData] = useState(false);
@@ -328,7 +331,7 @@ const Referral = () => {
           }`,
           {
             address: referralAddress,
-            limit: 5,
+            limit: 20,
             page: page || 1,
           },
         );
@@ -686,6 +689,8 @@ const Referral = () => {
         handleLevelSystem={handleLevelSystem}
         isActive={isActive}
         uniLVLData={uniLVLData}
+        stakedThisMonth={userData?.stakedThisMonth}
+        disabledAccount={!userData?.active && userData?.step == "6"}
       />
       {createCodePopupActive && (
         <Popup

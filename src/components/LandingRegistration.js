@@ -1,4 +1,9 @@
-import { HelpText, LandingSteps } from "@cubitrix/cubitrix-react-ui-module";
+import {
+  Button,
+  HelpText,
+  LandingSteps,
+  Popup,
+} from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect } from "react";
 
 import {
@@ -489,6 +494,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       .catch((e) => {});
   };
 
+  const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
+
   const handleDepositSubmit = async () => {
     setStakingLoading(true);
 
@@ -563,7 +570,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             side: "auto",
           })
           .then((res) => {
-            proceedStake();
+            if (res?.data?.auto_place === "code is already used") {
+              setReferralCodeAlreadyUsed(true);
+              toast.error("Referral code is already used", {
+                autoClose: 8000,
+              });
+              setStakingLoading(false);
+            } else {
+              proceedStake();
+            }
           })
           .catch((err) => {
             if (err?.response?.data) {
@@ -579,71 +594,104 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       } else {
         proceedStake();
       }
-
-      function proceedStake() {
-        stake(
-          async () => {
-            setStep(5);
-            axios
-              .post("/api/accounts/handle-step", {
-                address: account,
-                step: 5,
-              })
-              .then((res) => {
-                dispatch({
-                  type: "UPDATE_ACTIVE_EXTENSIONS",
-                  payload: { dashboard: "true" },
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            axios
-              .post("/api/accounts/manage_extensions", {
-                address: account,
-                extensions: { staking: "true", trade: "true" },
-                setup: true,
-              })
-              .then((res) => {
-                if (res?.data?.account) {
-                  dispatch({
-                    type: "UPDATE_ACTIVE_EXTENSIONS",
-                    payload: res.data.account.extensions,
-                  });
-                }
-                activateAccount();
-              })
-              .catch((e) => {
-                activateAccount();
-                console.log(e.response);
-              });
-
-            axios
-              .post("/api/accounts/get_account_balances", {
-                address: account?.toLowerCase(),
-              })
-              .then((res) => {
-                dispatch({
-                  type: "SET_ACCOUNTS_DATA",
-                  payload: res?.data?.data,
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-            setStakingLoading(false);
-            toast.success("Staked successfully", { autoClose: 8000 });
-            handleDepositAmount("");
-            handleTimePeriod(0);
-          },
-          () => {
-            setStakingLoading(false);
-            toast.error("Staking failed, please try again.", { autoClose: 8000 });
-          },
-        );
-      }
     }
   };
+
+  async function proceedStake() {
+    stake(
+      async () => {
+        setStep(5);
+        axios
+          .post("/api/accounts/handle-step", {
+            address: account,
+            step: 5,
+          })
+          .then((res) => {
+            dispatch({
+              type: "UPDATE_ACTIVE_EXTENSIONS",
+              payload: { dashboard: "true" },
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        axios
+          .post("/api/accounts/manage_extensions", {
+            address: account,
+            extensions: { staking: "true", trade: "true" },
+            setup: true,
+          })
+          .then((res) => {
+            if (res?.data?.account) {
+              dispatch({
+                type: "UPDATE_ACTIVE_EXTENSIONS",
+                payload: res.data.account.extensions,
+              });
+            }
+            activateAccount();
+          })
+          .catch((e) => {
+            activateAccount();
+            console.log(e.response);
+          });
+
+        axios
+          .post("/api/accounts/get_account_balances", {
+            address: account?.toLowerCase(),
+          })
+          .then((res) => {
+            dispatch({
+              type: "SET_ACCOUNTS_DATA",
+              payload: res?.data?.data,
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        setStakingLoading(false);
+        toast.success("Staked successfully", { autoClose: 8000 });
+        handleDepositAmount("");
+        handleTimePeriod(0);
+      },
+      () => {
+        setStakingLoading(false);
+        toast.error("Staking failed, please try again.", { autoClose: 8000 });
+      },
+    );
+  }
+
+  async function handleAutomaticReferral() {
+    try {
+      const parts = referralState?.value?.split("_");
+      const firstPart = parts[0];
+      setStakingLoading(true);
+      axios
+        .post("api/referral/register_referral", {
+          referral_address: firstPart,
+          user_address: account,
+          side: "auto",
+        })
+        .then((res) => {
+          setReferralCodeAlreadyUsed(false);
+          proceedStake();
+        })
+        .catch((err) => {
+          if (err?.response?.data) {
+            toast.error(err?.response?.data, {
+              autoClose: 8000,
+            });
+            setStakingLoading(false);
+            return;
+          }
+          setStakingLoading(false);
+          toast.error("something went wrong", { autoClose: 8000 });
+        });
+    } catch (e) {
+      toast.error(e?.response?.data, {
+        autoClose: 8000,
+      });
+    }
+  }
 
   const [accountLoading, setaccountLoading] = useState(false);
   useEffect(() => {
@@ -749,6 +797,46 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             });
         }}
       />
+      {referralCodeAlreadyUsed && (
+        <Popup
+          popUpElement={
+            <div className="confirm-list">
+              <p>Binary spot for the referral code you entered is already taken.</p>
+              <p>
+                You can either provide new code with different spot or click "Auto Place"
+                for auto binary positioning.
+              </p>
+              {/* <div className="confirm-list-item">
+                <span>From Account:</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>From Amount:</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>To Account:</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>To Amount:</span>
+              </div> */}
+              <Button
+                element={"button"}
+                size={"btn-lg"}
+                type={"btn-primary"}
+                label={"Auto Place"}
+                active={true}
+                customStyles={{
+                  width: "100%",
+                }}
+                onClick={() => {
+                  handleAutomaticReferral();
+                }}
+              />
+            </div>
+          }
+          label={"Referral code is already used"}
+          handlePopUpClose={() => setReferralCodeAlreadyUsed(false)}
+        />
+      )}
     </>
   );
 };

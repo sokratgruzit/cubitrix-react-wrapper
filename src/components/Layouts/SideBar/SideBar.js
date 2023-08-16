@@ -16,6 +16,7 @@ import {
   Deposit,
   FeeWarning,
   Button,
+  StakeCurrency,
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import { AddSquareIcon, MetaMask, WalletConnect } from "../../../assets/svg";
@@ -807,7 +808,6 @@ const SideBarRight = () => {
     }
 
     setWithdrawSubmitLoading(true);
-    console.log(exchangeAccountType, accountType);
     axios
       .post("/api/transactions/make_withdrawal", {
         address: account,
@@ -909,6 +909,7 @@ const SideBarRight = () => {
                 transferAddress: "",
               }));
             }, 3000);
+            setConfirm(false);
           } else if (currentObject.transferType === "internal") {
             generateAccountsData();
             dispatch({
@@ -1003,8 +1004,8 @@ const SideBarRight = () => {
                 x2="33.9012"
                 y2="4.39119"
                 gradientUnits="userSpaceOnUse">
-                <stop stop-color="white" stop-opacity="0.1" />
-                <stop offset="1" stop-color="white" stop-opacity="0.02" />
+                <stop stopColor="white" stopOpacity="0.1" />
+                <stop offset="1" stopColor="white" stopOpacity="0.02" />
               </linearGradient>
               <linearGradient
                 id="paint1_linear_506_2216"
@@ -1013,8 +1014,8 @@ const SideBarRight = () => {
                 x2="24.2795"
                 y2="14.2939"
                 gradientUnits="userSpaceOnUse">
-                <stop stop-color="white" stop-opacity="0.5" />
-                <stop offset="1" stop-color="white" stop-opacity="0.05" />
+                <stop stopColor="white" stopOpacity="0.5" />
+                <stop offset="1" stopColor="white" stopOpacity="0.05" />
               </linearGradient>
             </defs>
           </svg>
@@ -1459,13 +1460,26 @@ const SideBarRight = () => {
     return balanceInEth;
   }
 
-  useEffect(() => {
-    if (library && account) {
-      getBalance().then((res) => {
-        console.log(res);
+  const [stakingLoading, setStakingLoading] = useState(false);
+  async function handleStakeCurrency() {
+    try {
+      setStakingLoading(true);
+      const { data } = await axios.post("/api/accounts/stake_currency", {
+        address: account,
+        amount: Number(currentObject.amount),
+        duration: confirm,
+        currency: exchangeAccountType,
       });
+      setStakingLoading(false);
+      setConfirm(false);
+      generateAccountsData();
+      toast.success("Staking successful.", { autoClose: 8000 });
+    } catch (e) {
+      toast.error("Staking failed.", { autoClose: 8000 });
+      setStakingLoading(false);
+      setConfirm(false);
     }
-  }, [library, account]);
+  }
 
   return (
     <>
@@ -1563,6 +1577,40 @@ const SideBarRight = () => {
           }
           label={"Confirm your transaction"}
           handlePopUpClose={() => (setConfirm(false), setExchangeLoading(false))}
+        />
+      )}
+      {sideBar === "stake" && confirm && (
+        <Popup
+          popUpElement={
+            <div className="confirm-list">
+              <div className="confirm-list-item">
+                <span>Amount:</span>
+                <span>{currentObject.amount}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>Currency:</span>
+                <span>{exchangeAccountType?.toUpperCase()}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>Duration:</span>
+                <span>{confirm}</span>
+              </div>
+              <Button
+                element={"button"}
+                size={"btn-lg"}
+                type={"btn-primary"}
+                label={stakingLoading ? "Loading..." : "Confirm"}
+                active={true}
+                customStyles={{
+                  width: "100%",
+                }}
+                onClick={handleStakeCurrency}
+                disabled={stakingLoading}
+              />
+            </div>
+          }
+          label={"Confirm your transaction"}
+          handlePopUpClose={() => (setConfirm(false), setTransferSubmitLoading(false))}
         />
       )}
       <SideBar open={appState.sideBarOpen}>
@@ -1768,6 +1816,26 @@ const SideBarRight = () => {
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
             accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+          />
+        )}
+        {sideBar === "stake" && (
+          <StakeCurrency
+            label={"Stake Currency"}
+            sideBarClose={handleClose}
+            inputs={depositInputs}
+            currentObject={currentObject}
+            cardImg={"/img/dashboard/atar.png"}
+            handleSubmit={(duration) => setConfirm(duration)}
+            buttonLabel={stakingLoading ? "Loading..." : "Stake"}
+            stakeLoading={stakingLoading}
+            accountType={exchangeAccountType}
+            accountBalance={mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)}
+            accountBalanceSecond={`$${(
+              mainAccount?.assets?.[exchangeAccountType] *
+              rates?.[exchangeAccountType]?.usd
+            )?.toFixed(2)}`}
+            durationOptions={["360 D"]}
+            info={`3.0% APY On 360 Days.`}
           />
         )}
       </SideBar>

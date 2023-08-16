@@ -90,6 +90,19 @@ const Dashboard = () => {
     }
   };
 
+  const [referralLeftRight, setReferralLeftRight] = useState({});
+  async function generateReferralLeftRight() {
+    try {
+      const {
+        data: { results },
+      } = await axios.post("/api/referral/binary_comission_count_user", {
+        // address: account?.toLowerCase(),
+        address: userData?.address?.toLowerCase(),
+      });
+      setReferralLeftRight(results);
+    } catch (e) {}
+  }
+
   const prevDashboardTransactionsDataReload = useRef(dashboardTransactionsDataReload);
 
   useEffect(() => {
@@ -104,6 +117,7 @@ const Dashboard = () => {
     if (account && triedReconnect && active) {
       generateTransactionsData();
       generateTotalReferralData();
+      generateReferralLeftRight();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, triedReconnect, active]);
@@ -285,6 +299,12 @@ const Dashboard = () => {
         payload: accountType,
       });
     }
+    if (sideBar === "stake" && accountType) {
+      dispatch({
+        type: "SET_EXCHANGE_ACCOUNT_TYPE",
+        payload: accountType,
+      });
+    }
     dispatch({
       type: "SET_SIDE_BAR",
       payload: { sideBarOpen: true, sideBar },
@@ -373,7 +393,6 @@ const Dashboard = () => {
   //     });
   // }, []);
 
-  console.log(accountsData);
   return (
     <DashboardUI
       accountType={accountType}
@@ -396,10 +415,12 @@ const Dashboard = () => {
       handleExchange={(a, b) => handleSidebarOpen("exchange", b)}
       handleWithdraw={(a, b) => handleSidebarOpen("withdraw", b)}
       handleTransfer={() => handleSidebarOpen("transfer")}
+      handleStake={(a, b) => handleSidebarOpen("stake", b)}
       referralHistoryButtonsRight={referralHistoryRightButtons}
       tier={userData?.tier?.value}
       extensions={extensions}
       stakedTotal={userData?.stakedTotal}
+      referralTotal={referralLeftRight}
     />
   );
 };
