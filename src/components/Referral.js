@@ -33,9 +33,9 @@ const Referral = () => {
   const [referralTableType, setReferralTableType] = useState("binary");
   const [referralTreeData, setReferralTreeData] = useState([]);
   const [referralTableData, setReferralTableData] = useState([]);
-  // const [referralAddress, setReferralAddress] = useState(null);
-  function setReferralAddress() {}
-  let referralAddress = "0x06fc60f6da259409b1e164942a992a09eb21ce2e";
+  const [referralAddress, setReferralAddress] = useState(null);
+  // function setReferralAddress() {}
+  // let referralAddress = "0x06fc60f6da259409b1e164942a992a09eb21ce2e";
   const [animateTree, setAnimateTree] = useState(false);
   const [lvlType, setLvlType] = useState("uni");
   const [lvlData, setLvlData] = useState(false);

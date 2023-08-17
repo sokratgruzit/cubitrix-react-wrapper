@@ -4,7 +4,7 @@ import {
   LandingSteps,
   Popup,
 } from "@cubitrix/cubitrix-react-ui-module";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import {
   useConnect,
@@ -44,6 +44,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   const [receivePaymentAddress, setReceivePaymentAddress] = useState(
     "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
+  );
+  const mainAccount = useMemo(
+    () => appState?.accountsData?.find((acc) => acc?.account_category === "main"),
+    [appState?.accountsData],
   );
 
   const [tokenBalance, setTokenBalance] = useState(0);
@@ -495,6 +499,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   };
 
   const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
+  const [savedBeforeStakingValues, setSavedBeforeStakingValues] = useState({});
 
   const handleDepositSubmit = async () => {
     setStakingLoading(true);
@@ -561,97 +566,137 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         setStakingLoading(false);
         return;
       }
+      setSavedBeforeStakingValues({ buyAmount, referralValue: referralState.value });
+      proceedStake();
 
-      if (buyAmount > 500 && referralState.value) {
-        axios
-          .post("api/referral/register_referral", {
-            referral_address: referralState.value,
-            user_address: account,
-            side: "auto",
-          })
-          .then((res) => {
-            if (res?.data?.auto_place === "code is already used") {
-              setReferralCodeAlreadyUsed(true);
-              toast.error("Referral code is already used", {
-                autoClose: 8000,
-              });
-              setStakingLoading(false);
-            } else {
-              proceedStake();
-            }
-          })
-          .catch((err) => {
-            if (err?.response?.data) {
-              toast.error(err?.response?.data, {
-                autoClose: 8000,
-              });
-              setStakingLoading(false);
-              return;
-            }
-            setStakingLoading(false);
-            toast.error("something went wrong", { autoClose: 8000 });
-          });
-      } else {
-        proceedStake();
-      }
+      // if (buyAmount > 500 && referralState.value) {
+      //   axios
+      //     .post("api/referral/register_referral", {
+      //       referral_address: referralState.value,
+      //       user_address: account,
+      //       side: "auto",
+      //     })
+      //     .then((res) => {
+      //       if (res?.data?.auto_place === "code is already used") {
+      //         setReferralCodeAlreadyUsed(true);
+      //         toast.error("Referral code is already used", {
+      //           autoClose: 8000,
+      //         });
+      //         setStakingLoading(false);
+      //       } else {
+      // proceedStake();
+      //       }
+      //     })
+      //     .catch((err) => {
+      //       if (err?.response?.data) {
+      //         toast.error(err?.response?.data, {
+      //           autoClose: 8000,
+      //         });
+      //         setStakingLoading(false);
+      //         return;
+      //       }
+      //       setStakingLoading(false);
+      //       toast.error("something went wrong", { autoClose: 8000 });
+      //     });
+      // } else {
+      //   proceedStake();
+      // }
     }
   };
+
+  async function handleAfterStake() {
+    setStep(5);
+    axios
+      .post("/api/accounts/handle-step", {
+        address: account,
+        step: 5,
+      })
+      .then((res) => {
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "true" },
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    axios
+      .post("/api/accounts/manage_extensions", {
+        address: account,
+        extensions: { staking: "true", trade: "true" },
+        setup: true,
+      })
+      .then((res) => {
+        if (res?.data?.account) {
+          dispatch({
+            type: "UPDATE_ACTIVE_EXTENSIONS",
+            payload: res.data.account.extensions,
+          });
+        }
+        activateAccount();
+      })
+      .catch((e) => {
+        activateAccount();
+        console.log(e.response);
+      });
+    axios
+      .post("/api/accounts/get_account_balances", {
+        address: account?.toLowerCase(),
+      })
+      .then((res) => {
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res?.data?.data,
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    setStakingLoading(false);
+    toast.success("Staked successfully", { autoClose: 8000 });
+    handleDepositAmount("");
+    handleTimePeriod(0);
+  }
 
   async function proceedStake() {
     stake(
       async () => {
-        setStep(5);
-        axios
-          .post("/api/accounts/handle-step", {
-            address: account,
-            step: 5,
-          })
-          .then((res) => {
-            dispatch({
-              type: "UPDATE_ACTIVE_EXTENSIONS",
-              payload: { dashboard: "true" },
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        axios
-          .post("/api/accounts/manage_extensions", {
-            address: account,
-            extensions: { staking: "true", trade: "true" },
-            setup: true,
-          })
-          .then((res) => {
-            if (res?.data?.account) {
-              dispatch({
-                type: "UPDATE_ACTIVE_EXTENSIONS",
-                payload: res.data.account.extensions,
-              });
-            }
-            activateAccount();
-          })
-          .catch((e) => {
-            activateAccount();
-            console.log(e.response);
-          });
+        if (
+          savedBeforeStakingValues?.buyAmount > 500 &&
+          savedBeforeStakingValues?.referralValue
+        ) {
+          await axios
+            .post("api/referral/register_referral", {
+              referral_address: savedBeforeStakingValues?.referralValue,
+              user_address: account,
+              side: "auto",
+            })
+            .then((res) => {
+              if (res?.data?.auto_place === "code is already used") {
+                setReferralCodeAlreadyUsed(true);
+                toast.error("Referral code is already used", {
+                  autoClose: 8000,
+                });
+                setStakingLoading(false);
+              } else {
+                handleAfterStake();
+              }
+            })
+            .catch((err) => {
+              if (err?.response?.data) {
+                toast.error(err?.response?.data, {
+                  autoClose: 8000,
+                });
 
-        axios
-          .post("/api/accounts/get_account_balances", {
-            address: account?.toLowerCase(),
-          })
-          .then((res) => {
-            dispatch({
-              type: "SET_ACCOUNTS_DATA",
-              payload: res?.data?.data,
+                setStakingLoading(false);
+                return;
+              }
+              setStakingLoading(false);
+              toast.error("something went wrong", { autoClose: 8000 });
             });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-        setStakingLoading(false);
-        toast.success("Staked successfully", { autoClose: 8000 });
-        handleDepositAmount("");
-        handleTimePeriod(0);
+        } else {
+          handleAfterStake();
+        }
       },
       () => {
         setStakingLoading(false);
@@ -664,32 +709,38 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     try {
       const parts = referralState?.value?.split("_");
       const firstPart = parts[0];
-      setStakingLoading(true);
-      axios
-        .post("api/referral/register_referral", {
-          referral_address: firstPart,
-          user_address: account,
-          side: "auto",
-        })
-        .then((res) => {
-          setReferralCodeAlreadyUsed(false);
-          proceedStake();
-        })
-        .catch((err) => {
-          if (err?.response?.data) {
-            toast.error(err?.response?.data, {
-              autoClose: 8000,
-            });
-            setStakingLoading(false);
-            return;
-          }
-          setStakingLoading(false);
-          toast.error("something went wrong", { autoClose: 8000 });
-        });
+      setReferralState((prev) => ({
+        ...prev,
+        value: firstPart,
+      }));
+      setReferralCodeAlreadyUsed(false);
+
+      // setStakingLoading(true);
+      // axios
+      //   .post("api/referral/register_referral", {
+      //     referral_address: firstPart,
+      //     user_address: account,
+      //     side: "auto",
+      //   })
+      //   .then((res) => {
+      // setReferralCodeAlreadyUsed(false);
+      //     // handleAfterStake();
+      //   })
+      //   .catch((err) => {
+      //     if (err?.response?.data) {
+      //       toast.error(err?.response?.data, {
+      //         autoClose: 8000,
+      //       });
+      //       setStakingLoading(false);
+      //       return;
+      //     }
+      //     setStakingLoading(false);
+      //     toast.error("something went wrong", { autoClose: 8000 });
+      //   });
     } catch (e) {
-      toast.error(e?.response?.data, {
-        autoClose: 8000,
-      });
+      // toast.error(e?.response?.data, {
+      //   autoClose: 8000,
+      // });
     }
   }
 
@@ -702,6 +753,64 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       setaccountLoading(false);
     }
   }, [connectionLoading, appState?.userData?.address]);
+
+  const [referralCodeChecked, setReferralCodeChecked] = useState(false);
+  const [checkReferralCodeState, setCheckReferralCodeState] = useState({
+    loading: false,
+    message: "Referral code is required, please check referral code before staking",
+    status: "warning",
+  });
+
+  useEffect(() => {
+    if (!referralState.value) {
+      setCheckReferralCodeState((prev) => ({
+        ...prev,
+        loading: false,
+        status: "warning",
+        message: "Referral code is required, please check referral code before staking",
+      }));
+      setReferralCodeChecked(false);
+      return;
+    }
+    setCheckReferralCodeState((prev) => ({
+      ...prev,
+      loading: true,
+    }));
+    axios
+      .post("/api/referral/check_referral_available", {
+        referral_address: referralState.value,
+        user_address: account,
+      })
+      .then((res) => {
+        setTimeout(() => {
+          setCheckReferralCodeState((prev) => ({
+            ...prev,
+            loading: false,
+            status: "success",
+            message: "This referral code is available.",
+          }));
+          setReferralCodeChecked(true);
+        }, 500);
+      })
+      .catch((e) => {
+        let message =
+          "Referral code is required, please check referral code before staking";
+        if (e?.response?.data?.message === "no space") {
+          // message = "Binary spot for the referral code you entered is already taken.";
+          setReferralCodeAlreadyUsed(true);
+          return;
+        }
+        setTimeout(() => {
+          setCheckReferralCodeState((prev) => ({
+            ...prev,
+            loading: false,
+            status: "warning",
+            message: message,
+          }));
+          setReferralCodeChecked(false);
+        }, 500);
+      });
+  }, [referralState.value, mainAccount, account]);
 
   return (
     <>
@@ -764,6 +873,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         setReferralState={setReferralState}
         amountProgressOnchange={amountProgressOnchange}
         amountProgressValue={depositAmount}
+        referralCodeChecked={referralCodeChecked}
+        checkReferralCodeState={checkReferralCodeState}
         handleFinish={() => {
           axios
             .post("/api/accounts/handle-step", {
