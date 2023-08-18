@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TopUp as TopUpUI, TopUpDashboard } from "@cubitrix/cubitrix-react-ui-module";
+import { TopUpDashboard } from "@cubitrix/cubitrix-react-ui-module";
 import QRCode from "qrcode";
 import axios from "../../api/axios";
 import { useSelector, useDispatch } from "react-redux";

@@ -42,9 +42,11 @@ const Staking = () => {
   const [approveResonse, setApproveResonse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchCount, setFetchCount] = useState(0);
+  const appState = useSelector((state) => state.appState);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const { active, account } = useConnect();
   const hasMoreData = useSelector((state) => state.stake.hasMoreData);
+  const isActive = appState?.userData?.active;
 
   const { width } = useMobileWidth();
 
@@ -229,34 +231,34 @@ const Staking = () => {
       {
         icon: <CurrentStake />,
         title: "Current Stake",
-        value: parseFloat(stakersInfo.currentStaked).toFixed(5),
+        value: stakersInfo.currentStaked,
       },
       {
         icon: <Earn />,
         title: "Earn",
-        value: parseFloat(stakersInfo.realtimeReward).toFixed(10),
+        value: stakersInfo.realtimeReward,
       },
       {
         icon: <ClaimedReward />,
         title: "Claimed Reward",
-        value: parseFloat(stakersInfo.totalClaimedRewardTokenUser).toFixed(5),
+        value: stakersInfo.totalClaimedRewardTokenUser,
       },
     ],
     [
       {
         icon: <WalletBalance />,
         title: "Your Wallet Balance",
-        value: balance.toFixed(5),
+        value: balance,
       },
       {
         icon: <TotalStaked />,
         title: "Total Staked",
-        value: parseFloat(stakersInfo.totalStakedTokenUser).toFixed(5),
+        value: stakersInfo.totalStakedTokenUser,
       },
       {
         icon: <TotalUnstaked />,
         title: "Total Unstaked",
-        value: parseFloat(stakersInfo.totalUnstakedTokenUser).toFixed(5),
+        value: stakersInfo.totalUnstakedTokenUser,
       },
     ],
   ];
@@ -295,7 +297,7 @@ const Staking = () => {
                 address: account,
               },
               {
-                timeout: 60000,
+                timeout: 120000,
               },
             )
             .then((res) => {
@@ -361,6 +363,7 @@ const Staking = () => {
 
   return (
     <>
+      <input />
       <StakingUI
         account={account}
         stackContractInfo={stackContractInfo}
@@ -375,6 +378,7 @@ const Staking = () => {
         isFetching={isFetching}
         unstakeLoading={unstakeLoading}
         harvestLoading={harvestLoading}
+        isActive={isActive}
       />
       {createStakingPopUpActive && (
         <Popup
@@ -396,6 +400,7 @@ const Staking = () => {
                 stakingLoading,
               }}
               approveResonse={approveResonse}
+              isActive={isActive}
             />
           }
           label={"Staking Calculator"}

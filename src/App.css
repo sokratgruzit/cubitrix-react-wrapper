@@ -41,3 +41,18 @@ a {
 .Toastify__progress-bar--error {
   background-color: #ff0c46 !important;
 }
+@font-face {
+  font-family: 'Marcellus';
+  src: url('assets/fonts/Marcellus/Marcellus-Regular.eot');
+  src: url('assets/fonts/Marcellus/Marcellus-Regular.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.woff2') format('woff2'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.woff') format('woff'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.ttf') format('truetype'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.svg#Marcellus-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ttl {
+  font-family: 'Marcellus'!important;
+}

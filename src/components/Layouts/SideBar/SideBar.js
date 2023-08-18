@@ -15,13 +15,17 @@ import {
   Exchange,
   Deposit,
   FeeWarning,
+  Button,
+  StakeCurrency,
 } from "@cubitrix/cubitrix-react-ui-module";
 
-import { MetaMask, WalletConnect } from "../../../assets/svg";
+import { AddSquareIcon, MetaMask, WalletConnect } from "../../../assets/svg";
+
+import { WalletConnectV2Connector } from "../../../utils/walletconnectV2Connector";
 
 import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
-import { injected, walletConnect } from "../../../connector";
+import { injected } from "../../../connector";
 
 import { useEffect, useState, useMemo } from "react";
 import QRCode from "qrcode";
@@ -36,8 +40,10 @@ const SideBarRight = () => {
   const sideBar = useSelector((state) => state.appState.sideBar);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
   const exchangeAccountType = useSelector((state) => state.appState?.exchangeAccountType);
+  const { activeExtensions } = useSelector((state) => state.extensions);
 
   const [personalData, setPersonalData] = useState(null);
+  const [confirm, setConfirm] = useState(false);
   const { account, connect, disconnect, library } = useConnect();
 
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
@@ -123,7 +129,6 @@ const SideBarRight = () => {
         address: account,
       })
       .then((res) => {
-        console.log(res.data.success.data.accounts[0].extensions);
         dispatch({
           type: "SET_USER_DATA",
           payload: res.data.success.data.accounts[0],
@@ -438,7 +443,8 @@ const SideBarRight = () => {
       title: "Transfer amount",
       name: "amount",
       type: "default",
-      rightText: "ATR",
+      rightText:
+        exchangeAccountType === "ATAR" ? "ATR" : exchangeAccountType?.toUpperCase(),
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -461,6 +467,23 @@ const SideBarRight = () => {
       },
     },
   ];
+
+  const internalTransferOptions = useMemo(() => {
+    const options = [];
+
+    if (accountType === "main") {
+      if (activeExtensions.trade === "true") {
+        options.push({ name: "Trade", value: "trade" });
+      }
+      if (activeExtensions.loan === "true") {
+        options.push({ name: "Loan", value: "loan" });
+      }
+    } else {
+      options.push({ name: "Main", value: "main" });
+    }
+
+    return options;
+  }, [activeExtensions, accountType]);
 
   const transferInputs = [
     {
@@ -487,12 +510,12 @@ const SideBarRight = () => {
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
                       xmlns="http://www.w3.org/2000/svg">
-                      <g clip-path="url(#clip0_40_6461)">
+                      <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
                         <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
@@ -520,9 +543,9 @@ const SideBarRight = () => {
                       <path
                         d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
                         stroke="#C38C5C"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
                         d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
@@ -535,9 +558,9 @@ const SideBarRight = () => {
                       <path
                         d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
                         stroke="#C38C5C"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                   ),
@@ -554,12 +577,12 @@ const SideBarRight = () => {
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
                       xmlns="http://www.w3.org/2000/svg">
-                      <g clip-path="url(#clip0_40_6461)">
+                      <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                         <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
                         <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
@@ -589,9 +612,9 @@ const SideBarRight = () => {
                     <path
                       d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
                       stroke="#C38C5C"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                     <path
                       d="M12.4229 11.2258H12.2584C11.5808 11.2053 10.9381 10.9205 10.4678 10.4321C9.99758 9.94379 9.73715 9.29081 9.74226 8.61289C9.74226 7.17096 10.9132 6 12.3552 6C13.0386 6.00331 13.6937 6.27422 14.1798 6.75466C14.666 7.23511 14.9446 7.88687 14.956 8.57027C14.9674 9.25368 14.7106 9.91436 14.2407 10.4107C13.7709 10.9071 13.1253 11.1997 12.4423 11.2258H12.4229ZM12.3552 7.45161C11.7164 7.45161 11.1939 7.97419 11.1939 8.61289C11.1939 9.24192 11.6874 9.75483 12.3068 9.77418C12.3068 9.7645 12.3648 9.7645 12.4326 9.77418C13.0422 9.73547 13.5164 9.23225 13.5164 8.61289C13.5164 7.97419 12.9939 7.45161 12.3552 7.45161Z"
@@ -604,9 +627,9 @@ const SideBarRight = () => {
                     <path
                       d="M22 9C22 5.13 18.87 2 15 2L16.05 3.75"
                       stroke="#C38C5C"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </svg>
                 ),
@@ -623,15 +646,7 @@ const SideBarRight = () => {
       title: currentObject.transferType === "external" ? "address" : "Select Account",
       name: currentObject.transferType === "external" ? "transferAddress" : "account",
       type: currentObject.transferType === "external" ? "default" : "lable-input-select",
-      options:
-        accountType === "main"
-          ? [
-              {
-                name: "Trade",
-                value: "trade",
-              },
-            ]
-          : [{ name: "Main", value: "main" }],
+      options: internalTransferOptions,
       defaultAny: currentObject.transferType === "external" ? undefined : "Select",
       placeholder: currentObject.transferType === "external" ? "Enter" : undefined,
       onChange: (e) =>
@@ -674,12 +689,15 @@ const SideBarRight = () => {
 
   const [depositLoading, setDepositLoading] = useState(false);
   const handleDepositSubmit = async () => {
+    setDepositLoading(true);
+
+    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
     if (!account) {
       toast.error("Please connect your wallet.", { autoClose: 8000 });
+      await delay;
+      setDepositLoading(false);
       return;
     }
-
-    setDepositLoading(true);
 
     const web3 = library;
     const fromAddress = account;
@@ -715,7 +733,7 @@ const SideBarRight = () => {
             address: account,
             hash: receipt.transactionHash,
           })
-          .then((res) => {
+          .then(async (res) => {
             if (res?.data?.updatedAccount) {
               dispatch({
                 type: "SET_SYSTEM_ACCOUNT_DATA",
@@ -727,46 +745,65 @@ const SideBarRight = () => {
               });
               toast.success("Amount deposited successfully.", { autoClose: 8000 });
             }
+            await delay;
             setDepositLoading(false);
           })
-          .catch((e) => {
+          .catch(async (e) => {
             console.log(e);
+            toast.error("Transaction could not be registered.", { autoClose: 8000 });
+            await delay;
             setDepositLoading(false);
           });
       })
-      .catch((error) => {
-        setDepositLoading(false);
+      .catch(async (error) => {
         if (error.message.includes("User denied transaction signature")) {
           toast.error("Transaction rejected.", { autoClose: 8000 });
+          await delay;
+          setDepositLoading(false);
           return;
         }
         toast.error("Transaction failed.", { autoClose: 8000 });
+        await delay;
+        setDepositLoading(false);
       });
   };
+
   const [withdrawSubmitLoading, setWithdrawSubmitLoading] = useState(false);
   const handleWithdrawSubmit = async () => {
+    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+
     if (!account) {
       toast.error("Please connect your wallet.", { autoClose: 8000 });
+      await delay;
+      setWithdrawSubmitLoading(false);
       return;
     }
 
     if (!currentObject.address) {
       toast.error("Please enter address.", { autoClose: 8000 });
+      await delay;
+      setWithdrawSubmitLoading(false);
       return;
     }
 
     if (currentObject?.address?.length < 42) {
       toast.error("Please enter a valid address.", { autoClose: 8000 });
+      await delay;
+      setWithdrawSubmitLoading(false);
       return;
     }
 
     if (isNaN(currentObject.amount)) {
       toast.error("Please enter a valid amount.", { autoClose: 8000 });
+      await delay;
+      setWithdrawSubmitLoading(false);
       return;
     }
 
     if (Number(currentObject.amount) <= 0) {
       toast.error("Incorrect amount", { autoClose: 8000 });
+      await delay;
+      setWithdrawSubmitLoading(false);
       return;
     }
 
@@ -777,9 +814,9 @@ const SideBarRight = () => {
         address_to: currentObject.address,
         amount: currentObject.amount,
         accountType: exchangeAccountType,
-        rate: rates[exchangeAccountType].usd,
+        rate: exchangeAccountType === "ATAR" ? 2 : rates?.[exchangeAccountType]?.usd,
       })
-      .then((res) => {
+      .then(async (res) => {
         toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
         if (res.data?.result) {
           generateAccountsData();
@@ -788,119 +825,70 @@ const SideBarRight = () => {
             payload: {},
           });
         }
+        await delay;
         setWithdrawSubmitLoading(false);
       })
-      .catch((e) => {
+      .catch(async (e) => {
         let error;
-        if (e.response?.data?.message === "insufficient funds") {
+        if (e?.response?.data?.message === "main account is not active") {
+          error = "This account is disabled. Please contact support.";
+        } else if (e.response?.data?.message === "insufficient funds") {
           error = "Insufficient balance";
+        } else if (
+          e.response?.data?.message ===
+          "Withdrawal with this amount is not possible at the moment"
+        ) {
+          error = "Withdrawal with this amount is not possible at this moment";
         }
         toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+        await delay;
         setWithdrawSubmitLoading(false);
       });
-
-    // const web3 = library;
-    // const fromAddress = account;
-
-    // const toAddress = userBalances?.find(
-    //   (item) => item?.account_category === "system",
-    // )?.address;
-
-    // const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
-
-    // const amount = web3.utils.toBN(
-    //   web3.utils.toWei(currentObject.amount.toString(), "ether"),
-    // );
-
-    // const gasPrice = await web3.eth.getGasPrice();
-
-    // const transferData = tokenContract.methods
-    //   .transfer(toAddress, amount.toString())
-    //   .encodeABI();
-
-    // const transactionObject = {
-    //   from: fromAddress,
-    //   to: tokenAddress,
-    //   data: transferData,
-    //   gasPrice,
-    // };
-
-    // web3.eth
-    //   .sendTransaction(transactionObject)
-    //   .then((receipt) => {
-    //     axios
-    //       .post("/api/transactions/make_withdrawal", {
-    //         address: account,
-    //         hash: receipt.transactionHash,
-    //         address_to: currentObject.address,
-    //         accountType: exchangeAccountType,
-    //       })
-    //       .then((res) => {
-    //         if (res?.data?.updatedAccount) {
-    //           dispatch({
-    //             type: "SET_SYSTEM_ACCOUNT_DATA",
-    //             payload: res.data.updatedAccount,
-    //           });
-    //           dispatch({
-    //             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-    //             payload: {},
-    //           });
-    //           toast.success("Amount deposited successfully.", { autoClose: 8000 });
-    //         }
-    //         setDepositLoading(false);
-    //       })
-    //       .catch((e) => {
-    //         console.log(e);
-    //         setDepositLoading(false);
-    //       });
-    //   })
-    //   .catch((error) => {
-    //     setDepositLoading(false);
-    //     if (error.message.includes("User denied transaction signature")) {
-    //       toast.error("Transaction rejected.", { autoClose: 8000 });
-    //       return;
-    //     }
-    //     toast.error("Transaction failed.", { autoClose: 8000 });
-    //   });
-
-    // axios
-    //   .post("/api/transactions/make_withdrawal", {
-    //     address: account,
-    //     address_to: currentObject.address,
-    //     amount: currentObject.amount,
-    //   })
-    //   .then((res) => {
-    //     console.log(res);
-    //     setWithdrawSubmitLoading(false);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //     toast.error("Withdrawal failed.", { autoClose: 8000 });
-    //     setWithdrawSubmitLoading(false);
-    //   });
-    // console.log(currentObject.amount, currentObject.address);
-    // setCurrentObject((prev) => ({ ...prev, clientId: "", amount: "0" }));
   };
 
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
   const handleTransferSubmit = async () => {
+    setTransferSubmitLoading(true);
+
+    const delay = new Promise((resolve) => setTimeout(resolve, 3000));
+
+    let errorMsg = null;
     if (Number(currentObject.amount) <= 0) {
-      toast.error("Incorrect amount", { autoClose: 8000 });
+      errorMsg = "Incorrect amount";
+      toast.error(errorMsg, { autoClose: 8000 });
+      await delay;
+      setTransferSubmitLoading(false);
       return;
     }
-    if (currentObject.transferType === "external") {
-      setTransferSubmitLoading(true);
-      axios
-        .post("/api/transactions/make_transfer", {
-          from: account,
-          to: currentObject.transferAddress,
-          amount: currentObject.amount,
-          tx_currency: "ether",
-          account_category_from: "main",
-          account_category_to: "main",
-        })
-        .then((res) => {
-          if (res.data?.data?.updatedAcc) {
+    if (confirm) {
+      try {
+        let transferPromise;
+
+        if (currentObject.transferType === "external") {
+          transferPromise = axios.post("/api/transactions/make_transfer", {
+            from: account,
+            to: currentObject.transferAddress,
+            amount: currentObject.amount,
+            tx_currency: "ether",
+            account_category_from: "main",
+            account_category_to: "main",
+          });
+        } else if (currentObject.transferType === "internal") {
+          transferPromise = axios.post("/api/transactions/make_transfer", {
+            from: account,
+            to: account,
+            amount: currentObject.amount,
+            tx_currency: "ether",
+            account_category_from: accountType,
+            account_category_to: currentObject.account,
+            tx_type: "internal_transfer",
+          });
+        }
+
+        const [res] = await Promise.all([transferPromise]);
+
+        if (res.data?.data?.updatedAcc) {
+          if (currentObject.transferType === "external") {
             dispatch({
               type: "SET_SYSTEM_ACCOUNT_DATA",
               payload: res.data.data.updatedAcc,
@@ -909,77 +897,59 @@ const SideBarRight = () => {
               type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
               payload: {},
             });
-          }
-          setTransferSubmitLoading(false);
-          toast.success("Transfer was successful.", { autoClose: 8000 });
 
-          setTimeout(() => {
-            setCurrentObject((prev) => ({
-              ...prev,
-              type: "",
-              account: "",
-              amount: "0",
-              transferAddress: "",
-            }));
-          }, 3000);
-        })
-        .catch((e) => {
-          let errorMsg;
-          if (
-            e?.response?.data === "we dont have such address registered in our system."
-          ) {
-            errorMsg = "Incorrect to address";
-          } else if (e?.response?.data === "Cannot transfer to this account") {
-            errorMsg = "Recipient has not activated account";
-          }
-          setTransferSubmitLoading(false);
-          toast.error(errorMsg ?? "Transaction failed.", { autoClose: 8000 });
-        });
-    }
-    if (currentObject.transferType === "internal") {
-      setTransferSubmitLoading(true);
-      axios
-        .post("/api/transactions/make_transfer", {
-          from: account,
-          to: account,
-          amount: currentObject.amount,
-          tx_currency: "ether",
-          account_category_from: accountType,
-          account_category_to: currentObject.account,
-          tx_type: "internal_transfer",
-        })
-        .then((res) => {
-          if (res.data?.data?.updatedAcc) {
+            toast.success("Transfer was successful.", { autoClose: 8000 });
+
+            setTimeout(() => {
+              setCurrentObject((prev) => ({
+                ...prev,
+                type: "",
+                account: "",
+                amount: "0",
+                transferAddress: "",
+              }));
+            }, 3000);
+            setConfirm(false);
+          } else if (currentObject.transferType === "internal") {
             generateAccountsData();
             dispatch({
               type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
               payload: {},
             });
-          }
+            setConfirm(false);
+            toast.success("Transfer was successful.", { autoClose: 8000 });
 
-          setTransferSubmitLoading(false);
-          toast.success("Transfer was successful.", { autoClose: 8000 });
-          setTimeout(() => {
-            setCurrentObject((prev) => ({
-              ...prev,
-              type: "",
-              amount: 0,
-              transferAddress: "",
-            }));
-          }, 3000);
-        })
-        .catch((e) => {
-          let errorMsg;
-          if (
-            e?.response?.data === "we dont have such address registered in our system."
-          ) {
-            errorMsg = "Incorrect to address";
-          } else if (e?.response?.data === "Cannot transfer to this account") {
-            errorMsg = "Recipient has not activated account";
+            setTimeout(() => {
+              setCurrentObject((prev) => ({
+                ...prev,
+                type: "",
+                amount: 0,
+                transferAddress: "",
+              }));
+            }, 3000);
           }
-          setTransferSubmitLoading(false);
-          toast.error(errorMsg ?? "Transaction failed.", { autoClose: 8000 });
-        });
+        }
+      } catch (e) {
+        if (e?.response?.data === "we dont have such address registered in our system.") {
+          errorMsg = "Incorrect to address";
+        } else if (e?.response?.data === "Cannot transfer from this account") {
+          errorMsg = "This account is disabled. Please contact support.";
+        } else if (e?.response?.data === "Cannot transfer to this account") {
+          errorMsg = "Recipient has not activated account";
+        } else if (e?.response?.data === "Insufficient funds") {
+          errorMsg = "Insufficient funds";
+        } else if (e?.response?.data === "Insufficient funds or locked funds") {
+          errorMsg = "Funds are insufficient or locked";
+        }
+        setConfirm(false);
+
+        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
+      }
+      await delay;
+
+      setTransferSubmitLoading(false);
+    } else {
+      setConfirm(true);
     }
   };
 
@@ -1034,8 +1004,8 @@ const SideBarRight = () => {
                 x2="33.9012"
                 y2="4.39119"
                 gradientUnits="userSpaceOnUse">
-                <stop stop-color="white" stop-opacity="0.1" />
-                <stop offset="1" stop-color="white" stop-opacity="0.02" />
+                <stop stopColor="white" stopOpacity="0.1" />
+                <stop offset="1" stopColor="white" stopOpacity="0.02" />
               </linearGradient>
               <linearGradient
                 id="paint1_linear_506_2216"
@@ -1044,14 +1014,14 @@ const SideBarRight = () => {
                 x2="24.2795"
                 y2="14.2939"
                 gradientUnits="userSpaceOnUse">
-                <stop stop-color="white" stop-opacity="0.5" />
-                <stop offset="1" stop-color="white" stop-opacity="0.05" />
+                <stop stopColor="white" stopOpacity="0.5" />
+                <stop offset="1" stopColor="white" stopOpacity="0.05" />
               </linearGradient>
             </defs>
           </svg>
         ),
         title: "ATAR",
-        price: 2,
+        price: mainAccount?.balance,
       },
       {
         svg: (
@@ -1144,11 +1114,11 @@ const SideBarRight = () => {
             </defs>
           </svg>
         ),
-        title: "USDT",
+        title: "USDC",
         price:
-          mainAccount?.assets?.["usdt"] === undefined
+          mainAccount?.assets?.["usdc"] === undefined
             ? undefined
-            : mainAccount?.assets?.["usdt"],
+            : mainAccount?.assets?.["usdc"],
       },
       {
         svg: (
@@ -1420,31 +1390,96 @@ const SideBarRight = () => {
   }, [card, exchangeAccountType, ratedExchange]);
 
   const [exchangeLoading, setExchangeLoading] = useState(false);
+
   const handleExchangeSubmit = async () => {
+    const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+
     setExchangeLoading(true);
-    await axios
-      .post("/api/transactions/exchange", {
-        address: account,
-        fromAccType: exchangeAccountType,
-        fromAmount: Number(currentObject.transfer_amount),
-        toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
-        toAmount: Number(currentObject.receive_amount),
-      })
-      .then((res) => {
-        setExchangeLoading(false);
-        generateAccountsData();
-        dispatch({
-          type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
-          payload: {},
+    if (confirm) {
+      await axios
+        .post("/api/transactions/exchange", {
+          address: account,
+          fromAccType: exchangeAccountType,
+          fromAmount: Number(currentObject.transfer_amount),
+          toAccType: card.title === "ATAR" ? "ATAR" : card.title.toLowerCase(),
+          toAmount: Number(currentObject.receive_amount),
+        })
+        .then(async (res) => {
+          generateAccountsData();
+          dispatch({
+            type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
+            payload: {},
+          });
+          toast.success("Exchange successful.", { autoClose: 8000 });
+          await delay;
+          setExchangeLoading(false);
+          setConfirm(false);
+        })
+        .catch(async (e) => {
+          let error;
+          if (e?.response?.data?.message === "main account is not active") {
+            error = "This account is disabled. Please contact support.";
+          } else if (e?.response?.data?.message === "insufficient balance") {
+            error = "Insufficient balance.";
+          }
+
+          toast.error(error ?? "Exchange failed.", { autoClose: 8000 });
+          await delay;
+          setExchangeLoading(false);
+          setConfirm(false);
         });
-        toast.success("Exchange successful.", { autoClose: 8000 });
-      })
-      .catch((e) => {
-        setExchangeLoading(false);
-        toast.error("Exchange failed.", { autoClose: 8000 });
-        console.log(e);
-      });
+    } else {
+      setConfirm(true);
+    }
   };
+
+  const [recepientName, setRecepientName] = useState("");
+  useEffect(() => {
+    if (currentObject.transferAddress && currentObject.transferAddress.length > 41) {
+      axios
+        .post("/api/accounts/get_recepient_name", {
+          address: currentObject.transferAddress,
+        })
+        .then((res) => {
+          setRecepientName(res.data.name);
+        })
+        .catch((err) => {
+          setRecepientName("");
+        });
+    }
+  }, [currentObject.transferAddress]);
+
+  async function getBalance() {
+    var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
+    var decimals = await tokenContract.methods.decimals().call();
+    var getBalance = await tokenContract.methods.balanceOf(account).call();
+
+    var pow = 10 ** decimals;
+    var balanceInEth = getBalance / pow;
+
+    return balanceInEth;
+  }
+
+  const [stakingLoading, setStakingLoading] = useState(false);
+  async function handleStakeCurrency() {
+    try {
+      setStakingLoading(true);
+      const { data } = await axios.post("/api/accounts/stake_currency", {
+        address: account,
+        amount: Number(currentObject.amount),
+        duration: confirm,
+        currency: exchangeAccountType,
+      });
+      setStakingLoading(false);
+      setConfirm(false);
+      generateAccountsData();
+      toast.success("Staking successful.", { autoClose: 8000 });
+    } catch (e) {
+      toast.error("Staking failed.", { autoClose: 8000 });
+      setStakingLoading(false);
+      setConfirm(false);
+    }
+  }
 
   return (
     <>
@@ -1463,6 +1498,121 @@ const SideBarRight = () => {
           handlePopUpClose={() => setTwoFactorAuth(false)}
         />
       )}
+      {sideBar === "transfer" && confirm && (
+        <Popup
+          popUpElement={
+            <div className="confirm-list">
+              <div className="confirm-list-item">
+                <span>Transfer Type:</span>
+                <span>{currentObject.transferType}</span>
+              </div>
+              {currentObject.transferType === "external" && (
+                <div className="confirm-list-item">
+                  <span>Name:</span>
+                  <span>{recepientName ?? ""}</span>
+                </div>
+              )}
+              <div className="confirm-list-item">
+                <span>To:</span>
+                <span>
+                  {currentObject.transferType === "external"
+                    ? currentObject.transferAddress
+                    : currentObject.account}
+                </span>
+              </div>
+              <div className="confirm-list-item">
+                <span>Amount:</span>
+                <span>{currentObject.amount}</span>
+              </div>
+
+              <Button
+                element={"button"}
+                size={"btn-lg"}
+                type={"btn-primary"}
+                label={"Confirm"}
+                active={true}
+                customStyles={{
+                  width: "100%",
+                }}
+                onClick={handleTransferSubmit}
+              />
+            </div>
+          }
+          label={"Confirm your transaction"}
+          handlePopUpClose={() => (setConfirm(false), setTransferSubmitLoading(false))}
+        />
+      )}
+      {sideBar === "exchange" && confirm && (
+        <Popup
+          popUpElement={
+            <div className="confirm-list">
+              <div className="confirm-list-item">
+                <span>From Account:</span>
+                <span>{exchangeAccountType}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>From Amount:</span>
+                <span>{Number(currentObject.transfer_amount)}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>To Account:</span>
+                <span>{card.title === "ATAR" ? "ATAR" : card.title.toLowerCase()}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>To Amount:</span>
+                <span>{Number(currentObject.receive_amount)}</span>
+              </div>
+              <Button
+                element={"button"}
+                size={"btn-lg"}
+                type={"btn-primary"}
+                label={"Confirm"}
+                active={true}
+                customStyles={{
+                  width: "100%",
+                }}
+                onClick={handleExchangeSubmit}
+              />
+            </div>
+          }
+          label={"Confirm your transaction"}
+          handlePopUpClose={() => (setConfirm(false), setExchangeLoading(false))}
+        />
+      )}
+      {sideBar === "stake" && confirm && (
+        <Popup
+          popUpElement={
+            <div className="confirm-list">
+              <div className="confirm-list-item">
+                <span>Amount:</span>
+                <span>{currentObject.amount}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>Currency:</span>
+                <span>{exchangeAccountType?.toUpperCase()}</span>
+              </div>
+              <div className="confirm-list-item">
+                <span>Duration:</span>
+                <span>{confirm}</span>
+              </div>
+              <Button
+                element={"button"}
+                size={"btn-lg"}
+                type={"btn-primary"}
+                label={stakingLoading ? "Loading..." : "Confirm"}
+                active={true}
+                customStyles={{
+                  width: "100%",
+                }}
+                onClick={handleStakeCurrency}
+                disabled={stakingLoading}
+              />
+            </div>
+          }
+          label={"Confirm your transaction"}
+          handlePopUpClose={() => (setConfirm(false), setTransferSubmitLoading(false))}
+        />
+      )}
       <SideBar open={appState.sideBarOpen}>
         {sideBar === "connect" && !account && (
           <Connect
@@ -1475,7 +1625,17 @@ const SideBarRight = () => {
               {
                 label: "ConnectWallet",
                 svg: <WalletConnect />,
-                connect: () => connect("walletConnect", walletConnect),
+                connect: async () => {
+                  const walletConnect = new WalletConnectV2Connector({
+                    projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+                    showQrModal: true,
+                    chains: [97],
+                    rpcMap: {
+                      97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+                    },
+                  });
+                  await connect("walletConnect", walletConnect);
+                },
               },
             ]}
             signIn={handleSignInBar}
@@ -1488,10 +1648,17 @@ const SideBarRight = () => {
             warning={!appState.emailVerified}
             completeAccount={handleUserAccount}
             sideBarClose={handleClose}
-            disconnect={disconnect}
+            disconnect={() => {
+              dispatch({
+                type: "SET_SIDE_BAR",
+                payload: { sideBarOpen: false },
+              });
+              disconnect();
+              localStorage.removeItem("walletconnect");
+            }}
             userAccount={handleUserAccount}
             account={account}
-            mainAccount={mainAccount.address}
+            mainAccount={mainAccount?.address}
           />
         )}
         {sideBar === "UserAccount" && (
@@ -1511,7 +1678,7 @@ const SideBarRight = () => {
             securityDataState={securityDataState}
             resendEmail={(e) => resendEmail(e)}
             hasPasswordSet={appState.hasPasswordSet}
-            imgValue={`https://cubitrix-idq6.onrender.com/images/${account}.png`}
+            imgValue={`https://cubitrix-node-server.onrender.com/images/${account}.png`}
             twoFactorAuth={twoFactorAuth}
             handleTwoFactorAuth={(val) => {
               setTwoFactorAuth(val);
@@ -1576,13 +1743,13 @@ const SideBarRight = () => {
             accountBalance={
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance?.toFixed(2)
-                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+                : mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance * 2?.toFixed(2)
                 : (
-                    mainAccount.assets[exchangeAccountType] *
+                    mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd
                   )?.toFixed(2)
             }`}
@@ -1606,13 +1773,13 @@ const SideBarRight = () => {
             accountBalance={
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance?.toFixed(2)
-                : mainAccount.assets[exchangeAccountType]?.toFixed(2)
+                : mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
                 ? chosenAccount?.balance * 2?.toFixed(2)
                 : (
-                    mainAccount.assets[exchangeAccountType] *
+                    mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd
                   )?.toFixed(2)
             }`}
@@ -1631,6 +1798,9 @@ const SideBarRight = () => {
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
             accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            library={library}
+            account={account}
+            getBalance={getBalance}
           />
         )}
         {sideBar === "transfer" && (
@@ -1646,6 +1816,26 @@ const SideBarRight = () => {
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
             accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+          />
+        )}
+        {sideBar === "stake" && (
+          <StakeCurrency
+            label={"Stake Currency"}
+            sideBarClose={handleClose}
+            inputs={depositInputs}
+            currentObject={currentObject}
+            cardImg={"/img/dashboard/atar.png"}
+            handleSubmit={(duration) => setConfirm(duration)}
+            buttonLabel={stakingLoading ? "Loading..." : "Stake"}
+            stakeLoading={stakingLoading}
+            accountType={exchangeAccountType}
+            accountBalance={mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)}
+            accountBalanceSecond={`$${(
+              mainAccount?.assets?.[exchangeAccountType] *
+              rates?.[exchangeAccountType]?.usd
+            )?.toFixed(2)}`}
+            durationOptions={["360 D"]}
+            info={`3.0% APY On 360 Days.`}
           />
         )}
       </SideBar>

@@ -19,6 +19,7 @@ const Transactions = () => {
     time: "",
   });
   const [loading, setLoading] = useState(false);
+  const [itemsLimit, setItemsLimit] = useState(5);
 
   const [transactionsPaginationTotal, setTransactionsPaginationTotal] =
     useState(1);
@@ -44,7 +45,7 @@ const Transactions = () => {
 
       const requestBody = {
         address: account?.toLowerCase(),
-        limit: 5,
+        limit: itemsLimit,
         page: transactionsCurrentPage,
         ...filterObject,
         account:
@@ -66,7 +67,7 @@ const Transactions = () => {
       setTransactionsData(data);
       setTotalTransactions({
         total_transaction: data?.total_transaction || 0,
-        received: amountsToFrom?.toCount || 0,
+        received: amountsToFrom?.toSum || 0,
         spent: amountsToFrom?.fromSum || 0,
       });
       setLoading(false);
@@ -76,7 +77,7 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    if (account && active && triedReconnect) {
+    if (account && active && triedReconnect && itemsLimit) {
       generateTransactionsData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,32 +89,33 @@ const Transactions = () => {
     account,
     active,
     triedReconnect,
+    itemsLimit,
   ]);
 
   const transactionHeader = [
     {
       name: "From",
       mobileWidth: width >= 500 ? 45 : 100,
-      width: 20,
+      width: 16.6,
       id: 0,
       height: "40px",
     },
     {
       name: "To",
-      width: 20,
+      width: 16.6,
       // mobileWidth: 45,
       id: 1,
       height: "40px",
     },
     {
       name: "Type",
-      width: 20,
+      width: 16.6,
       id: 2,
       height: "40px",
     },
     {
       name: "Time",
-      width: 20,
+      width: 16.6,
       id: 3,
       height: "40px",
       icon: (
@@ -138,7 +140,7 @@ const Transactions = () => {
     },
     {
       name: "Amount",
-      width: 20,
+      width: 16.6,
       mobileWidth: width >= 500 ? 45 : false,
       id: 4,
       height: "40px",
@@ -162,6 +164,13 @@ const Transactions = () => {
         </svg>
       ),
     },
+    {
+      name: "Status",
+      width: 16.6,
+      mobileWidth: width >= 500 ? 45 : false,
+      id: 5,
+      height: "40px",
+    },
   ];
 
   const footer = {
@@ -171,16 +180,14 @@ const Transactions = () => {
 
   const rightPanelData = [
     {
-      title: "Recieved",
+      title: "Incoming",
       value: totalTransactions?.received,
     },
     {
-      title: "Spent",
+      title: "Outgoing",
       value: totalTransactions?.spent,
     },
   ];
-
-  console.log(filterObject);
 
   const inputs = [
     {
@@ -210,8 +217,8 @@ const Transactions = () => {
         { name: "Deposit", value: "deposit" },
         { name: "Transfer", value: "transfer" },
         { name: "Internal Transfer", value: "internal_transfer" },
-        { name: "Withdrawal", value: "withdrawal" },
-        { name: "Referral Bonus", value: "referral_bonus" },
+        { name: "Withdraw", value: "withdraw" },
+        { name: "Referral Bonus", value: "bonus" },
       ],
       defaultAny: "Any Type",
       onChange: (e) =>
@@ -231,12 +238,29 @@ const Transactions = () => {
           [e.target.name]: e.target.value,
         })),
     },
+    {
+      title: "Choose Items To Show",
+      name: "type",
+      type: "lable-input-select",
+      options: [
+        { name: "5", value: "5" },
+        { name: "10", value: "10" },
+        { name: "15", value: "15" },
+        { name: "20", value: "20" },
+        { name: "25", value: "25" },
+        { name: "30", value: "30" },
+        { name: "35", value: "35" },
+      ],
+      defaultAny: 5,
+      onChange: (e) => setItemsLimit(e.target.value),
+    },
   ];
 
   const transactionsTableEmpty = {
     label: "No Transaction History",
     icon: <NoHistoryIcon />,
   };
+  console.log(transactionsData?.transactions);
   return (
     <TransactionsUI
       header={"Transactions"}

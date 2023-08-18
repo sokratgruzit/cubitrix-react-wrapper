@@ -23,7 +23,8 @@ import {
 } from "@cubitrix/cubitrix-react-ui-module";
 
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "./hooks/use-connect";
 
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -52,7 +53,6 @@ function App() {
   const sideBar = useSelector((state) => state.appState?.sideBar);
   const emailVerified = useSelector((state) => state.appState?.emailVerified);
   const exts = useSelector((state) => state.extensions?.activeExtensions);
-  const chainId = useSelector((state) => state.connect.chainId);
   const providerType = useSelector((state) => state.connect.providerType);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const balance = useSelector((state) => state.appState.userData?.balance);
@@ -70,6 +70,7 @@ function App() {
     account,
     MetaMaskEagerlyConnect,
     WalletConnectEagerly,
+    chainId,
   } = useConnect();
 
   useEffect(() => {
@@ -81,6 +82,16 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    if (chainId && chainId !== 97) {
+      localStorage.removeItem("walletconnect");
+      dispatch({
+        type: "CONNECTION_ERROR",
+        payload: "Please switch your network in wallet",
+      });
+    }
+  }, [chainId]);
+
   var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
   var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";
   const { checkAllowance } = useStake({ Router, tokenAddress });
@@ -88,13 +99,13 @@ function App() {
   const { depositAmount } = useSelector((state) => state.stake);
 
   useEffect(() => {
-    if (account && triedReconnect && active) {
+    if (account && triedReconnect && active && library) {
       checkAllowance();
     }
     // eslint-disable-next-line
-  }, [account, triedReconnect, active, depositAmount]);
+  }, [account, triedReconnect, active, depositAmount, library]);
 
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(6);
   const [initialRegister, setInitialRegister] = useState(true);
 
   const updateState = () => {
@@ -158,6 +169,10 @@ function App() {
           .catch((err) => {});
       };
       fetchData();
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: false },
+      });
     }
   }, [account, triedReconnect, active]);
 
@@ -207,7 +222,7 @@ function App() {
               address: account,
             },
             {
-              timeout: 60000,
+              timeout: 120000,
             },
           )
           .then((res) => {
@@ -302,7 +317,7 @@ function App() {
     },
     {
       to: "/top-up",
-      label: "Payment Method",
+      label: "Purchase",
       svg: (
         <svg
           width="24"
@@ -338,10 +353,11 @@ function App() {
     } else if (account && triedReconnect && active) {
       if (
         systemAcc &&
-        systemAcc.active &&
+        systemAcc?.step > 5 &&
+        // systemAcc.active &&
         systemAcc?.account_owner === account?.toLowerCase()
       ) {
-        setStep(5);
+        setStep(6);
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
           payload: { dashboard: "true" },
@@ -356,8 +372,8 @@ function App() {
           payload: { dashboard: "false" },
         });
         getBalance().then((balance) => {
-          if (balance > 200) {
-            setStep(4);
+          if (balance >= 100) {
+            setStep(systemAcc.step > 4 ? systemAcc.step : 4);
           } else {
             setStep(systemAcc.step);
           }
@@ -383,6 +399,15 @@ function App() {
 
     return balanceInEth;
   }
+
+  // console.log(
+  //   isExtensionsLoaded &&
+  //     activeExtensions.referral === "false" &&
+  //     (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "Novice Navigator"),
+  //   isExtensionsLoaded,
+  //   activeExtensions.referral === "false",
+  //   !appState?.userData?.tier?.value || appState?.userData?.tier?.value === "Novice Navigator",
+  // );
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
@@ -411,10 +436,10 @@ function App() {
           handleNotifications={handleNotifications}
           verified={emailVerified}
           amount={balance ?? 0}
-          initialRegister={step < 5}
+          initialRegister={step < 6}
           setInitialRegister={setInitialRegister}
         />
-        {initialRegister && step < 5 && (
+        {initialRegister && step < 6 && (
           <LandingRegistration
             step={step}
             setStep={setStep}
@@ -436,30 +461,59 @@ function App() {
           />
           <Route
             path="/dashboard"
-            element={<DashboardSharedLayout links={links} children={<Dashboard />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<Dashboard />}
+              />
+            }
           />
           <Route
             path="/transactions"
-            element={<DashboardSharedLayout links={links} children={<Transactions />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<Transactions />}
+              />
+            }
           />
           <Route
             path="/top-up"
-            element={<DashboardSharedLayout links={links} children={<TopUp />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<TopUp />}
+              />
+            }
           />
           <Route
             path="/loan"
             element={
-              isExtensionsLoaded && activeExtensions.loan === "false" ? (
+              isExtensionsLoaded &&
+              activeExtensions.loan === "false" &&
+              activeExtensions?.loanAdmin === "false" ? (
                 <Navigate to="/" />
               ) : (
                 <Loan />
+                // <Trade />
               )
             }
           />
           <Route
             path="/trade"
             element={
-              isExtensionsLoaded && activeExtensions.trade === "false" ? (
+              isExtensionsLoaded &&
+              activeExtensions.trade === "false" &&
+              activeExtensions?.tradeAdmin === "false" ? (
                 <Navigate to="/" />
               ) : (
                 <Trade />
@@ -468,19 +522,24 @@ function App() {
           />
           <Route
             path="/staking"
-            // element={
-            //   isExtensionsLoaded && activeExtensions.staking === "false" ? (
-            //     <Navigate to="/" />
-            //   ) : (
-            //     <Staking />
-            //   )
-            // }
-            element={<Staking />}
+            element={
+              isExtensionsLoaded &&
+              activeExtensions.staking === "false" &&
+              activeExtensions?.stakingAdmin === "false" ? (
+                <Navigate to="/" />
+              ) : (
+                <Staking />
+              )
+            }
           />
           <Route
             path="/referral"
             element={
-              isExtensionsLoaded && activeExtensions.referral === "false" ? (
+              isExtensionsLoaded &&
+              activeExtensions.referral === "false" &&
+              activeExtensions.referralAdmin === "false" &&
+              (!appState?.userData?.tier?.value ||
+                appState?.userData?.tier?.value === "Novice Navigator") ? (
                 <Navigate to="/" />
               ) : (
                 <Referral />
@@ -493,7 +552,15 @@ function App() {
           <Route path="/reset-password/:code" element={<ResetPassword />} />
           <Route
             path="/create-account"
-            element={<DashboardSharedLayout links={links} children={<CreateAccount />} />}
+            element={
+              <DashboardSharedLayout
+                disabledAccount={
+                  !appState?.userData?.active && appState?.userData?.step == "6"
+                }
+                links={links}
+                children={<CreateAccount />}
+              />
+            }
           />
           <Route path="/test" element={<Test />} />
           <Route path="/deposit/:hash" element={<Success />} />
