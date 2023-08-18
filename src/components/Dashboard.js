@@ -15,16 +15,7 @@ const Dashboard = () => {
   const [transactionsData, setTransactionsData] = useState({});
   const [totalTransactions, setTotalTransactions] = useState({});
 
-  const [totalReferralData, setTotalReferralData] = useState({
-    uni: {
-      levelUser: 0,
-      totalComission: 0,
-    },
-    binary: {
-      levelUser: 0,
-      totalComission: 0,
-    },
-  });
+  const [totalReferralData, setTotalReferralData] = useState(false);
   const [referralCodeTableLoading, setReferralCodeTableLoading] = useState(false);
   const [referralHistoryTableLoading, setReferralHistoryTableLoading] = useState(false);
   const [transactionsTableLoading, setTransactionsTableLoading] = useState(false);
@@ -106,31 +97,28 @@ const Dashboard = () => {
     }
   };
 
+  let getTotalData = async (address) => {
+    try {
+      const { data } = await axios.post("/api/referral/get_reerral_global_data", {
+        address: address,
+      });
+      setTotalReferralData(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
   const generateTotalReferralData = async () => {
     try {
-      const apiUrl = "/api/referral/get_referral_code_of_user_dashboard";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
+      const { data } = await axios.post("/api/referral/get_referral_address", {
+        address:  account?.toLowerCase(),
+      });
+      console.log(data, "asdasdasdasdad");
 
-      const response = await axios.post(apiUrl, requestBody);
-
-      const data = response.data;
-
-      setTotalReferralData((prev) => ({
-        ...prev,
-        uni: {
-          levelUser: data?.referral_count_binary || 0,
-          totalComission: data?.referral_sum_uni[0]?.amount || 0,
-        },
-        binary: {
-          levelUser: data?.referral_count_uni || 0,
-          totalComission: data?.referral_sum_binary[0]?.amount || 0,
-        },
-      }));
-    } catch (error) {
-      console.error("Error:", error);
+      getTotalData(data)
+    } catch (err) {
+      console.log(err);
     }
+
   };
 
   const prevDashboardTransactionsDataReload = useRef(dashboardTransactionsDataReload);
@@ -307,17 +295,20 @@ const Dashboard = () => {
     },
   ];
 
-  const referralCardsData = [
+  let referralCardsData = [
     {
       title: "Uni",
       data: [
         {
           title: "Level User",
-          value: totalReferralData?.uni?.levelUser,
+          value: totalReferralData?.uni_users,
         },
         {
           title: "Total Comission",
-          value: totalReferralData?.uni?.totalComission,
+          value:  totalReferralData?.uni_comission_total &&
+          totalReferralData?.uni_comission_total.length > 0
+              ? totalReferralData?.uni_comission_total[0]?.totalAmount
+              : 0,
         },
       ],
     },
@@ -327,11 +318,14 @@ const Dashboard = () => {
       data: [
         {
           title: "Level User",
-          value: totalReferralData?.binary?.levelUser,
+          value: totalReferralData?.binary_users,
         },
         {
           title: "Total Comission",
-          value: totalReferralData?.binary?.totalComission,
+          value:    totalReferralData?.binary_comission_total &&
+          totalReferralData?.binary_comission_total.length > 0
+              ? totalReferralData?.binary_comission_total[0]?.totalAmount
+              : 0,
         },
       ],
     },

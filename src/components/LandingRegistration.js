@@ -160,6 +160,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         update_profile();
       })
       .catch((err) => {
+        update_profile();
+
         let error = "Referral code could not be assigned";
         if (err?.response?.data === "Referral code doesnot exist") {
           error = "Referral code does not exist";
@@ -180,6 +182,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         });
         toast.error(error, { autoClose: 8000 });
       });
+
+    update_profile();
 
     async function update_profile() {
       axios
