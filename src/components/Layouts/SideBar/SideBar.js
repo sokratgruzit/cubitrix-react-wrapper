@@ -1735,7 +1735,9 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={withdrawInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/atar.png"}
+            cardImg={`/img/dashboard/${
+              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+            }.png`}
             handleSubmit={handleWithdrawSubmit}
             buttonLabel={withdrawSubmitLoading ? "Loading..." : "Withdraw"}
             withdrawSubmitLoading={withdrawSubmitLoading}
@@ -1761,7 +1763,9 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={exchangeInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/atar.png"}
+            cardImg={`/img/dashboard/${
+              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+            }.png`}
             accounts={exchangeAccounts}
             handleSubmit={handleExchangeSubmit}
             buttonLabel={exchangeLoading ? "Loading..." : "Exchange"}
@@ -1824,7 +1828,9 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={depositInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/atar.png"}
+            cardImg={`/img/dashboard/${
+              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+            }.png`}
             handleSubmit={(duration) => setConfirm(duration)}
             buttonLabel={stakingLoading ? "Loading..." : "Stake"}
             stakeLoading={stakingLoading}

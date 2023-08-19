@@ -50,6 +50,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     [appState?.accountsData],
   );
 
+  const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
+  const [savedBeforeStakingValues, setSavedBeforeStakingValues] = useState({});
+
   const [tokenBalance, setTokenBalance] = useState(0);
 
   useEffect(() => {
@@ -498,9 +501,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       .catch((e) => {});
   };
 
-  const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
-  const [savedBeforeStakingValues, setSavedBeforeStakingValues] = useState({});
-
   const handleDepositSubmit = async () => {
     setStakingLoading(true);
 
@@ -566,8 +566,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         setStakingLoading(false);
         return;
       }
+
       setSavedBeforeStakingValues({ buyAmount, referralValue: referralState.value });
-      proceedStake();
+      proceedStake(referralState.value);
 
       // if (buyAmount > 500 && referralState.value) {
       //   axios
@@ -658,29 +659,28 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     handleTimePeriod(0);
   }
 
-  async function proceedStake() {
+  async function proceedStake(referralCode) {
     stake(
       async () => {
-        if (
-          savedBeforeStakingValues?.buyAmount > 500 &&
-          savedBeforeStakingValues?.referralValue
-        ) {
+        const buyAmount = Number(depositAmount);
+        if (buyAmount > 500) {
+          console.log("runs");
           await axios
             .post("api/referral/register_referral", {
-              referral_address: savedBeforeStakingValues?.referralValue,
+              referral_address: referralCode,
               user_address: account,
               side: "auto",
             })
             .then((res) => {
-              if (res?.data?.auto_place === "code is already used") {
-                setReferralCodeAlreadyUsed(true);
-                toast.error("Referral code is already used", {
-                  autoClose: 8000,
-                });
-                setStakingLoading(false);
-              } else {
-                handleAfterStake();
-              }
+              // if (res?.data?.auto_place === "code is already used") {
+              //   setReferralCodeAlreadyUsed(true);
+              //   toast.error("Referral code is already used", {
+              //     autoClose: 8000,
+              //   });
+              //   setStakingLoading(false);
+              // } else {
+              handleAfterStake();
+              // }
             })
             .catch((err) => {
               if (err?.response?.data) {
