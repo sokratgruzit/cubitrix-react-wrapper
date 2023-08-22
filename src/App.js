@@ -1,269 +1,54 @@
-import { Buffer } from "buffer";
-import "./App.css";
-import Dashboard from "./components/Dashboard";
-import Trade from "./components/Trade";
-import Loan from "./components/Loan";
-import Referral from "./components/Referral";
-import Staking from "./components/Staking";
-import CreateAccount from "./components/CreateAccount";
-import { Routes, Route } from "react-router-dom";
-import Extensions from "./components/Extensions";
-import ExtensionItem from "./components/ExtensionItem";
-import Transactions from "./components/Transactions";
-
+import { useEffect, useState } from "react";
+import { Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import SideBar from "./components/Layouts/SideBar/SideBar";
-import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
+import { Buffer } from "buffer";
 import {
   ChangeNetwork,
   DashboardSharedLayout,
   Header,
   NoMetaMask,
   Popup,
+  SignIn
 } from "@cubitrix/cubitrix-react-ui-module";
 
-import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "./hooks/use-connect";
-
-import { useLocation, Navigate, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "./api/axios";
-import { Logo } from "./assets/svg";
-import ResetPassword from "./components/ResetPassword/ResetPassword";
-
-import { injected, walletConnect } from "./connector";
+import Dashboard from "./components/Dashboard";
+import Trade from "./components/Trade";
+import Loan from "./components/Loan";
+import Referral from "./components/Referral";
+import Staking from "./components/Staking";
+import CreateAccount from "./components/CreateAccount";
+import Extensions from "./components/Extensions";
+import ExtensionItem from "./components/ExtensionItem";
+import Transactions from "./components/Transactions";
+import SideBar from "./components/Layouts/SideBar/SideBar";
+import VerifyEmail from "./components/VerifyEmail/VerifyEmail";
 import Test from "./components/test";
 import TopUp from "./components/TopUp/TopUp";
 import Success from "./components/Deposit/Success";
 import Cancel from "./components/Deposit/Cancel";
-import WBNB from "./abi/WBNB.json";
-
 import Landing from "./components/Landing";
 import LandingRegistration from "./components/LandingRegistration";
+import ResetPassword from "./components/ResetPassword/ResetPassword";
 
+// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import { useConnect } from "./hooks/use-connect";
+import axios from "./api/axios";
+import { Logo } from "./assets/svg";
+import { injected, walletConnect } from "./connector";
+import WBNB from "./abi/WBNB.json";
 // import { useStake } from "@cubitrix/cubitrix-react-connect-module";
 import { useStake } from "./hooks/use-stake";
 import { toast, ToastContainer } from "react-toastify";
+
+import "./App.css";
+import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
 import "react-toastify/dist/ReactToastify.css";
 
 window.Buffer = window.Buffer || Buffer;
+
 function App() {
-  const sideBarOpen = useSelector((state) => state.appState?.sideBarOpen);
-  const sideBar = useSelector((state) => state.appState?.sideBar);
-  const emailVerified = useSelector((state) => state.appState?.emailVerified);
-  const exts = useSelector((state) => state.extensions?.activeExtensions);
-  const providerType = useSelector((state) => state.connect.providerType);
-  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
-  const balance = useSelector((state) => state.appState.userData?.balance);
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const appState = useSelector((state) => state.appState);
-  const isExtensionsLoaded = appState.isExtensionsLoaded;
-  const { activeExtensions } = useSelector((state) => state.extensions);
-
-  const {
-    library,
-    disconnect,
-    switchToBscTestnet,
-    active,
-    account,
-    MetaMaskEagerlyConnect,
-    WalletConnectEagerly,
-    chainId,
-  } = useConnect();
-
-  useEffect(() => {
-    MetaMaskEagerlyConnect(injected);
-    WalletConnectEagerly(walletConnect);
-    if (!providerType) {
-      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
-    }
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    if (chainId && chainId !== 97) {
-      localStorage.removeItem("walletconnect");
-      dispatch({
-        type: "CONNECTION_ERROR",
-        payload: "Please switch your network in wallet",
-      });
-    }
-  }, [chainId]);
-
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";
-  const { checkAllowance } = useStake({ Router, tokenAddress });
-
-  const { depositAmount } = useSelector((state) => state.stake);
-
-  useEffect(() => {
-    if (account && triedReconnect && active && library) {
-      checkAllowance();
-    }
-    // eslint-disable-next-line
-  }, [account, triedReconnect, active, depositAmount, library]);
-
-  const [step, setStep] = useState(6);
-  const [initialRegister, setInitialRegister] = useState(true);
-
-  const updateState = () => {
-    dispatch({
-      type: "SET_USER_DATA",
-      payload: {},
-    });
-    axios
-      .post("/api/accounts/get_account", {
-        address: account,
-      })
-      .then((res) => {
-        dispatch({
-          type: "SET_USER_DATA",
-          payload: res.data.success.data.accounts[0],
-        });
-        dispatch({
-          type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: res.data.success.data.accounts[0].extensions,
-        });
-        dispatch({
-          type: "SET_EXTENSIONS_LOADED",
-          payload: true,
-        });
-      })
-      .catch((e) => {});
-  };
-
-  const generateAccountsData = async () => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
-
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
-      });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (account && triedReconnect && active) {
-      generateAccountsData();
-      setInitialRegister(true);
-      const fetchData = async () => {
-        await axios
-          .post("/api/accounts/login", {
-            address: account,
-          })
-          .then((res) => {
-            if (res?.data === "success") {
-              updateState();
-            }
-          })
-          .catch((err) => {});
-      };
-      fetchData();
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: false },
-      });
-    }
-  }, [account, triedReconnect, active]);
-
-  useEffect(() => {
-    dispatch({
-      type: "UPDATE_STATE",
-      account: account,
-      chainId: chainId,
-    });
-  }, [account, chainId, dispatch]);
-
-  const handleConnect = () => {
-    if (sideBarOpen) {
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: !sideBarOpen },
-      });
-    } else {
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: !sideBarOpen, sideBar: "connect" },
-      });
-    }
-  };
-
-  const handleNotifications = () => {
-    if (sideBarOpen && sideBar !== "notifications") {
-      return dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBar: "notifications" },
-      });
-    }
-
-    dispatch({
-      type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: !sideBarOpen, sideBar: "notifications" },
-    });
-  };
-
-  useEffect(() => {
-    if (account && triedReconnect && active) {
-      async function init() {
-        await axios
-          .post(
-            "/api/accounts/activate-account",
-            {
-              address: account,
-            },
-            {
-              timeout: 120000,
-            },
-          )
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-            }
-          })
-          .catch((e) => {});
-      }
-      init();
-    }
-    // eslint-disable-next-line
-  }, [account, triedReconnect, active]);
-
-  useEffect(() => {
-    if (!account && triedReconnect && !active) {
-      dispatch({
-        type: "UPDATE_ACTIVE_EXTENSIONS",
-        payload: {
-          trade: "false",
-          loan: "false",
-          notify: "false",
-          staking: "false",
-          referral: "false",
-          connect: "false",
-          dashboard: "false",
-        },
-      });
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: {
-          userData: null,
-        },
-      });
-    }
-    // eslint-disable-next-line
-  }, [account, triedReconnect, active]);
-
+  const Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
+  const tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";
   const links = [
     {
       to: "/dashboard",
@@ -341,14 +126,347 @@ function App() {
       ),
     },
   ];
+  
+  const sideBarOpen = useSelector((state) => state.appState?.sideBarOpen);
+  const sideBar = useSelector((state) => state.appState?.sideBar);
+  const emailVerified = useSelector((state) => state.appState?.emailVerified);
+  const exts = useSelector((state) => state.extensions?.activeExtensions);
+  const providerType = useSelector((state) => state.connect.providerType);
+  const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const balance = useSelector((state) => state.appState.userData?.balance);
+  const { activeExtensions } = useSelector((state) => state.extensions);
+  const appState = useSelector((state) => state.appState);
+  const { depositAmount } = useSelector((state) => state.stake);
 
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [resetPasswordState, setResetPasswordState] = useState({ loading: false, error: "", success: "" });
+  const [signInState, setSignInState] = useState({ loading: false, error: false });
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  const [activated, setActivated] = useState(false);
+  const [procceed2fa, setProcceed2fa] = useState(false);
+  const [base32, setBase32] = useState("");
+  const [qrcodeUrl, setqrCodeUrl] = useState("");
+  const [otpState, setOtpState] = useState({ loading: false, error: false });
+  const [signInAddress, setSignInAddress] = useState("");
+  const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
+  const [initialRegister, setInitialRegister] = useState(true);
+  const [step, setStep] = useState(6);
+  
+  const { checkAllowance } = useStake({ Router, tokenAddress });
+  const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {
+    library,
+    disconnect,
+    switchToBscTestnet,
+    active,
+    account,
+    MetaMaskEagerlyConnect,
+    WalletConnectEagerly,
+    chainId,
+  } = useConnect();
 
+  const isExtensionsLoaded = appState.isExtensionsLoaded;
   const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 
+  const updateState = async () => {
+    dispatch({
+      type: "SET_USER_DATA",
+      payload: {},
+    });
+
+    await axios.post("/api/accounts/get_account", {
+      address: account,
+    })
+    .then((res) => {
+      dispatch({
+        type: "SET_USER_DATA",
+        payload: res.data.success.data.accounts[0],
+      });
+      dispatch({
+        type: "UPDATE_ACTIVE_EXTENSIONS",
+        payload: res.data.success.data.accounts[0].extensions,
+      });
+      dispatch({
+        type: "SET_EXTENSIONS_LOADED",
+        payload: true,
+      });
+    })
+    .catch((e) => {});
+  };
+
+  const generateAccountsData = async () => {
+    try {
+      const apiUrl = "/api/accounts/get_account_balances";
+      const requestBody = {
+        address: account?.toLowerCase(),
+      };
+
+      const response = await axios.post(apiUrl, requestBody);
+      const data = response.data;
+
+      dispatch({
+        type: "SET_ACCOUNTS_DATA",
+        payload: data?.data,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const fetchData = async () => {
+    await axios
+    .post("/api/accounts/login", {
+      address: account,
+    })
+    .then((res) => {
+      if (res?.data === "success") {
+        updateState();
+      }
+    })
+    .catch((err) => {});
+  };
+
+  const handleConnect = () => {
+    if (sideBarOpen) {
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: !sideBarOpen },
+      });
+    } else {
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: !sideBarOpen, sideBar: "connect" },
+      });
+    }
+  };
+
+  const handleNotifications = () => {
+    if (sideBarOpen && sideBar !== "notifications") {
+      return dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBar: "notifications" },
+      });
+    }
+
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: !sideBarOpen, sideBar: "notifications" },
+    });
+  };
+
+  async function getBalance() {
+    var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
+    var decimals = await tokenContract.methods.decimals().call();
+    var getBalance = await tokenContract.methods.balanceOf(account).call();
+
+    var pow = 10 ** decimals;
+    var balanceInEth = getBalance / pow;
+
+    return balanceInEth;
+  }
+
+  const loginWithEmail = show => {
+    setShowSignInModal(show);
+  };
+
+  const handleSubmitSignIn = ({ email, password }) => {
+    if (email && password) {
+      setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
+
+      axios
+      .post("/api/accounts/recovery/login", {
+        // account,
+        email,
+        password,
+      })
+      .then((res) => {
+        setSignInState((prev) => ({ ...prev, loading: false }));
+        setSignInAddress(res.data.address);
+
+        if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
+        
+        updateState();
+        setProcceed2fa(false);
+      })
+      .catch((e) => {
+        setSignInState((prev) => ({
+          ...prev,
+          loading: false,
+          error: e.response.data,
+        }));
+      });
+    }
+  };
+
+  const handleDataChange = e => {
+    let error = false;
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+    if (e.target.name === "email") {
+      if (e.target.value && !emailRegex.test(e.target.value)) {
+        error = "Invalid email";
+      }
+
+      if (!e.target.value) {
+        error = "Email is required";
+      }
+    }
+
+    setSignInState(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+      error: error
+    }));
+    console.log(signInState);
+  };
+
+  const handleResetPassword = email => {
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+    if (email && !emailRegex.test(email)) {
+      setResetPasswordState(prev => ({
+        ...prev,
+        error: "Invalid email"
+      }));
+    }
+
+    if (!email) {
+      setResetPasswordState(prev => ({
+        ...prev,
+        error: "Email is required"
+      }));
+    }
+    
+    setResetPasswordState({ loading: true, success: "", error: "" });
+
+    axios
+    .post("/api/accounts/get-reset-password-email", {
+      email,
+    })
+    .then((res) => {
+      setResetPasswordState((prev) => ({
+        ...prev,
+        loading: false,
+        success: res.data,
+      }));
+    })
+    .catch((e) => {
+      setResetPasswordState((prev) => ({
+        ...prev,
+        loading: false,
+        error: e?.response?.data,
+      }));
+    });
+  };
+
+  useEffect(() => {
+    MetaMaskEagerlyConnect(injected);
+    WalletConnectEagerly(walletConnect);
+
+    if (!providerType) {
+      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    if (chainId && chainId !== 97) {
+      localStorage.removeItem("walletconnect");
+      
+      dispatch({
+        type: "CONNECTION_ERROR",
+        payload: "Please switch your network in wallet",
+      });
+    }
+  }, [chainId]);
+
+  useEffect(() => {
+    if (account && triedReconnect && active && library) {
+      checkAllowance();
+    }
+
+    if (account && triedReconnect && active) {
+      generateAccountsData();
+      setInitialRegister(true);
+      fetchData();
+
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: false },
+      });
+    }
+  }, [account, triedReconnect, active, depositAmount, library]);
+
+  useEffect(() => {
+    dispatch({
+      type: "UPDATE_STATE",
+      account: account,
+      chainId: chainId,
+    });
+  }, [account, chainId]);
+
+  useEffect(() => {
+    if (account && triedReconnect && active) {
+      async function init() {
+        await axios
+          .post(
+            "/api/accounts/activate-account",
+            {
+              address: account,
+            },
+            {
+              timeout: 120000,
+            },
+          )
+          .then((res) => {
+            if (res.data?.account) {
+              dispatch({
+                type: "SET_SYSTEM_ACCOUNT_DATA",
+                payload: res.data.account,
+              });
+            }
+          })
+          .catch((e) => {});
+      }
+      init();
+    }
+    // eslint-disable-next-line
+  }, [account, triedReconnect, active]);
+
   useEffect(() => {
     if (!account && triedReconnect && !active) {
+      dispatch({
+        type: "UPDATE_ACTIVE_EXTENSIONS",
+        payload: {
+          trade: "false",
+          loan: "false",
+          notify: "false",
+          staking: "false",
+          referral: "false",
+          connect: "false",
+          dashboard: "false",
+        },
+      });
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: {
+          userData: null,
+        },
+      });
+    }
+    // eslint-disable-next-line
+  }, [account, triedReconnect, active]);
+
+  useEffect(() => {
+    if (
+      !account && 
+      triedReconnect && 
+      !active && 
+      !location.pathname.includes('/reset-password/')
+    ) {
       setStep(1);
     } else if (account && triedReconnect && active) {
       if (
@@ -387,30 +505,28 @@ function App() {
         setStep(2);
       }
     }
-  }, [account, triedReconnect, active, library, metaAcc]);
+  }, [account, triedReconnect, active, library, metaAcc, location]);
 
-  async function getBalance() {
-    var tokenContract = new library.eth.Contract(WBNB, tokenAddress);
-    var decimals = await tokenContract.methods.decimals().call();
-    var getBalance = await tokenContract.methods.balanceOf(account).call();
-
-    var pow = 10 ** decimals;
-    var balanceInEth = getBalance / pow;
-
-    return balanceInEth;
-  }
-
-  // console.log(
-  //   isExtensionsLoaded &&
-  //     activeExtensions.referral === "false" &&
-  //     (!appState?.userData?.tier?.value || appState?.userData?.tier?.value === "Novice Navigator"),
-  //   isExtensionsLoaded,
-  //   activeExtensions.referral === "false",
-  //   !appState?.userData?.tier?.value || appState?.userData?.tier?.value === "Novice Navigator",
-  // );
+  useEffect(() => {
+    if (appState.otp_verified) setTwoFactorAuth(appState.otp_verified);
+  }, [appState.otp_verified]);
+  
   return (
     <main>
       <div className={`main-container ${sideBarOpen ? "sideOpen" : ""}`}>
+        {showSignInModal && <div className="signInContainer">
+          <SignIn
+            onClick={handleSubmitSignIn}
+            sideBarClose={() => loginWithEmail(false)}
+            signInState={signInState}
+            otpEnabled={false}
+            otpState={{ loading: false, error: "" }}
+            handleTFA={(e) => console.log(e)}
+            resetPasswordState={resetPasswordState}
+            handleResetPassword={handleResetPassword}
+            handleDataChange={handleDataChange}
+          />
+        </div>}
         <Header
           title={
             <svg
@@ -438,6 +554,7 @@ function App() {
           amount={balance ?? 0}
           initialRegister={step < 6}
           setInitialRegister={setInitialRegister}
+          loginWithEmail={loginWithEmail}
         />
         {initialRegister && step < 6 && (
           <LandingRegistration
@@ -447,125 +564,144 @@ function App() {
           />
         )}
         <ToastContainer />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Landing
-                step={step}
-                setStep={setStep}
-                initialRegister={initialRegister}
-                setInitialRegister={setInitialRegister}
-              />
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <DashboardSharedLayout
-                disabledAccount={
-                  !appState?.userData?.active && appState?.userData?.step == "6"
-                }
-                links={links}
-                children={<Dashboard />}
-              />
-            }
-          />
-          <Route
-            path="/transactions"
-            element={
-              <DashboardSharedLayout
-                disabledAccount={
-                  !appState?.userData?.active && appState?.userData?.step == "6"
-                }
-                links={links}
-                children={<Transactions />}
-              />
-            }
-          />
-          <Route
-            path="/top-up"
-            element={
-              <DashboardSharedLayout
-                disabledAccount={
-                  !appState?.userData?.active && appState?.userData?.step == "6"
-                }
-                links={links}
-                children={<TopUp />}
-              />
-            }
-          />
-          <Route
-            path="/loan"
-            element={
-              isExtensionsLoaded &&
-              activeExtensions.loan === "false" &&
-              activeExtensions?.loanAdmin === "false" ? (
-                <Navigate to="/" />
-              ) : (
-                <Loan />
-                // <Trade />
-              )
-            }
-          />
-          <Route
-            path="/trade"
-            element={
-              isExtensionsLoaded &&
-              activeExtensions.trade === "false" &&
-              activeExtensions?.tradeAdmin === "false" ? (
-                <Navigate to="/" />
-              ) : (
-                <Trade />
-              )
-            }
-          />
-          <Route
-            path="/staking"
-            element={
-              isExtensionsLoaded &&
-              activeExtensions.staking === "false" &&
-              activeExtensions?.stakingAdmin === "false" ? (
-                <Navigate to="/" />
-              ) : (
-                <Staking />
-              )
-            }
-          />
-          <Route
-            path="/referral"
-            element={
-              isExtensionsLoaded &&
-              activeExtensions.referral === "false" &&
-              activeExtensions.referralAdmin === "false" &&
-              (!appState?.userData?.tier?.value ||
-                appState?.userData?.tier?.value === "Novice Navigator") ? (
-                <Navigate to="/" />
-              ) : (
-                <Referral />
-              )
-            }
-          />
-          <Route path="/extensions" element={<Extensions />} />
-          <Route path="/extensions/:id" element={<ExtensionItem />} />
-          <Route path="/verify/:id" element={<VerifyEmail />} />
-          <Route path="/reset-password/:code" element={<ResetPassword />} />
-          <Route
-            path="/create-account"
-            element={
-              <DashboardSharedLayout
-                disabledAccount={
-                  !appState?.userData?.active && appState?.userData?.step == "6"
-                }
-                links={links}
-                children={<CreateAccount />}
-              />
-            }
-          />
-          <Route path="/test" element={<Test />} />
-          <Route path="/deposit/:hash" element={<Success />} />
-          <Route path="/coinbase/cancel" element={<Cancel />} />
-        </Routes>
+        {account ? (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Landing
+                  step={step}
+                  setStep={setStep}
+                  initialRegister={initialRegister}
+                  setInitialRegister={setInitialRegister}
+                />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <DashboardSharedLayout
+                  disabledAccount={
+                    !appState?.userData?.active && appState?.userData?.step == "6"
+                  }
+                  links={links}
+                  children={<Dashboard />}
+                />
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <DashboardSharedLayout
+                  disabledAccount={
+                    !appState?.userData?.active && appState?.userData?.step == "6"
+                  }
+                  links={links}
+                  children={<Transactions />}
+                />
+              }
+            />
+            <Route
+              path="/top-up"
+              element={
+                <DashboardSharedLayout
+                  disabledAccount={
+                    !appState?.userData?.active && appState?.userData?.step == "6"
+                  }
+                  links={links}
+                  children={<TopUp />}
+                />
+              }
+            />
+            <Route
+              path="/loan"
+              element={
+                isExtensionsLoaded &&
+                activeExtensions.loan === "false" &&
+                activeExtensions?.loanAdmin === "false" ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Loan />
+                  // <Trade />
+                )
+              }
+            />
+            <Route
+              path="/trade"
+              element={
+                isExtensionsLoaded &&
+                activeExtensions.trade === "false" &&
+                activeExtensions?.tradeAdmin === "false" ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Trade />
+                )
+              }
+            />
+            <Route
+              path="/staking"
+              element={
+                isExtensionsLoaded &&
+                activeExtensions.staking === "false" &&
+                activeExtensions?.stakingAdmin === "false" ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Staking />
+                )
+              }
+            />
+            <Route
+              path="/referral"
+              element={
+                isExtensionsLoaded &&
+                activeExtensions.referral === "false" &&
+                activeExtensions.referralAdmin === "false" &&
+                (!appState?.userData?.tier?.value ||
+                  appState?.userData?.tier?.value === "Novice Navigator") ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Referral />
+                )
+              }
+            />
+            <Route path="/extensions" element={<Extensions />} />
+            <Route path="/extensions/:id" element={<ExtensionItem />} />
+            <Route path="/verify/:id" element={<VerifyEmail />} />
+            <Route path="/reset-password/:code" element={<ResetPassword />} />
+            <Route
+              path="/create-account"
+              element={
+                <DashboardSharedLayout
+                  disabledAccount={
+                    !appState?.userData?.active && appState?.userData?.step == "6"
+                  }
+                  links={links}
+                  children={<CreateAccount />}
+                />
+              }
+            />
+            <Route path="/test" element={<Test />} />
+            <Route path="/deposit/:hash" element={<Success />} />
+            <Route path="/coinbase/cancel" element={<Cancel />} />
+          </Routes>
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Landing
+                  step={step}
+                  setStep={setStep}
+                  initialRegister={initialRegister}
+                  setInitialRegister={setInitialRegister}
+                />
+              }
+            />
+            <Route path="/reset-password/:code" element={<ResetPassword />} />
+            <Route path="/extensions" element={<Extensions />} />
+            <Route path="/extensions/:id" element={<ExtensionItem />} />
+          </Routes>
+        )}
       </div>
       <SideBar />
       {appState?.connectionError === "No MetaMask detected" && (

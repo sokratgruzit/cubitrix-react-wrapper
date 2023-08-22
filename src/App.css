@@ -34,6 +34,16 @@ a {
   border-radius: 15px !important;
 }
 
+.signInContainer {
+  position: fixed;
+  width: 500px;
+  height: auto;
+  left: calc(50% - 250px);
+  top: 150px;
+  z-index: 10000;
+  background: #152c2f !important;
+}
+
 .Toastify__toast--error svg {
   fill: #ff0c46;
 }

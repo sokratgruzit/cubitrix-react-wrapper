@@ -234,7 +234,7 @@ const SideBarRight = () => {
           error: e?.response?.data,
         }));
       });
-
+    
     let formData = new FormData();
     formData.append("img", userData.avatar);
     formData.append("address", account);
@@ -318,6 +318,7 @@ const SideBarRight = () => {
         });
     }
   };
+
   useEffect(() => {
     if (userMetaData) {
       setPersonalData({
@@ -1391,6 +1392,19 @@ const SideBarRight = () => {
 
   const [exchangeLoading, setExchangeLoading] = useState(false);
 
+  const handleVerifyEmail = async () => {
+    axios
+    .post("/api/accounts/resend-email", {
+      address: account,
+    })
+    .then((res) => {
+      console.log(res.response);
+    })
+    .catch((e) => {
+      console.log(e.response);
+    });
+  };
+
   const handleExchangeSubmit = async () => {
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -1464,7 +1478,7 @@ const SideBarRight = () => {
   async function handleStakeCurrency() {
     try {
       setStakingLoading(true);
-      const { data } = await axios.post("/api/accounts/stake_currency", {
+      await axios.post("/api/accounts/stake_currency", {
         address: account,
         amount: Number(currentObject.amount),
         duration: confirm,
@@ -1673,6 +1687,7 @@ const SideBarRight = () => {
             personalData={personalData}
             handlePersonalData={handlePersonalData}
             handleSecurityData={handleSecurityData}
+            handleVerifyEmail={handleVerifyEmail}
             emailVerified={appState.emailVerified}
             personalDataState={personalDataState}
             securityDataState={securityDataState}
