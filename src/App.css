@@ -2,4 +2,57 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  color: #fff;
+}
+
+span,
+a {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.main-container {
+  width: 100vw;
+  transition: 0.5s;
+}
+
+.sideOpen {
+  transform: translateX(-362px);
+}
+
+.sideOpen .header {
+  border-right: 2px solid #070b1a;
+}
+
+.cover-most-bg {
+  z-index: 1002 !important;
+}
+
+.Toastify__toast {
+  background: #152c2f !important;
+  border: 1px solid #115650 !important;
+  border-radius: 15px !important;
+}
+
+.Toastify__toast--error svg {
+  fill: #ff0c46;
+}
+
+.Toastify__progress-bar--error {
+  background-color: #ff0c46 !important;
+}
+@font-face {
+  font-family: 'Marcellus';
+  src: url('assets/fonts/Marcellus/Marcellus-Regular.eot');
+  src: url('assets/fonts/Marcellus/Marcellus-Regular.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.woff2') format('woff2'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.woff') format('woff'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.ttf') format('truetype'),
+  url('assets/fonts/Marcellus/Marcellus-Regular.svg#Marcellus-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.ttl {
+  font-family: 'Marcellus'!important;
 }

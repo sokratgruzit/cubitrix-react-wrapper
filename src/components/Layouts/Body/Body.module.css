@@ -1,25 +1,25 @@
 .container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .left {
-    width: 25%;
-    height: 100%;
-    color: white;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    background-color: rgb(86, 123, 193);
+  width: 25%;
+  height: 100%;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background-color: #070b1a;
 }
 .right {
-    width: 75%;
-    height: 100%;
-    color: white;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    background-color: rgb(193, 152, 86);
+  width: 75%;
+  height: 100%;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background-color: #070b1a;
 }
