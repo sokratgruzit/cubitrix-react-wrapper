@@ -1,6 +1,4 @@
 import { InjectedConnector } from "@web3-react/injected-connector";
-// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
-// import { WalletConnect as WalletConnectV2 } from "@web3-react/walletconnect-v2";
 
 import { WalletConnectV2Connector } from "./utils/walletconnectV2Connector";
 
