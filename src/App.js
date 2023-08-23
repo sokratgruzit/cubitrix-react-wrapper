@@ -171,23 +171,26 @@ function App() {
   const systemAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 
-  const updateState = async () => {
+  const updateState = async (account) => {
     dispatch({
       type: "SET_USER_DATA",
       payload: {},
     });
-
+    
     await axios.post("/api/accounts/get_account", {
       address: account,
     })
     .then((res) => {
+      let exts = res.data.success.data.accounts[0].extensions;
+      exts.dashboard = "true";
+
       dispatch({
         type: "SET_USER_DATA",
         payload: res.data.success.data.accounts[0],
       });
       dispatch({
         type: "UPDATE_ACTIVE_EXTENSIONS",
-        payload: res.data.success.data.accounts[0].extensions,
+        payload: exts,
       });
       dispatch({
         type: "SET_EXTENSIONS_LOADED",
@@ -223,7 +226,7 @@ function App() {
     })
     .then((res) => {
       if (res?.data === "success") {
-        updateState();
+        updateState(account);
       }
     })
     .catch((err) => {});
@@ -272,30 +275,29 @@ function App() {
     setShowSignInModal(show);
   };
 
-  const handleSubmitSignIn = ({ email, password }) => {
+  const handleSubmitSignIn = async ({ email, password }) => {
     if (email && password) {
       setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
-
-      axios
-      .post("/api/accounts/recovery/login", {
-        // account,
+      
+      await axios.post("/api/accounts/recovery/login", {
         email,
-        password,
+        password
       })
       .then((res) => {
         setSignInState((prev) => ({ ...prev, loading: false }));
         setSignInAddress(res.data.address);
 
         if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
-        
-        updateState();
+
+        updateState(res.data.address);
         setProcceed2fa(false);
+        setShowSignInModal(false);
       })
       .catch((e) => {
         setSignInState((prev) => ({
           ...prev,
           loading: false,
-          error: e.response.data,
+          error: e.response,
         }));
       });
     }
@@ -564,7 +566,7 @@ function App() {
           />
         )}
         <ToastContainer />
-        {account ? (
+        {account || emailVerified ? (
           <Routes>
             <Route
               path="/"
