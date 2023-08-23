@@ -41,6 +41,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [hostedUrl, setHostedUrl] = useState("");
+  const [amountError, setAmountError] = useState("");
 
   const [receivePaymentAddress, setReceivePaymentAddress] = useState(
     "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
@@ -138,13 +139,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   async function handleRegistration({ fullName, email, referral }) {
     const errors = {};
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
     if (!fullName) {
       errors.fullNameError = "Full Name is required";
     }
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
     if (email && !emailRegex.test(email)) {
       errors.emailError = "Invalid email";
     }
+
     if (!email) {
       errors.emailError = "Email is required";
     }
@@ -278,17 +282,42 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   }, [appState?.userData]);
 
-  async function resendEmail() {
-    axios
-      .post("/api/accounts/resend-email", {
-        address: account,
+  useEffect(() => {
+    const checkEmail = async () => {
+      axios.post("/api/accounts/check-email", {
+        email: formData.email
       })
       .then((res) => {
-        console.log(res.response);
+        let { status, msg } = res?.data;
+
+        if (!status) {
+          let errors = {};
+          errors.emailError = msg;
+
+          setRegistrationState({
+            ...registrationState,
+            ...errors,
+          });
+        }
       })
-      .catch((e) => {
-        console.log(e.response);
-      });
+    };
+
+    if (registrationState.emailError === "" && formData.email !== "") {
+      checkEmail();
+    }
+  }, [formData.email]);
+
+  async function resendEmail() {
+    axios
+    .post("/api/accounts/resend-email", {
+      address: account,
+    })
+    .then((res) => {
+      console.log(res.response);
+    })
+    .catch((e) => {
+      console.log(e.response);
+    });
   }
 
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
@@ -368,10 +397,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   ];
 
   function amountProgressOnchange(e) {
+    let value = parseInt(e.target.value);
+
+    if (value % 5000 !== 0) {
+      setAmountError("The amount must be a multiple of 5000");
+    } else {
+      setAmountError("");
+    }
+
     handleDepositAmount(e.target.value);
   }
-
-  const [progressValue, setProgressValue] = useState(300);
 
   useEffect(() => {
     if (step !== 3) {
@@ -664,7 +699,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       async () => {
         const buyAmount = Number(depositAmount);
         if (buyAmount > 500) {
-          console.log("runs");
           await axios
             .post("api/referral/register_referral", {
               referral_address: referralCode,
@@ -816,6 +850,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     <>
       <LandingSteps
         account={account}
+        amountError={amountError}
         receivePaymentAddress={receivePaymentAddress}
         handleMetamaskConnect={async () => {
           await connect("metaMask", injected);
