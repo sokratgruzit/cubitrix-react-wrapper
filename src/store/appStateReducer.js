@@ -1,5 +1,6 @@
 const INIT_STATE = {
   sideBarOpen: false,
+  loggedWithEmail: false,
   sideBar: "",
   userData: null,
   triedReconnect: false,
@@ -17,6 +18,29 @@ const appStateReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
     case "SET_SIDE_BAR":
       return { ...state, ...action.payload };
+    
+    case "SET_LOGGED_WITH_EMAIL":
+      return { 
+        ...state, 
+        loggedWithEmail: action.payload 
+      };
+
+    case "SET_LOGOUT_WITH_EMAIL":
+      return { 
+        sideBarOpen: false,
+        loggedWithEmail: false,
+        sideBar: "",
+        userData: null,
+        triedReconnect: false,
+        isExtensionsLoaded: false,
+        coinbaseLoading: false,
+        connectionError: "",
+        accountsData: [],
+        dashboardTransactionsDataReload: {},
+        dashboardAccountType: "main",
+        exchangeAccountType: "",
+        feeWarnAccountType: "",
+      };
 
     case "SET_USER_DATA":
       return {
