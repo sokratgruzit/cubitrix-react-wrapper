@@ -141,14 +141,9 @@ function App() {
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [resetPasswordState, setResetPasswordState] = useState({ loading: false, error: "", success: "" });
   const [signInState, setSignInState] = useState({ loading: false, error: false });
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-  const [activated, setActivated] = useState(false);
   const [procceed2fa, setProcceed2fa] = useState(false);
-  const [base32, setBase32] = useState("");
-  const [qrcodeUrl, setqrCodeUrl] = useState("");
   const [otpState, setOtpState] = useState({ loading: false, error: false });
   const [signInAddress, setSignInAddress] = useState("");
-  const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
   const [initialRegister, setInitialRegister] = useState(true);
   const [step, setStep] = useState(6);
   
@@ -183,6 +178,7 @@ function App() {
     .then((res) => {
       let exts = res.data.success.data.accounts[0].extensions;
       exts.dashboard = "true";
+      console.log(res)
 
       dispatch({
         type: "SET_USER_DATA",
@@ -200,7 +196,7 @@ function App() {
     .catch((e) => {});
   };
 
-  const generateAccountsData = async () => {
+  const generateAccountsData = async (account) => {
     try {
       const apiUrl = "/api/accounts/get_account_balances";
       const requestBody = {
@@ -278,7 +274,7 @@ function App() {
   const handleSubmitSignIn = async ({ email, password }) => {
     if (email && password) {
       setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
-      
+
       await axios.post("/api/accounts/recovery/login", {
         email,
         password
@@ -290,8 +286,19 @@ function App() {
         if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
 
         updateState(res.data.address);
+        generateAccountsData(res.data.address);
         setProcceed2fa(false);
         setShowSignInModal(false);
+
+        dispatch({
+          type: "SET_SIDE_BAR",
+          payload: { sideBar: "UserAccount" }
+        });
+
+        dispatch({
+          type: "SET_LOGGED_WITH_EMAIL",
+          payload: true
+        });
       })
       .catch((e) => {
         setSignInState((prev) => ({
@@ -301,6 +308,25 @@ function App() {
         }));
       });
     }
+  };
+
+  const validate2fa = async (token) => {
+    setOtpState({ loading: true, error: "" });
+
+    await axios
+      .post("/api/accounts/otp/validate", {
+        token,
+        address: signInAddress,
+      })
+      .then((res) => {
+        updateState(signInAddress);
+        setOtpState({ loading: false, error: "" });
+        dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+        setProcceed2fa(false);
+      })
+      .catch((e) => {
+        setOtpState({ loading: false, error: e.response.data });
+      });
   };
 
   const handleDataChange = e => {
@@ -391,7 +417,7 @@ function App() {
     }
 
     if (account && triedReconnect && active) {
-      generateAccountsData();
+      generateAccountsData(account);
       setInitialRegister(true);
       fetchData();
 
@@ -508,10 +534,6 @@ function App() {
       }
     }
   }, [account, triedReconnect, active, library, metaAcc, location]);
-
-  useEffect(() => {
-    if (appState.otp_verified) setTwoFactorAuth(appState.otp_verified);
-  }, [appState.otp_verified]);
   
   return (
     <main>
@@ -521,9 +543,9 @@ function App() {
             onClick={handleSubmitSignIn}
             sideBarClose={() => loginWithEmail(false)}
             signInState={signInState}
-            otpEnabled={false}
-            otpState={{ loading: false, error: "" }}
-            handleTFA={(e) => console.log(e)}
+            otpEnabled={procceed2fa}
+            otpState={otpState}
+            handleTFA={(code) => validate2fa(code)}
             resetPasswordState={resetPasswordState}
             handleResetPassword={handleResetPassword}
             handleDataChange={handleDataChange}
@@ -557,6 +579,7 @@ function App() {
           initialRegister={step < 6}
           setInitialRegister={setInitialRegister}
           loginWithEmail={loginWithEmail}
+          loggedWithEmail={appState.loggedWithEmail}
         />
         {initialRegister && step < 6 && (
           <LandingRegistration
@@ -566,7 +589,7 @@ function App() {
           />
         )}
         <ToastContainer />
-        {account || emailVerified ? (
+        {account || emailVerified && appState.loggedWithEmail ? (
           <Routes>
             <Route
               path="/"
