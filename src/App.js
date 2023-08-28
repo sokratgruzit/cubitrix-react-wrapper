@@ -309,7 +309,7 @@ function App() {
           setSignInState((prev) => ({
             ...prev,
             loading: false,
-            error: e.response,
+            error: e.response?.data,
           }));
         });
     }

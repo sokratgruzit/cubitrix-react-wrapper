@@ -284,22 +284,23 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   useEffect(() => {
     const checkEmail = async () => {
-      axios.post("/api/accounts/check-email", {
-        email: formData.email
-      })
-      .then((res) => {
-        let { status, msg } = res?.data;
+      axios
+        .post("/api/accounts/check-email", {
+          email: formData.email,
+        })
+        .then((res) => {
+          let { status, msg } = res?.data;
 
-        if (!status) {
-          let errors = {};
-          errors.emailError = msg;
+          if (!status) {
+            let errors = {};
+            errors.emailError = msg;
 
-          setRegistrationState({
-            ...registrationState,
-            ...errors,
-          });
-        }
-      })
+            setRegistrationState({
+              ...registrationState,
+              ...errors,
+            });
+          }
+        });
     };
 
     if (registrationState.emailError === "" && formData.email !== "") {
@@ -309,15 +310,15 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   async function resendEmail() {
     axios
-    .post("/api/accounts/resend-email", {
-      address: account,
-    })
-    .then((res) => {
-      console.log(res.response);
-    })
-    .catch((e) => {
-      console.log(e.response);
-    });
+      .post("/api/accounts/resend-email", {
+        address: account,
+      })
+      .then((res) => {
+        console.log(res.response);
+      })
+      .catch((e) => {
+        console.log(e.response);
+      });
   }
 
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
@@ -783,6 +784,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     if (connectionLoading) {
       setaccountLoading(true);
     }
+
     if (appState?.userData?.address) {
       setaccountLoading(false);
     }
