@@ -12,12 +12,19 @@ const INIT_STATE = {
   dashboardAccountType: "main",
   exchangeAccountType: "",
   feeWarnAccountType: "",
+  access_token: ""
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
     case "SET_SIDE_BAR":
       return { ...state, ...action.payload };
+    
+    case "SET_NEW_ACCESS_TOKEN":
+      return { 
+        ...state, 
+        access_token: action.payload
+      };
     
     case "SET_LOGGED_WITH_EMAIL":
       return { 
@@ -40,6 +47,7 @@ const appStateReducer = (state = INIT_STATE, action) => {
         dashboardAccountType: "main",
         exchangeAccountType: "",
         feeWarnAccountType: "",
+        access_token: ""
       };
 
     case "SET_USER_DATA":

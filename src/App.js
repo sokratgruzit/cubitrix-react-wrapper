@@ -33,6 +33,7 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 // import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 import { useConnect } from "./hooks/use-connect";
 import axios from "./api/axios";
+import useAxiosPrivate from "./hooks/useAxiosPrivate";
 import { Logo } from "./assets/svg";
 import { injected, walletConnect } from "./connector";
 import WBNB from "./abi/WBNB.json";
@@ -151,6 +152,8 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const axiosPrivate = useAxiosPrivate();
+
   const {
     library,
     disconnect,
@@ -172,7 +175,7 @@ function App() {
       payload: {},
     });
     
-    await axios.post("/api/accounts/get_account", {
+    await axiosPrivate.post("/api/accounts/get_account", {
       address: account,
     })
     .then((res) => {
