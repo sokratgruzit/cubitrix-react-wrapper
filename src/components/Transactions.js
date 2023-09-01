@@ -25,6 +25,7 @@ const Transactions = () => {
   const [transactionsCurrentPage, setTransactionsCurrentPage] = useState(1);
 
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
+  const appState = useSelector((state) => state.appState);
   const { account, active } = useConnect();
   const { width } = useMobileWidth();
 
@@ -75,19 +76,16 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    if (account && active && triedReconnect && itemsLimit) {
+    if (appState?.accountSigned) {
       generateTransactionsData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    appState?.accountSigned,
+    itemsLimit,
     filterObject?.type,
     filterObject?.time,
     filterObject?.account,
     transactionsCurrentPage,
-    account,
-    active,
-    triedReconnect,
-    itemsLimit,
   ]);
 
   const transactionHeader = [
@@ -256,7 +254,6 @@ const Transactions = () => {
     label: "No Transaction History",
     icon: <NoHistoryIcon />,
   };
-  console.log(transactionsData?.transactions);
   return (
     <TransactionsUI
       header={"Transactions"}

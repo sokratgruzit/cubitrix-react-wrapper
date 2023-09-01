@@ -1,4 +1,6 @@
 const INIT_STATE = {
+  connectionType: "",
+  accountSigned: false,
   sideBarOpen: false,
   loggedWithEmail: false,
   sideBar: "",
@@ -12,21 +14,30 @@ const INIT_STATE = {
   dashboardAccountType: "main",
   exchangeAccountType: "",
   feeWarnAccountType: "",
+  access_token: "",
+  attemptSign: {},
+  metaMaskConnectionLoading: false,
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
     case "SET_SIDE_BAR":
       return { ...state, ...action.payload };
-    
+
+    case "SET_NEW_ACCESS_TOKEN":
+      return {
+        ...state,
+        access_token: action.payload,
+      };
+
     case "SET_LOGGED_WITH_EMAIL":
-      return { 
-        ...state, 
-        loggedWithEmail: action.payload 
+      return {
+        ...state,
+        loggedWithEmail: action.payload,
       };
 
     case "SET_LOGOUT_WITH_EMAIL":
-      return { 
+      return {
         sideBarOpen: false,
         loggedWithEmail: false,
         sideBar: "",
@@ -40,6 +51,7 @@ const appStateReducer = (state = INIT_STATE, action) => {
         dashboardAccountType: "main",
         exchangeAccountType: "",
         feeWarnAccountType: "",
+        access_token: "",
       };
 
     case "SET_USER_DATA":
@@ -123,6 +135,26 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         feeWarnAccountType: action.payload,
+      };
+    case "SET_ACCOUNT_SIGNED":
+      return {
+        ...state,
+        accountSigned: action.payload,
+      };
+    case "SET_CONNECTION_TYPE":
+      return {
+        ...state,
+        connectionType: action.payload,
+      };
+    case "SET_ATTEMPT_SIGN":
+      return {
+        ...state,
+        attemptSign: { ...action.payload },
+      };
+    case "SET_METAMASK_CONNECT_LOADING":
+      return {
+        ...state,
+        metaMaskConnectionLoading: action.payload,
       };
     default:
       return state;

@@ -19,22 +19,41 @@ export const useExtensionsData = () => {
   const userBalances = useSelector((state) => state.appState.accountsData);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
 
-  const generateAccountsData = async () => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
+  const updateState = async (callback) => {
+    dispatch({
+      type: "SET_USER_DATA",
+      payload: {},
+    });
 
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
+    await axios
+      .post("/api/accounts/get_account", {})
+      .then((res) => {
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
+
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.data.accounts[0],
+        });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: exts1,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
+      })
+      .catch((e) => {
+        console.log(e);
       });
-    } catch (error) {
-      console.error("Error:", error);
-    }
   };
 
   const handleChangeExtension = (title, value) => {
@@ -78,7 +97,7 @@ export const useExtensionsData = () => {
         }
 
         setExtsActive(res.data.account.extensions);
-        generateAccountsData();
+        updateState();
       })
       .catch((e) => {
         console.log(e.response);

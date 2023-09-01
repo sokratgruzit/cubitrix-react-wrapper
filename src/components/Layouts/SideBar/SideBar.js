@@ -22,11 +22,12 @@ import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 import axios from "../../../api/axios";
 import WBNB from "../../../abi/WBNB.json";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
-  const userMetaData = useSelector((state) => state.appState.userData?.meta);
-  const userBalances = useSelector((state) => state.appState.accountsData);
+  const userMetaData = useSelector((state) => state.appState?.userData?.meta);
+  const userBalances = useSelector((state) => state.appState?.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
   const exchangeAccountType = useSelector((state) => state.appState?.exchangeAccountType);
@@ -82,33 +83,45 @@ const SideBarRight = () => {
 
   const { account, connect, disconnect, library } = useConnect();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
 
-  const updateState = () => {
+  const updateState = async (callback) => {
     dispatch({
       type: "SET_USER_DATA",
       payload: {},
     });
-    axios
-      .post("/api/accounts/get_account", {
-        address: account,
-      })
+
+    await axios
+      .post("/api/accounts/get_account", {})
       .then((res) => {
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
+
         dispatch({
           type: "SET_USER_DATA",
-          payload: res.data.success.data.accounts[0],
+          payload: res.data.data.accounts[0],
         });
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: res.data.success.data.accounts[0].extensions,
+          payload: exts1,
         });
         dispatch({
           type: "SET_EXTENSIONS_LOADED",
           payload: true,
         });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
       })
-      .catch((e) => {});
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   const handleClose = () => {
@@ -177,7 +190,7 @@ const SideBarRight = () => {
           error: e?.response?.data,
         }));
       });
-    
+
     let formData = new FormData();
     formData.append("img", userData.avatar);
     formData.append("address", account);
@@ -263,24 +276,6 @@ const SideBarRight = () => {
             error: e?.response?.data,
           }));
         });
-    }
-  };
-
-  const generateAccountsData = async () => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
-
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
-      });
-    } catch (error) {
-      console.error("Error:", error);
     }
   };
 
@@ -423,7 +418,7 @@ const SideBarRight = () => {
       .then(async (res) => {
         toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
         if (res.data?.result) {
-          generateAccountsData();
+          updateState();
           dispatch({
             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
             payload: {},
@@ -514,7 +509,7 @@ const SideBarRight = () => {
             }, 3000);
             setConfirm(false);
           } else if (currentObject.transferType === "internal") {
-            generateAccountsData();
+            updateState();
             dispatch({
               type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
               payload: {},
@@ -558,15 +553,15 @@ const SideBarRight = () => {
 
   const handleVerifyEmail = async () => {
     axios
-    .post("/api/accounts/resend-email", {
-      address: account,
-    })
-    .then((res) => {
-      console.log(res.response);
-    })
-    .catch((e) => {
-      console.log(e.response);
-    });
+      .post("/api/accounts/resend-email", {
+        address: account,
+      })
+      .then((res) => {
+        toast.success("Email sent successfully.", { autoClose: 8000 });
+      })
+      .catch((e) => {
+        toast.error("Email could not be sent.", { autoClose: 8000 });
+      });
   };
 
   const handleExchangeSubmit = async () => {
@@ -583,7 +578,7 @@ const SideBarRight = () => {
           toAmount: Number(currentObject.receive_amount),
         })
         .then(async (res) => {
-          generateAccountsData();
+          updateState();
           dispatch({
             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
             payload: {},
@@ -633,7 +628,7 @@ const SideBarRight = () => {
       });
       setStakingLoading(false);
       setConfirm(false);
-      generateAccountsData();
+      updateState();
       toast.success("Staking successful.", { autoClose: 8000 });
     } catch (e) {
       toast.error("Staking failed.", { autoClose: 8000 });
@@ -644,15 +639,27 @@ const SideBarRight = () => {
 
   const handleLogout = () => {
     dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: false },
+    });
+    disconnect();
+    dispatch({
+      type: "SET_LAST_CONNECTION_TYPE",
+      payload: "",
+    });
+    localStorage.removeItem("walletconnect");
+    axios
+      .post("/api/accounts/logout", {})
+      .then((res) => {
+        navigate("/");
+      })
+      .catch((e) => {});
   };
 
   useEffect(() => {
     if (appState.otp_verified) setTwoFactorAuth(appState.otp_verified);
   }, [appState.otp_verified]);
-
-  useEffect(() => {
-    updateState();
-  }, [account]);
 
   useEffect(() => {
     const fecthRates = async () => {
@@ -665,13 +672,13 @@ const SideBarRight = () => {
           console.log(e);
         });
     };
-    
+
     fecthRates();
   }, []);
 
   useEffect(() => {
     if (userMetaData) {
-      setSignInAddress(appState.userData.account_owner);
+      setSignInAddress(appState?.userData?.account_owner);
       setPersonalData({
         name: userMetaData.name ? userMetaData.name : "",
         email: userMetaData.email ? userMetaData.email : "",
@@ -716,7 +723,7 @@ const SideBarRight = () => {
       }));
     }
   }, [accountType, userBalances]);
-  
+
   useEffect(() => {
     if (card && rates.btc && exchangeAccountType) {
       setRatedExchange(
@@ -751,7 +758,7 @@ const SideBarRight = () => {
       setCard(null);
     }
   }, [exchangeAccountType]);
-  
+
   useEffect(() => {
     if (currentObject.transferAddress && currentObject.transferAddress.length > 41) {
       axios
@@ -1537,16 +1544,10 @@ const SideBarRight = () => {
             completeAccount={handleUserAccount}
             sideBarClose={handleClose}
             disconnect={() => {
-              dispatch({
-                type: "SET_SIDE_BAR",
-                payload: { sideBarOpen: false },
-              });
-              disconnect();
-              localStorage.removeItem("walletconnect");
               handleLogout();
             }}
             userAccount={handleUserAccount}
-            account={account || appState.userData.address}
+            account={account || appState?.userData?.account_owner}
             mainAccount={mainAccount?.address}
           />
         )}
@@ -1599,7 +1600,7 @@ const SideBarRight = () => {
             handleResetPassword={handleSetUpPassword}
             resetEmail={userMetaData?.email}
           />
-        )} 
+        )}
         {sideBar === "notifications" && <div>notifications</div>}
         {sideBar === "withdraw" && (
           <TransferFromAcc

@@ -34,6 +34,7 @@ const Referral = () => {
   const [referralTreeData, setReferralTreeData] = useState([]);
   const [referralTableData, setReferralTableData] = useState([]);
   const [referralAddress, setReferralAddress] = useState(null);
+
   // function setReferralAddress() {}
   // let referralAddress = "0x06fc60f6da259409b1e164942a992a09eb21ce2e";
   const [animateTree, setAnimateTree] = useState(false);
@@ -54,6 +55,7 @@ const Referral = () => {
   const [rebatesPaginationTotalUni, setRebatesPaginationTotalUni] = useState(1);
 
   const isActive = useSelector((state) => state.appState?.userData?.active);
+  const appState = useSelector((state) => state.appState);
 
   // const [rebatesCurrentPage, setRebatesCurrentPage] = useState(1);
   // const [rebatesPaginationTotal, setRebatesPaginationTotal] = useState(1);
@@ -148,9 +150,7 @@ const Referral = () => {
   );
   let referralStats = async () => {
     try {
-      const { data } = await axios.post("/api/referral/get_reerral_global_data", {
-        address: referralAddress,
-      });
+      const { data } = await axios.post("/api/referral/get_reerral_global_data", {});
       setReferralTotal(data);
     } catch (err) {
       console.log(err);
@@ -164,7 +164,6 @@ const Referral = () => {
           const { data } = await axios.post("/api/referral/get_referral_parent_address", {
             address: activeTreeUser.user_address,
           });
-          console.log(data);
           let newUser = {
             user_address: data,
           };
@@ -184,12 +183,17 @@ const Referral = () => {
     try {
       try {
         const { data } = await axios.post("/api/referral/get_referral_tree", {
-          address: referralAddress,
           second_address: item.user_address,
         });
 
         setTimeout(() => {
-          setReferralTreeData(data.final_result);
+          let mergedResult = mergeArrays(
+            data.final_result,
+            data.uni_calcs ?? [],
+            data.binary_calcs ?? [],
+          );
+
+          setReferralTreeData(mergedResult);
           setActiveTreeUser(item);
           setTimeout(() => {
             setAnimateTree(true);
@@ -308,38 +312,21 @@ const Referral = () => {
     }
   }, [referralTableType]);
 
-  const getReferralAddress = async (address) => {
+  const generateTreeTableData = async (table, page) => {
     try {
-      const { data } = await axios.post("/api/referral/get_referral_address", {
-        address: address,
-      });
-      setReferralAddress(data);
-      setActiveTreeUser({
-        user_address: referralAddress,
-      });
-      getReferralTree();
+      const { data } = await axios.post(
+        `/api/referral/${
+          table === "binary" ? "get_referral_data" : "get_referral_data_uni"
+        }`,
+        {
+          limit: 20,
+          page: page || 1,
+        },
+      );
+      setReferralTableData(data);
+      // setBinaryTreePageTotalUni(data?.total_page);
     } catch (err) {
       console.log(err);
-    }
-  };
-  const generateTreeTableData = async (table, page) => {
-    if (referralAddress) {
-      try {
-        const { data } = await axios.post(
-          `/api/referral/${
-            table === "binary" ? "get_referral_data" : "get_referral_data_uni"
-          }`,
-          {
-            address: referralAddress,
-            limit: 20,
-            page: page || 1,
-          },
-        );
-        setReferralTableData(data);
-        // setBinaryTreePageTotalUni(data?.total_page);
-      } catch (err) {
-        console.log(err);
-      }
     }
   };
 
@@ -370,15 +357,41 @@ const Referral = () => {
   //     getOptions('Binary bv')
   //   }
   // },[lvlType])
+  function mergeArrays(final_result, uni_calcs, binary_calcs) {
+    for (const levelObj of final_result) {
+      const { documents } = levelObj;
+
+      for (let doc of documents) {
+        const { user_address: address } = doc;
+
+        for (const uni_calc of uni_calcs) {
+          if (uni_calc.address === address) {
+            Object.assign(doc, { ...uni_calc });
+          }
+        }
+
+        for (const binary_calc of binary_calcs) {
+          if (binary_calc.address === address) {
+            Object.assign(doc, { ...binary_calc });
+          }
+        }
+      }
+    }
+    return final_result;
+  }
 
   const getReferralTree = async () => {
     setAnimateTree(false);
     try {
-      const { data } = await axios.post("/api/referral/get_referral_tree", {
-        address: referralAddress,
-      });
+      const { data } = await axios.post("/api/referral/get_referral_tree", {});
 
-      setReferralTreeData(data.final_result);
+      const mergedResult = mergeArrays(
+        data.final_result,
+        data.uni_calcs ?? [],
+        data.binary_calcs ?? [],
+      );
+
+      setReferralTreeData(mergedResult);
       setAnimateTree(true);
     } catch (err) {
       console.log(err);
@@ -415,38 +428,39 @@ const Referral = () => {
       }, 3000);
     }
   };
-  useEffect(() => {
-    if (account && triedReconnect && active) {
-      getReferralAddress(account.toLowerCase());
-      referralStats();
-    }
 
-    // getReferralAddress(account.toLowerCase());
-    getOptions("Uni");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, active, triedReconnect, referralAddress]);
   useEffect(() => {
-    if (account && triedReconnect && active) {
+    if (appState?.accountSigned) {
+      generateReferralLeftRight();
+      referralStats();
+
+      getReferralTree();
+      getOptions("Uni");
+    }
+    // eslint-disable-next-line
+  }, [appState?.accountSigned]);
+
+  useEffect(() => {
+    if (appState?.userData?.address) {
+      setReferralAddress(appState?.userData?.address);
+      setActiveTreeUser({
+        user_address: appState?.userData?.address,
+      });
+    }
+  }, [appState?.userData?.address]);
+
+  useEffect(() => {
+    if (appState?.accountSigned) {
       generateTreeTableData(referralTableType, binaryTreePageUni);
     }
-
-    // getReferralAddress(account.toLowerCase());
-    // getOptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, referralTableType, binaryTreePageUni, referralBinaryType]);
+  }, [appState?.accountSigned, referralTableType, binaryTreePageUni, referralBinaryType]);
 
   useEffect(() => {
-    if (account && triedReconnect && active) {
+    if (appState?.accountSigned) {
       getReferralHistory(referralHistoryType ?? "uni");
     }
-  }, [
-    account,
-    active,
-    triedReconnect,
-    referralAddress,
-    rebatesCurrentPageUni,
-    referralHistoryType,
-  ]);
+  }, [appState?.accountSigned, rebatesCurrentPageUni, referralHistoryType]);
 
   async function getReferralHistory(type) {
     try {
@@ -457,7 +471,6 @@ const Referral = () => {
             ? `/api/referral/get_referral_uni_transactions`
             : `/api/referral/get_referral_binary_transactions`,
           {
-            address: referralAddress,
             limit: 5,
             page: rebatesCurrentPageUni,
           },
@@ -646,6 +659,41 @@ const Referral = () => {
     </div>
   );
 
+  const [referralLeftRight, setReferralLeftRight] = useState({});
+  async function generateReferralLeftRight() {
+    try {
+      const [binaryCommissionResponse, uniCommissionResponse] = await Promise.all([
+        axios.post("/api/referral/binary_comission_count_user", {}),
+        axios.post("/api/referral/uni_comission_count_user", {}),
+      ]);
+
+      const binaryResults = binaryCommissionResponse.data.results;
+      const uniResults = uniCommissionResponse.data.results;
+
+      setReferralLeftRight({ ...binaryResults, uni: uniResults });
+    } catch (e) {
+      console.error("An error occurred:", e);
+    }
+  }
+
+  const referralTreeMainAddressData = useMemo(() => {
+    return {
+      ...referralLeftRight,
+      user_address: referralAddress,
+      stakedThisMonth: userData?.stakedThisMonth,
+      stakedToday: userData?.stakedToday,
+      stakedTotal: userData?.stakedTotal,
+      name: userData?.meta?.name,
+    };
+  }, [
+    userData?.stakedThisMonth,
+    userData?.meta?.name,
+    referralAddress,
+    referralLeftRight,
+    userData?.stakedToday,
+    userData?.stakedTotal,
+  ]);
+
   return (
     <>
       <ReferralUI
@@ -655,6 +703,7 @@ const Referral = () => {
         referralAddress={referralAddress}
         referralTreeActiveAddress={activeTreeUser}
         referralTreeActive={animateTree}
+        referralTreeMainAddressData={referralTreeMainAddressData}
         referralBinaryType={referralBinaryType}
         referralTreeBtnsLeft={tableVisualType}
         referralTreeBtnsRight={tableType}

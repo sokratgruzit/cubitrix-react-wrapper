@@ -34,8 +34,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { account, connect, disconnect, connectionLoading, library, active } =
-    useConnect();
+  const { account, connect, disconnect, library, active } = useConnect();
 
   // const [loading, setLoading] = useState(true);
 
@@ -458,22 +457,41 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     };
   }, [step, library]); // Add step as a dependency
 
-  const generateAccountsData = async () => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
+  const updateState = async (callback) => {
+    dispatch({
+      type: "SET_USER_DATA",
+      payload: {},
+    });
 
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
+    await axios
+      .post("/api/accounts/get_account", {})
+      .then((res) => {
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
+
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.data.accounts[0],
+        });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: exts1,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
+      })
+      .catch((e) => {
+        console.log(e);
       });
-    } catch (error) {
-      console.error("Error:", error);
-    }
   };
 
   const [stakingLoading, setStakingLoading] = useState(false);
@@ -510,32 +528,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       })
       .catch((e) => {});
   }
-
-  const updateState = () => {
-    dispatch({
-      type: "SET_USER_DATA",
-      payload: {},
-    });
-    axios
-      .post("/api/accounts/get_account", {
-        address: account,
-      })
-      .then((res) => {
-        dispatch({
-          type: "SET_USER_DATA",
-          payload: res.data.success.data.accounts[0],
-        });
-        dispatch({
-          type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: res.data.success.data.accounts[0].extensions,
-        });
-        dispatch({
-          type: "SET_EXTENSIONS_LOADED",
-          payload: true,
-        });
-      })
-      .catch((e) => {});
-  };
 
   const handleDepositSubmit = async () => {
     setStakingLoading(true);
@@ -676,19 +668,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         activateAccount();
         console.log(e.response);
       });
-    axios
-      .post("/api/accounts/get_account_balances", {
-        address: account?.toLowerCase(),
-      })
-      .then((res) => {
-        dispatch({
-          type: "SET_ACCOUNTS_DATA",
-          payload: res?.data?.data,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    updateState();
     setStakingLoading(false);
     toast.success("Staked successfully", { autoClose: 8000 });
     handleDepositAmount("");
@@ -779,23 +759,43 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   }
 
-  const [accountLoading, setaccountLoading] = useState(false);
-  useEffect(() => {
-    if (connectionLoading) {
-      setaccountLoading(true);
-    }
-
-    if (appState?.userData?.address) {
-      setaccountLoading(false);
-    }
-  }, [connectionLoading, appState?.userData?.address]);
-
   const [referralCodeChecked, setReferralCodeChecked] = useState(false);
   const [checkReferralCodeState, setCheckReferralCodeState] = useState({
     loading: false,
     message: "Referral code is required, please check referral code before staking",
     status: "warning",
   });
+
+  async function handlePersonalSign() {
+    dispatch({
+      type: "SET_METAMASK_CONNECT_LOADING",
+      payload: true,
+    });
+    dispatch({
+      type: "SET_ATTEMPT_SIGN",
+      payload: {},
+    });
+  }
+
+  async function logout() {
+    dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: false },
+    });
+    disconnect();
+    dispatch({
+      type: "SET_LAST_CONNECTION_TYPE",
+      payload: "",
+    });
+    localStorage.removeItem("walletconnect");
+    axios
+      .post("/api/accounts/logout", {})
+      .then((res) => {
+        navigate("/");
+      })
+      .catch((e) => {});
+  }
 
   useEffect(() => {
     if (!referralState.value) {
@@ -855,7 +855,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         amountError={amountError}
         receivePaymentAddress={receivePaymentAddress}
         handleMetamaskConnect={async () => {
-          await connect("metaMask", injected);
+          await connect("metaMask", injected, handlePersonalSign);
         }}
         handleWalletConnect={async () => {
           const walletConnect = new WalletConnectV2Connector({
@@ -867,9 +867,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             },
           });
 
-          await connect("walletConnect", walletConnect);
+          await connect("walletConnect", walletConnect, handlePersonalSign);
         }}
-        connectionLoading={accountLoading}
+        connectionLoading={appState?.metaMaskConnectionLoading}
         step={step}
         setStep={setStep}
         initialLoading={false}
@@ -884,8 +884,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         setFormData={setFormData}
         resendEmail={resendEmail}
         disconnect={() => {
-          disconnect();
-          localStorage.removeItem("walletconnect");
+          logout();
         }}
         closeLandingSteps={() => setInitialRegister(false)}
         qrcode={qrCodeUrl}
@@ -921,7 +920,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             })
             .then((res) => {
               let sendObj = { dashboard: "true" };
-              console.log("before finish", res?.data?.account?.tier?.value);
               if (
                 res?.data?.account?.tier?.value !== "Novice Navigator" &&
                 res?.data?.account?.tier?.value
@@ -934,7 +932,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                 payload: sendObj,
               });
               setStep(6);
-              generateAccountsData();
               updateState();
               setTimeout(() => {
                 navigate("/dashboard");

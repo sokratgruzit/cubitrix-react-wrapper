@@ -30,8 +30,7 @@ import Landing from "./components/Landing";
 import LandingRegistration from "./components/LandingRegistration";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 
-// import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
-import { useConnect } from "./hooks/use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import { injected, walletConnect } from "./connector";
@@ -131,6 +130,7 @@ function App() {
   const sideBar = useSelector((state) => state.appState?.sideBar);
   const emailVerified = useSelector((state) => state.appState?.emailVerified);
   const exts = useSelector((state) => state.extensions?.activeExtensions);
+  const connectState = useSelector((state) => state.connect);
   const providerType = useSelector((state) => state.connect.providerType);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const balance = useSelector((state) => state.appState.userData?.balance);
@@ -148,13 +148,14 @@ function App() {
   const [procceed2fa, setProcceed2fa] = useState(false);
   const [otpState, setOtpState] = useState({ loading: false, error: false });
   const [signInAddress, setSignInAddress] = useState("");
-  const [initialRegister, setInitialRegister] = useState(true);
-  const [step, setStep] = useState(6);
+  const [initialRegister, setInitialRegister] = useState(false);
+  const [step, setStep] = useState(1);
 
   const { checkAllowance } = useStake({ Router, tokenAddress });
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const {
     library,
     disconnect,
@@ -164,59 +165,48 @@ function App() {
     MetaMaskEagerlyConnect,
     WalletConnectEagerly,
     chainId,
+    web3PersonalSign,
   } = useConnect();
 
   const isExtensionsLoaded = appState.isExtensionsLoaded;
-  const systemAcc = appState?.userData;
+  const mainAcc = appState?.userData;
   const metaAcc = appState?.userData?.meta;
 
-  const updateState = async (account) => {
+  const updateState = async (callback) => {
     dispatch({
       type: "SET_USER_DATA",
       payload: {},
     });
 
     await axios
-      .post("/api/accounts/get_account", {
-        address: account,
-      })
+      .post("/api/accounts/get_account", {})
       .then((res) => {
-        let exts = res.data.success.data.accounts[0].extensions;
-        exts.dashboard = "true";
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
 
         dispatch({
           type: "SET_USER_DATA",
-          payload: res.data.success.data.accounts[0],
+          payload: res.data.data.accounts[0],
         });
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: exts,
+          payload: exts1,
         });
         dispatch({
           type: "SET_EXTENSIONS_LOADED",
           payload: true,
         });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
       })
-      .catch((e) => {});
-  };
-
-  const generateAccountsData = async (account) => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
-
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
+      .catch((e) => {
+        console.log(e);
       });
-    } catch (error) {
-      console.error("Error:", error);
-    }
   };
 
   const fetchData = async () => {
@@ -226,7 +216,7 @@ function App() {
       })
       .then((res) => {
         if (res?.data === "success") {
-          updateState(account);
+          updateState();
         }
       })
       .catch((err) => {});
@@ -290,16 +280,25 @@ function App() {
 
           if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
 
-          updateState(res.data.address);
-          generateAccountsData(res.data.address);
+          updateState();
           setProcceed2fa(false);
           setShowSignInModal(false);
-
+          dispatch({
+            type: "SET_CONNECTION_TYPE",
+            payload: "email",
+          });
+          dispatch({
+            type: "SET_ACCOUNT_SIGNED",
+            payload: true,
+          });
+          dispatch({
+            type: "SET_LAST_CONNECTION_TYPE",
+            payload: "email",
+          });
           dispatch({
             type: "SET_SIDE_BAR",
             payload: { sideBar: "UserAccount" },
           });
-
           dispatch({
             type: "SET_LOGGED_WITH_EMAIL",
             payload: true,
@@ -324,10 +323,22 @@ function App() {
         address: signInAddress,
       })
       .then((res) => {
-        updateState(signInAddress);
         setOtpState({ loading: false, error: "" });
         dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+        dispatch({
+          type: "SET_ACCOUNT_SIGNED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_CONNECTION_TYPE",
+          payload: "email",
+        });
+        dispatch({
+          type: "SET_LOGGED_WITH_EMAIL",
+          payload: true,
+        });
         setProcceed2fa(false);
+        setShowSignInModal(false);
       })
       .catch((e) => {
         setOtpState({ loading: false, error: e.response.data });
@@ -353,7 +364,6 @@ function App() {
       [e.target.name]: e.target.value,
       error: error,
     }));
-    console.log(signInState);
   };
 
   const handleResetPassword = (email) => {
@@ -395,15 +405,133 @@ function App() {
       });
   };
 
+  // handle email reconnect after refresh
   useEffect(() => {
-    MetaMaskEagerlyConnect(injected);
-    WalletConnectEagerly(walletConnect);
+    if (connectState?.lastConnectionType === "email") {
+      updateState(() => {
+        dispatch({
+          type: "SET_ACCOUNT_SIGNED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_CONNECTION_TYPE",
+          payload: "email",
+        });
+      });
+    }
+    // eslint-disable-next-line
+  }, [connectState?.lastConnectionType]);
+
+  // handle web3 reconnect after refresh
+  useEffect(() => {
+    MetaMaskEagerlyConnect(injected, handlePersonalSign, () => {
+      disconnect();
+    });
+    WalletConnectEagerly(walletConnect, handlePersonalSign, () => {
+      disconnect();
+    });
 
     if (!providerType) {
       dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
     }
     // eslint-disable-next-line
   }, []);
+
+  async function handlePersonalSign() {
+    dispatch({
+      type: "SET_ATTEMPT_SIGN",
+      payload: {},
+    });
+  }
+
+  useEffect(() => {
+    if (library && account && triedReconnect && appState?.connectionType !== "email") {
+      web3PersonalSign(
+        library,
+        account,
+        "I confirm that this is my address",
+        handleWeb3Connection,
+        () => {
+          dispatch({
+            type: "SET_METAMASK_CONNECT_LOADING",
+            payload: false,
+          });
+          disconnect();
+        },
+      );
+    }
+  }, [library, account, triedReconnect, appState?.attemptSign]);
+
+  useEffect(() => {
+    if (appState?.accountSigned) {
+      init();
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: false },
+      });
+    }
+  }, [appState?.accountSigned, account]);
+
+  useEffect(() => {
+    if (account && active && triedReconnect) {
+      fetchData();
+    }
+  }, [account, active, triedReconnect]);
+
+  const logout = () => {
+    dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: false },
+    });
+    disconnect();
+    dispatch({
+      type: "SET_LAST_CONNECTION_TYPE",
+      payload: "",
+    });
+    localStorage.removeItem("walletconnect");
+    axios
+      .post("/api/accounts/logout", {})
+      .then((res) => {
+        navigate("/");
+      })
+      .catch((e) => {});
+  };
+
+  async function handleWeb3Connection(receivedAddress, signature) {
+    axios
+      .post("/api/accounts/web3Connect", {
+        address: receivedAddress,
+        signature,
+        message: "I confirm that this is my address",
+      })
+      .then((res) => {
+        dispatch({
+          type: "SET_METAMASK_CONNECT_LOADING",
+          payload: false,
+        });
+        updateState();
+        dispatch({
+          type: "SET_ACCOUNT_SIGNED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_CONNECTION_TYPE",
+          payload: "web3",
+        });
+        dispatch({
+          type: "SET_LAST_CONNECTION_TYPE",
+          payload: "web3",
+        });
+      })
+      .catch((e) => {
+        dispatch({
+          type: "SET_METAMASK_CONNECT_LOADING",
+          payload: false,
+        });
+        console.log(e);
+      });
+  }
 
   useEffect(() => {
     if (chainId && chainId !== 97) {
@@ -417,60 +545,51 @@ function App() {
   }, [chainId]);
 
   useEffect(() => {
-    if (account && triedReconnect && active && library) {
+    if (appState?.accountSigned && library) {
       checkAllowance();
     }
-
-    if (account && triedReconnect && active) {
-      generateAccountsData(account);
-      setInitialRegister(true);
-      fetchData();
-
-      dispatch({
-        type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: false },
-      });
-    }
-  }, [account, triedReconnect, active, depositAmount, library]);
+  }, [appState?.accountSigned, library]);
 
   useEffect(() => {
-    dispatch({
-      type: "UPDATE_STATE",
-      account: account,
-      chainId: chainId,
-    });
-  }, [account, chainId]);
-
-  useEffect(() => {
-    if (account && triedReconnect && active) {
-      async function init() {
-        await axios
-          .post(
-            "/api/accounts/activate-account",
-            {
-              address: account,
-            },
-            {
-              timeout: 120000,
-            },
-          )
-          .then((res) => {
-            if (res.data?.account) {
-              dispatch({
-                type: "SET_SYSTEM_ACCOUNT_DATA",
-                payload: res.data.account,
-              });
-            }
-          })
-          .catch((e) => {});
+    if (appState?.connectionType !== "email") {
+      if (mainAcc?.step > 5 && mainAcc?.account_owner === account?.toLowerCase()) {
+        setStep(6);
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "true" },
+        });
+      } else if (
+        mainAcc?.step > 2 &&
+        mainAcc?.account_owner === account?.toLowerCase() &&
+        library
+      ) {
+        setInitialRegister(true);
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "false" },
+        });
+        getBalance().then((balance) => {
+          if (balance >= 100) {
+            setStep(mainAcc?.step > 4 ? mainAcc?.step : 4);
+          } else {
+            setStep(mainAcc?.step);
+          }
+        });
+      } else if (mainAcc?.account_owner !== account?.toLowerCase()) {
+        setStep(1);
+      } else {
+        setInitialRegister(true);
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: { dashboard: "false" },
+        });
+        setStep(2);
       }
-      init();
     }
-    // eslint-disable-next-line
-  }, [account, triedReconnect, active]);
+  }, [appState?.connectionType, mainAcc?.step, mainAcc?.account_owner, account, library]);
 
   useEffect(() => {
-    if (!account && triedReconnect && !active) {
+    if (!appState?.connectionType) {
       dispatch({
         type: "UPDATE_ACTIVE_EXTENSIONS",
         payload: {
@@ -490,55 +609,27 @@ function App() {
         },
       });
     }
-    // eslint-disable-next-line
-  }, [account, triedReconnect, active]);
+  }, [appState?.connectionType]);
 
-  useEffect(() => {
-    if (
-      !account &&
-      triedReconnect &&
-      !active &&
-      !location.pathname.includes("/reset-password/")
-    ) {
-      setStep(1);
-    } else if (account && triedReconnect && active) {
-      if (
-        systemAcc &&
-        systemAcc?.step > 5 &&
-        // systemAcc.active &&
-        systemAcc?.account_owner === account?.toLowerCase()
-      ) {
-        setStep(6);
-        dispatch({
-          type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "true" },
-        });
-      } else if (
-        systemAcc?.step > 2 &&
-        library &&
-        systemAcc?.account_owner === account?.toLowerCase()
-      ) {
-        dispatch({
-          type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "false" },
-        });
-        getBalance().then((balance) => {
-          if (balance >= 100) {
-            setStep(systemAcc.step > 4 ? systemAcc.step : 4);
-          } else {
-            setStep(systemAcc.step);
-          }
-        });
-      } else if (systemAcc?.account_owner !== account?.toLowerCase()) {
-      } else {
-        dispatch({
-          type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "false" },
-        });
-        setStep(2);
-      }
-    }
-  }, [account, triedReconnect, active, library, metaAcc, location]);
+  async function init() {
+    await axios
+      .post(
+        "/api/accounts/activate-account",
+        {},
+        {
+          timeout: 120000,
+        },
+      )
+      .then((res) => {
+        if (res.data?.account) {
+          dispatch({
+            type: "SET_SYSTEM_ACCOUNT_DATA",
+            payload: res.data.account,
+          });
+        }
+      })
+      .catch((e) => {});
+  }
 
   return (
     <main>
@@ -575,7 +666,7 @@ function App() {
           logoSvg={<Logo />}
           onLogoClick={() => navigate("/")}
           modules={exts}
-          account={account}
+          account={appState?.userData?.address && account ? account : ""}
           location={location}
           sideBarOpen={sideBarOpen}
           sideBar={sideBar}
@@ -586,7 +677,7 @@ function App() {
           initialRegister={step < 6}
           setInitialRegister={setInitialRegister}
           loginWithEmail={loginWithEmail}
-          loggedWithEmail={appState.loggedWithEmail}
+          loggedWithEmail={appState.connectionType === "email"}
         />
         {initialRegister && step < 6 && (
           <LandingRegistration
@@ -596,7 +687,7 @@ function App() {
           />
         )}
         <ToastContainer />
-        {account || (emailVerified && appState.loggedWithEmail) ? (
+        {account || (emailVerified && appState.connectionType === "email") ? (
           <Routes>
             <Route
               path="/"
@@ -766,7 +857,7 @@ function App() {
           popUpElement={
             <ChangeNetwork
               disconnect={() => {
-                disconnect();
+                logout();
                 dispatch({
                   type: "CONNECTION_ERROR",
                   payload: "",

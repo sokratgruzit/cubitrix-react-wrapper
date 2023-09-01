@@ -1,4 +1,5 @@
 const INIT_STATE = {
+  lastConnectionType: "",
   isConnected: false,
   providerType: "",
   walletModalOpen: false,
@@ -35,28 +36,11 @@ export const connectReducer = (state = INIT_STATE, action) => {
       ...action,
     };
   }
-  if (action.type === "UPDATE_STATE1") {
+
+  if (action.type === "SET_LAST_CONNECTION_TYPE") {
     return {
       ...state,
-      ...action,
-    };
-  }
-  if (action.type === "UPDATE_STATE2") {
-    return {
-      ...state,
-      ...action,
-    };
-  }
-  if (action.type === "UPDATE_STATE3") {
-    return {
-      ...state,
-      ...action,
-    };
-  }
-  if (action.type === "UPDATE_STATE4") {
-    return {
-      ...state,
-      ...action,
+      lastConnectionType: action.payload,
     };
   }
   return state;
