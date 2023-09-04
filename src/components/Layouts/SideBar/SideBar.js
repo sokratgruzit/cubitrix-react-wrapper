@@ -146,7 +146,10 @@ const SideBarRight = () => {
           loading: false,
           saved: true,
         }));
-        updateState();
+        dispatch({
+          type: "SET_USER_AUTH",
+          payload: res.data,
+        });
         setTimeout(() => {
           setSecurityDataState((prev) => ({ ...prev, saved: false }));
         }, 3000);
@@ -173,7 +176,11 @@ const SideBarRight = () => {
         if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
-        updateState();
+
+        dispatch({
+          type: "SET_META_DATA",
+          payload: res.data,
+        });
         setPersonalDataState((prev) => ({
           ...prev,
           loading: false,
@@ -191,22 +198,22 @@ const SideBarRight = () => {
         }));
       });
 
-    let formData = new FormData();
-    formData.append("img", userData.avatar);
-    formData.append("address", account);
+    // let formData = new FormData();
+    // formData.append("img", userData.avatar);
+    // formData.append("address", account);
 
-    axios
-      .post("/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then(() => {
-        updateState();
-      })
-      .catch((e) => {
-        console.log(e.response);
-      });
+    // axios
+    //   .post("/profile", formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   })
+    //   .then(() => {
+    //     updateState();
+    //   })
+    //   .catch((e) => {
+    //     console.log(e.response);
+    //   });
   };
 
   const resendEmail = (e) => {

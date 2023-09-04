@@ -679,6 +679,7 @@ const Referral = () => {
   const referralTreeMainAddressData = useMemo(() => {
     return {
       ...referralLeftRight,
+      external_address: userData?.account_owner,
       user_address: referralAddress,
       stakedThisMonth: userData?.stakedThisMonth,
       stakedToday: userData?.stakedToday,

@@ -160,46 +160,39 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       return;
     }
 
-    setRegistrationState({
-      ...registrationState,
-      loading: true,
-    });
+    const checkEmail = async () => {
+      try {
+        const res = await axios.post("/api/accounts/check-email", {
+          email: email,
+        });
+        let { status, msg } = res?.data;
 
-    // axios
-    //   .post("api/referral/register_referral", {
-    //     referral_address: referral,
-    //     user_address: account,
-    //     side: "auto",
-    //   })
-    //   .then((res) => {
-    //     update_profile();
-    //   })
-    //   .catch((err) => {
-    //     update_profile();
+        if (!status) {
+          setRegistrationState({
+            ...registrationState,
+            emailError: msg,
+          });
+          return false;
+        }
+        return true;
+      } catch (e) {
+        return false;
+      }
+    };
 
-    //     let error = "Referral code could not be assigned";
-    //     if (err?.response?.data === "Referral code doesnot exist") {
-    //       error = "Referral code does not exist";
-    //     }
-    //     let errorsMessages = [
-    //       "User already activated both referral code",
-    //       "User already activated uni level referral code",
-    //       "User already activated binary level referral code",
-    //     ];
-    //     if (errorsMessages.includes(err?.response?.data)) {
-    //       update_profile();
-    //       return;
-    //     }
+    const emailIsValid = await checkEmail();
+    if (!emailIsValid) {
+      return;
+    }
 
-    //     setRegistrationState({
-    //       ...registrationState,
-    //       loading: false,
-    //     });
-    //     toast.error(error, { autoClose: 8000 });
-    //   });
+    console.log("registerrrrr");
 
-    update_profile();
+    // setRegistrationState({
+    //   ...registrationState,
+    //   loading: true,
+    // });
 
+    // update_profile();
     async function update_profile() {
       axios
         .post("/api/accounts/update_profile", {
@@ -222,7 +215,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               if (balance >= 100) {
                 step = 4;
               }
-
               axios
                 .post("/api/accounts/handle-step", { step, address: account })
                 .then((e) => {
@@ -276,36 +268,36 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       setFormData({
         fullName: appState?.userData?.meta?.name ?? "",
         email: appState?.userData?.meta?.email ?? "",
-        // referral: appState?.userData?.referral?.[0]?.referral ?? "",
       });
     }
   }, [appState?.userData]);
 
-  useEffect(() => {
-    const checkEmail = async () => {
-      axios
-        .post("/api/accounts/check-email", {
-          email: formData.email,
-        })
-        .then((res) => {
-          let { status, msg } = res?.data;
+  // useEffect(() => {
+  //   const checkEmail = async () => {
+  //     axios
+  //       .post("/api/accounts/check-email", {
+  //         email: formData.email,
+  //       })
+  //       .then((res) => {
+  //         let { status, msg } = res?.data;
 
-          if (!status) {
-            let errors = {};
-            errors.emailError = msg;
+  //         if (!status) {
+  //           let errors = {};
+  //           errors.emailError = msg;
 
-            setRegistrationState({
-              ...registrationState,
-              ...errors,
-            });
-          }
-        });
-    };
+  //           setRegistrationState({
+  //             ...registrationState,
+  //             ...errors,
+  //           });
+  //         }
+  //       })
+  //       .catch((e) => {});
+  //   };
 
-    if (registrationState.emailError === "" && formData.email !== "") {
-      checkEmail();
-    }
-  }, [formData.email]);
+  //   if (registrationState.emailError === "" && formData.email !== "") {
+  //     checkEmail();
+  //   }
+  // }, [formData.email]);
 
   async function resendEmail() {
     axios

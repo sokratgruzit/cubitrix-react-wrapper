@@ -420,32 +420,55 @@ function App() {
       });
     }
     // eslint-disable-next-line
-  }, [connectState?.lastConnectionType]);
+  }, []);
 
   // handle web3 reconnect after refresh
   useEffect(() => {
-    MetaMaskEagerlyConnect(injected, handlePersonalSign, () => {
-      disconnect();
-    });
-    WalletConnectEagerly(walletConnect, handlePersonalSign, () => {
-      disconnect();
-    });
+    if (connectState?.lastConnectionType === "web3") {
+      MetaMaskEagerlyConnect(
+        injected,
+        () => {
+          updateState();
+          dispatch({
+            type: "SET_ACCOUNT_SIGNED",
+            payload: true,
+          });
+          dispatch({
+            type: "SET_CONNECTION_TYPE",
+            payload: "web3",
+          });
+        },
+        () => {
+          disconnect();
+        },
+      );
+      WalletConnectEagerly(
+        walletConnect,
+        () => {
+          updateState();
+          dispatch({
+            type: "SET_ACCOUNT_SIGNED",
+            payload: true,
+          });
+          dispatch({
+            type: "SET_CONNECTION_TYPE",
+            payload: "web3",
+          });
+        },
+        () => {
+          disconnect();
+        },
+      );
 
-    if (!providerType) {
-      dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+      if (!providerType) {
+        dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+      }
     }
     // eslint-disable-next-line
   }, []);
 
-  async function handlePersonalSign() {
-    dispatch({
-      type: "SET_ATTEMPT_SIGN",
-      payload: {},
-    });
-  }
-
   useEffect(() => {
-    if (library && account && triedReconnect && appState?.connectionType !== "email") {
+    if (library && appState?.attemptSign && !appState?.connectionType) {
       web3PersonalSign(
         library,
         account,
@@ -460,7 +483,7 @@ function App() {
         },
       );
     }
-  }, [library, account, triedReconnect, appState?.attemptSign]);
+  }, [library, appState?.attemptSign]);
 
   useEffect(() => {
     if (appState?.accountSigned) {
@@ -532,6 +555,41 @@ function App() {
         console.log(e);
       });
   }
+
+  useEffect(() => {
+    if (
+      library &&
+      library.currentProvider &&
+      typeof library.currentProvider.on === "function"
+    ) {
+      const accountsChangedCallback = (accounts) => {
+        logout();
+        // web3PersonalSign(
+        //   library,
+        //   accounts[0],
+        //   "I confirm that this is my address",
+        //   handleWeb3Connection,
+        //   () => {
+        //     dispatch({
+        //       type: "SET_METAMASK_CONNECT_LOADING",
+        //       payload: false,
+        //     });
+        //     disconnect();
+        //   },
+        // );
+      };
+
+      library.currentProvider.on("accountsChanged", accountsChangedCallback);
+      return () => {
+        if (typeof library.currentProvider.removeListener === "function") {
+          library.currentProvider.removeListener(
+            "accountsChanged",
+            accountsChangedCallback,
+          );
+        }
+      };
+    }
+  }, [library]);
 
   useEffect(() => {
     if (chainId && chainId !== 97) {
@@ -610,6 +668,13 @@ function App() {
       });
     }
   }, [appState?.connectionType]);
+
+  useEffect(() => {
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: false },
+    });
+  }, [location]);
 
   async function init() {
     await axios

@@ -15,8 +15,8 @@ const INIT_STATE = {
   exchangeAccountType: "",
   feeWarnAccountType: "",
   access_token: "",
-  attemptSign: {},
-  metaMaskConnectionLoading: false,
+  attemptSign: null,
+  metaMaskConneconLoading: false,
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -53,7 +53,6 @@ const appStateReducer = (state = INIT_STATE, action) => {
         feeWarnAccountType: "",
         access_token: "",
       };
-
     case "SET_USER_DATA":
       return {
         ...state,
@@ -62,6 +61,23 @@ const appStateReducer = (state = INIT_STATE, action) => {
         hasPasswordSet: action.payload.hasPasswordSet,
         otp_enabled: action.payload.otp_enabled,
         otp_verified: action.payload.otp_verified,
+      };
+
+    case "SET_USER_AUTH":
+      console.log(action.payload);
+      return {
+        ...state,
+        hasPasswordSet: action.payload.hasPasswordSet,
+        otp_enabled: action.payload.otp_enabled,
+        otp_verified: action.payload.otp_verified,
+      };
+    case "SET_META_DATA":
+      return {
+        ...state,
+        userData: {
+          ...state?.userData,
+          meta: action.payload,
+        },
       };
 
     case "SET_SYSTEM_ACCOUNT_DATA":
