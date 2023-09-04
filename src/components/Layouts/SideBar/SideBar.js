@@ -88,11 +88,6 @@ const SideBarRight = () => {
   const tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
 
   const updateState = async (callback) => {
-    dispatch({
-      type: "SET_USER_DATA",
-      payload: {},
-    });
-
     await axios
       .post("/api/accounts/get_account", {})
       .then((res) => {
@@ -1554,7 +1549,7 @@ const SideBarRight = () => {
               handleLogout();
             }}
             userAccount={handleUserAccount}
-            account={account || appState?.userData?.account_owner}
+            account={account?.toLowerCase() || appState?.userData?.account_owner}
             mainAccount={mainAccount?.address}
           />
         )}
@@ -1635,6 +1630,11 @@ const SideBarRight = () => {
                     rates?.[exchangeAccountType]?.usd
                   )?.toFixed(2)
             }`}
+            helpTitle={
+              exchangeAccountType === "ATAR"
+                ? `Withdrawal from ATR balance is immediate. Fee is 2 ATR.`
+                : ""
+            }
           />
         )}
         {sideBar === "exchange" && (

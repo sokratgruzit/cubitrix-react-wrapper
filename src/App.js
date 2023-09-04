@@ -35,8 +35,7 @@ import axios from "./api/axios";
 import { Logo } from "./assets/svg";
 import { injected, walletConnect } from "./connector";
 import WBNB from "./abi/WBNB.json";
-// import { useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { useStake } from "./hooks/use-stake";
+import { useStake } from "@cubitrix/cubitrix-react-connect-module";
 import { toast, ToastContainer } from "react-toastify";
 
 import "./App.css";
@@ -173,11 +172,6 @@ function App() {
   const metaAcc = appState?.userData?.meta;
 
   const updateState = async (callback) => {
-    dispatch({
-      type: "SET_USER_DATA",
-      payload: {},
-    });
-
     await axios
       .post("/api/accounts/get_account", {})
       .then((res) => {
@@ -606,9 +600,11 @@ function App() {
     if (appState?.accountSigned && library) {
       checkAllowance();
     }
-  }, [appState?.accountSigned, library]);
+  }, [appState?.accountSigned, library, depositAmount]);
 
   useEffect(() => {
+    console.log(mainAcc?.account_owner, account?.toLowerCase());
+
     if (appState?.connectionType !== "email") {
       if (mainAcc?.step > 5 && mainAcc?.account_owner === account?.toLowerCase()) {
         setStep(6);

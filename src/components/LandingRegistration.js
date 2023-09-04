@@ -160,6 +160,11 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       return;
     }
 
+    setRegistrationState({
+      ...registrationState,
+      loading: true,
+    });
+
     const checkEmail = async () => {
       try {
         const res = await axios.post("/api/accounts/check-email", {
@@ -172,27 +177,30 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             ...registrationState,
             emailError: msg,
           });
+          setRegistrationState({
+            ...registrationState,
+            emailError: msg,
+            loading: false,
+          });
           return false;
         }
         return true;
       } catch (e) {
+        setRegistrationState({
+          ...registrationState,
+          loading: false,
+        });
         return false;
       }
     };
 
     const emailIsValid = await checkEmail();
+    console.log(emailIsValid);
     if (!emailIsValid) {
       return;
     }
 
-    console.log("registerrrrr");
-
-    // setRegistrationState({
-    //   ...registrationState,
-    //   loading: true,
-    // });
-
-    // update_profile();
+    update_profile();
     async function update_profile() {
       axios
         .post("/api/accounts/update_profile", {
@@ -208,31 +216,29 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               loading: false,
             }));
           }
-          if (res?.data === "account updated") {
-            getBalance().then((balance) => {
-              let step = 3;
-              setTokenBalance(balance);
-              if (balance >= 100) {
-                step = 4;
-              }
-              axios
-                .post("/api/accounts/handle-step", { step, address: account })
-                .then((e) => {
-                  setStep(e?.data?.account?.step ?? 3);
-                  setRegistrationState({
-                    ...registrationState,
-                    loading: false,
-                  });
-                })
-                .catch((e) => {
-                  setRegistrationState({
-                    ...registrationState,
-                    loading: false,
-                  });
-                  toast.error("Something went wrong!", { autoClose: 8000 });
+          getBalance().then((balance) => {
+            let step = 3;
+            setTokenBalance(balance);
+            if (balance >= 100) {
+              step = 4;
+            }
+            axios
+              .post("/api/accounts/handle-step", { step, address: account })
+              .then((e) => {
+                setStep(e?.data?.account?.step ?? 3);
+                setRegistrationState({
+                  ...registrationState,
+                  loading: false,
                 });
-            });
-          }
+              })
+              .catch((e) => {
+                setRegistrationState({
+                  ...registrationState,
+                  loading: false,
+                });
+                toast.error("Something went wrong!", { autoClose: 8000 });
+              });
+          });
         })
         .catch((err) => {
           if (err?.response?.data === "email already exists & is verified") {
@@ -271,33 +277,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       });
     }
   }, [appState?.userData]);
-
-  // useEffect(() => {
-  //   const checkEmail = async () => {
-  //     axios
-  //       .post("/api/accounts/check-email", {
-  //         email: formData.email,
-  //       })
-  //       .then((res) => {
-  //         let { status, msg } = res?.data;
-
-  //         if (!status) {
-  //           let errors = {};
-  //           errors.emailError = msg;
-
-  //           setRegistrationState({
-  //             ...registrationState,
-  //             ...errors,
-  //           });
-  //         }
-  //       })
-  //       .catch((e) => {});
-  //   };
-
-  //   if (registrationState.emailError === "" && formData.email !== "") {
-  //     checkEmail();
-  //   }
-  // }, [formData.email]);
 
   async function resendEmail() {
     axios
@@ -389,19 +368,30 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   ];
 
   function amountProgressOnchange(e) {
-    let value = parseInt(e.target.value);
+    const originalValue = e.target.value;
+    let value = parseInt(originalValue);
 
-    if (value % 5000 !== 0) {
-      setAmountError("The amount must be a multiple of 5000");
+    if (originalValue !== value.toString()) {
+      setAmountError("Please enter a valid number");
+    } else if (value < 0) {
+      setAmountError("Please enter a positive number");
+    } else if (value < 100) {
+      setAmountError("Minimum amount is 100");
+    } else if (value >= 100 && value <= 500) {
+      setAmountError("");
+    } else if (value > 500 && value % 5000 !== 0) {
+      setAmountError("Above 500, the amount must be a multiple of 5000");
+    } else if (value > 500000) {
+      setAmountError("Maximum limit is 500,000");
     } else {
       setAmountError("");
     }
 
-    handleDepositAmount(e.target.value);
+    handleDepositAmount(value);
   }
 
   useEffect(() => {
-    if (step !== 3) {
+    if (step !== 3 && step !== 4) {
       return;
     }
 
@@ -412,7 +402,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       if (library) {
         getBalance().then((balance) => {
           setTokenBalance(balance);
-          if (balance >= 100) {
+          if (balance >= 100 && step === 3) {
             clearInterval(timer);
             axios
               .post("/api/accounts/handle-step", { step: 4, address: account })
@@ -450,11 +440,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }, [step, library]); // Add step as a dependency
 
   const updateState = async (callback) => {
-    dispatch({
-      type: "SET_USER_DATA",
-      payload: {},
-    });
-
     await axios
       .post("/api/accounts/get_account", {})
       .then((res) => {
@@ -840,6 +825,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       });
   }, [referralState.value, mainAccount, account]);
 
+  console.log(tokenBalance < depositAmount, tokenBalance, depositAmount);
   return (
     <>
       <LandingSteps
