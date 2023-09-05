@@ -720,12 +720,13 @@ const Referral = () => {
 
     if (matchingBinary) {
       const { address, ...otherProps } = matchingBinary;
+
       obj.total_right = otherProps?.total_right;
       obj.total_left = otherProps?.left_total;
       obj.all_amount_sum = otherProps?.all_amount_sum;
       obj.total_staked = otherProps?.total_staked_amount;
-      obj.users_left = otherProps?.users_sum_left;
-      obj.users_right = otherProps?.users_sum_right;
+      obj.users_sum_left = otherProps?.users_sum_left;
+      obj.users_sum_right = otherProps?.users_sum_right;
     }
 
     return obj;
@@ -737,6 +738,8 @@ const Referral = () => {
     referralLeftRight,
     referralTreeCalcs,
   ]);
+
+  console.log(referralTreeMainAddressData);
 
   return (
     <>
