@@ -51,7 +51,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   );
 
   const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
-  const [savedBeforeStakingValues, setSavedBeforeStakingValues] = useState({});
 
   const [tokenBalance, setTokenBalance] = useState(0);
 
@@ -123,6 +122,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     referralError: "",
     emailSent: false,
   });
+
+  const [watchReferral, setWatchReferral] = useState(true);
 
   useEffect(() => {
     if (account && triedReconnect && active) {
@@ -572,41 +573,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         return;
       }
 
-      setSavedBeforeStakingValues({ buyAmount, referralValue: referralState.value });
       proceedStake(referralState.value);
-
-      // if (buyAmount > 500 && referralState.value) {
-      //   axios
-      //     .post("api/referral/register_referral", {
-      //       referral_address: referralState.value,
-      //       user_address: account,
-      //       side: "auto",
-      //     })
-      //     .then((res) => {
-      //       if (res?.data?.auto_place === "code is already used") {
-      //         setReferralCodeAlreadyUsed(true);
-      //         toast.error("Referral code is already used", {
-      //           autoClose: 8000,
-      //         });
-      //         setStakingLoading(false);
-      //       } else {
-      // proceedStake();
-      //       }
-      //     })
-      //     .catch((err) => {
-      //       if (err?.response?.data) {
-      //         toast.error(err?.response?.data, {
-      //           autoClose: 8000,
-      //         });
-      //         setStakingLoading(false);
-      //         return;
-      //       }
-      //       setStakingLoading(false);
-      //       toast.error("something went wrong", { autoClose: 8000 });
-      //     });
-      // } else {
-      //   proceedStake();
-      // }
     }
   };
 
@@ -653,6 +620,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }
 
   async function proceedStake(referralCode) {
+    setWatchReferral(false);
     stake(
       async () => {
         const buyAmount = Number(depositAmount);
@@ -691,6 +659,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         }
       },
       () => {
+        setWatchReferral(true);
         setStakingLoading(false);
         toast.error("Staking failed, please try again.", { autoClose: 8000 });
       },
@@ -775,7 +744,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }
 
   useEffect(() => {
-    if (!referralState.value) {
+    if (!referralState.value && watchReferral) {
       setCheckReferralCodeState((prev) => ({
         ...prev,
         loading: false,
@@ -809,7 +778,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         let message =
           "Referral code is required, please check referral code before staking";
         if (e?.response?.data?.message === "no space") {
-          // message = "Binary spot for the referral code you entered is already taken.";
           setReferralCodeAlreadyUsed(true);
           return;
         }
@@ -823,7 +791,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           setReferralCodeChecked(false);
         }, 500);
       });
-  }, [referralState.value, mainAccount, account]);
+  }, [referralState.value, mainAccount, account, watchReferral]);
 
   return (
     <>
