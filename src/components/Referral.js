@@ -706,12 +706,12 @@ const Referral = () => {
     const matchingBinary = referralTreeCalcs?.binary?.find(
       (item) => item.address === referralAddress,
     );
+
     const obj = {
       ...referralLeftRight,
-      user_address: referralAddress,
-      stakedToday: userData?.stakedToday,
-      stakedTotal: userData?.stakedTotal,
       name: userData?.meta?.name,
+      external_address: userData?.account_owner,
+      user_address: referralAddress,
     };
 
     if (matchingUni) {
@@ -723,6 +723,9 @@ const Referral = () => {
       obj.total_right = otherProps?.total_right;
       obj.total_left = otherProps?.left_total;
       obj.all_amount_sum = otherProps?.all_amount_sum;
+      obj.total_staked = otherProps?.total_staked_amount;
+      obj.users_left = otherProps?.users_sum_left;
+      obj.users_right = otherProps?.users_sum_right;
     }
 
     return obj;
@@ -734,8 +737,6 @@ const Referral = () => {
     referralLeftRight,
     referralTreeCalcs,
   ]);
-
-  // console.log(referralTreeMainAddressData);
 
   return (
     <>
