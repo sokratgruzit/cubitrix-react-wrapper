@@ -172,6 +172,8 @@ const SideBarRight = () => {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
 
+        console.log(res.data);
+
         dispatch({
           type: "SET_META_DATA",
           payload: res.data,

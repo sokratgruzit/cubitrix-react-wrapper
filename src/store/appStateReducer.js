@@ -78,6 +78,7 @@ const appStateReducer = (state = INIT_STATE, action) => {
           ...state?.userData,
           meta: action.payload,
         },
+        emailVerified: action.payload?.verified,
       };
 
     case "SET_SYSTEM_ACCOUNT_DATA":

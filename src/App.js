@@ -169,7 +169,6 @@ function App() {
 
   const isExtensionsLoaded = appState.isExtensionsLoaded;
   const mainAcc = appState?.userData;
-  const metaAcc = appState?.userData?.meta;
 
   const updateState = async (callback) => {
     await axios
@@ -328,9 +327,14 @@ function App() {
           payload: "email",
         });
         dispatch({
+          type: "SET_LAST_CONNECTION_TYPE",
+          payload: "email",
+        });
+        dispatch({
           type: "SET_LOGGED_WITH_EMAIL",
           payload: true,
         });
+        updateState();
         setProcceed2fa(false);
         setShowSignInModal(false);
       })
@@ -603,8 +607,6 @@ function App() {
   }, [appState?.accountSigned, library, depositAmount]);
 
   useEffect(() => {
-    console.log(mainAcc?.account_owner, account?.toLowerCase());
-
     if (appState?.connectionType !== "email") {
       if (mainAcc?.step > 5 && mainAcc?.account_owner === account?.toLowerCase()) {
         setStep(6);

@@ -17,18 +17,36 @@ const VerifyEmail = () => {
   const [emailWasSent, setEmailWasSent] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const updateState = () => {
-    axios
-      .post("/api/accounts/get_account", {
-        address: account,
-      })
+  const updateState = async (callback) => {
+    await axios
+      .post("/api/accounts/get_account", {})
       .then((res) => {
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
+
         dispatch({
           type: "SET_USER_DATA",
-          payload: res?.data?.success?.data?.accounts?.[0],
+          payload: res.data.data.accounts[0],
         });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: exts1,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   const verify = () => {

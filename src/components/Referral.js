@@ -32,6 +32,7 @@ const Referral = () => {
   const [referralBinaryType, setReferralBinaryType] = useState("visual");
   const [referralTableType, setReferralTableType] = useState("binary");
   const [referralTreeData, setReferralTreeData] = useState([]);
+  const [referralTreeCalcs, setReferralTreeCalcs] = useState({});
   const [referralTableData, setReferralTableData] = useState([]);
   const [referralAddress, setReferralAddress] = useState(null);
 
@@ -194,6 +195,7 @@ const Referral = () => {
           );
 
           setReferralTreeData(mergedResult);
+
           setActiveTreeUser(item);
           setTimeout(() => {
             setAnimateTree(true);
@@ -392,6 +394,10 @@ const Referral = () => {
       );
 
       setReferralTreeData(mergedResult);
+      setReferralTreeCalcs({
+        binary: data.binary_calcs ?? [],
+        uni: data.uni_calcs ?? [],
+      });
       setAnimateTree(true);
     } catch (err) {
       console.log(err);
@@ -676,24 +682,60 @@ const Referral = () => {
     }
   }
 
+  // const referralTreeMainAddressData = useMemo(() => {
+  //   return {
+  //     ...referralLeftRight,
+  //     user_address: referralAddress,
+  //     stakedToday: userData?.stakedToday,
+  //     stakedTotal: userData?.stakedTotal,
+  //     name: userData?.meta?.name,
+  //   };
+  // }, [
+  //   userData?.stakedThisMonth,
+  //   userData?.meta?.name,
+  //   referralAddress,
+  //   referralLeftRight,
+  //   userData?.stakedToday,
+  //   userData?.stakedTotal,
+  // ]);
+
   const referralTreeMainAddressData = useMemo(() => {
-    return {
+    const matchingUni = referralTreeCalcs?.uni?.find(
+      (item) => item.address === referralAddress,
+    );
+    const matchingBinary = referralTreeCalcs?.binary?.find(
+      (item) => item.address === referralAddress,
+    );
+    const obj = {
       ...referralLeftRight,
-      external_address: userData?.account_owner,
       user_address: referralAddress,
-      stakedThisMonth: userData?.stakedThisMonth,
       stakedToday: userData?.stakedToday,
       stakedTotal: userData?.stakedTotal,
       name: userData?.meta?.name,
     };
+
+    if (matchingUni) {
+      obj.uni = matchingUni?.amount;
+    }
+
+    if (matchingBinary) {
+      const { address, ...otherProps } = matchingBinary;
+      obj.total_right = otherProps?.total_right;
+      obj.total_left = otherProps?.left_total;
+      obj.all_amount_sum = otherProps?.all_amount_sum;
+    }
+
+    return obj;
   }, [
-    userData?.stakedThisMonth,
+    userData?.stakedToday,
+    userData?.stakedTotal,
     userData?.meta?.name,
     referralAddress,
     referralLeftRight,
-    userData?.stakedToday,
-    userData?.stakedTotal,
+    referralTreeCalcs,
   ]);
+
+  // console.log(referralTreeMainAddressData);
 
   return (
     <>

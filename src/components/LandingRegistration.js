@@ -825,7 +825,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       });
   }, [referralState.value, mainAccount, account]);
 
-  console.log(tokenBalance < depositAmount, tokenBalance, depositAmount);
   return (
     <>
       <LandingSteps
