@@ -86,7 +86,7 @@ const VerifyEmail = () => {
     <div className={styles.verifyEmailContainer}>
       <div className={styles.logoContainer}>
         <Logo />
-        <h2>COMPLEND</h2>
+        <h2>ATAR</h2>
       </div>
       {loading ? (
         <div className={styles.spinnerContainer}>
@@ -118,7 +118,7 @@ const VerifyEmail = () => {
               onClick={handleClick}
               type="btn-primary"
               size="btn-sm"
-              customStyles={{ background: "#00C6FF" }}
+              // customStyles={{ background: "#00C6FF" }}
             />
           )}
           {data && (
