@@ -1,24 +1,29 @@
-import { configureStore, getDefaultMiddleware, combineReducers } from '@reduxjs/toolkit';
-import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { configureStore, getDefaultMiddleware, combineReducers } from "@reduxjs/toolkit";
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-import connectReducer from './connectReducer';
+import extensionsReducer from "./extensionsReducer";
+import { stakeReducer } from "@cubitrix/cubitrix-react-connect-module";
+import { connectReducer } from "./connectReducer";
+// import { stakeReducer } from "./stakeReducer";
+import appStateReducer from "./appStateReducer";
 
-const rootReducer = combineReducers({
-  connect: connectReducer
-});
-
-const persistConfig = {
-  key: 'root',
+const connectPersistConfig = {
+  key: "connect",
   storage,
   stateReconciler: autoMergeLevel2,
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const rootReducer = combineReducers({
+  extensions: extensionsReducer,
+  appState: appStateReducer,
+  connect: persistReducer(connectPersistConfig, connectReducer),
+  stake: stakeReducer,
+});
 
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: getDefaultMiddleware({
     serializableCheck: false,
   }),

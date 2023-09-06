@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'Sainte Colombe';
+    src: url('SainteColombe-Regular.eot');
+    src: url('SainteColombe-Regular.eot?#iefix') format('embedded-opentype'),
+        url('SainteColombe-Regular.woff2') format('woff2'),
+        url('SainteColombe-Regular.woff') format('woff'),
+        url('SainteColombe-Regular.ttf') format('truetype'),
+        url('SainteColombe-Regular.svg#SainteColombe-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

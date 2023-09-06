@@ -1,0 +1,106 @@
+.container {
+  position: fixed;
+  height: 100vh;
+  left: 100%;
+  top: 0;
+  width: 362px;
+  background: #0c1121;
+  transition: 0.5s;
+  font-size: 12px;
+  line-height: 140%;
+}
+
+.completeAcc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  width: 322px;
+  height: 176px;
+  background: #070b1a;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 140%;
+}
+.completeAcc p {
+  text-align: center;
+}
+
+.borderFull {
+  width: 100%;
+  height: 0px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.close {
+  cursor: pointer;
+}
+
+.address {
+  max-width: calc(100% - 30px);
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  color: #9c9da3;
+}
+.userActions {
+  width: 100%;
+  height: 32px;
+  display: flex;
+  border-radius: 6px;
+  align-items: center;
+  cursor: pointer;
+  padding-right: 20px;
+}
+.hoverBorder {
+  height: 100%;
+  max-height: 0px;
+  width: 2px;
+  margin-right: 20px;
+  transition: 0.6s cubic-bezier(0.79, 0.01, 0.15, 0.99);
+  background-color: #3d5afe;
+  border-radius: 0px 4px 4px 0px;
+}
+
+.userActions:hover .hoverBorder {
+  max-height: 30px;
+}
+.userActions:hover .actionTitle {
+  background: rgba(255, 255, 255, 0.05);
+}
+.actionTitle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  transition: 0.6s cubic-bezier(0.79, 0.01, 0.15, 0.99);
+  padding-left: 12.5px;
+}
+
+.accWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.metaMaskWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.copyWrapper {
+  width: 20px;
+  height: 20px;
+}

@@ -1,79 +1,47 @@
 const INIT_STATE = {
-  activeExtensions: {
-    trade: process.env.REACT_APP_TRADE,
-    loan: process.env.REACT_APP_LOAN,
-    notify: process.env.REACT_APP_NOTIFY,
-    staking: process.env.REACT_APP_STAKING,
-    referal: process.env.REACT_APP_REFERAL,
-    connect: process.env.REACT_APP_CONNECT
-  }
+  lastConnectionType: "",
+  isConnected: false,
+  providerType: "",
+  walletModalOpen: false,
+  account: "",
+  chainId: undefined,
+  otpEnabled: false,
 };
 
-const connectReducer = (state = INIT_STATE, action) => {
-  /*if (action.type === 'ACTIVA') {
+export const connectReducer = (state = INIT_STATE, action) => {
+  if (action.type === "TOGGLE_WALLET_CONNECT_MODAL") {
     return {
       ...state,
-      startGame: action.startGame,
+      walletModalOpen: action.payload,
     };
   }
 
-  if (action.type === 'ROLL_DICE') {
+  if (action.type === "GET_OPT_ENABLED") {
     return {
       ...state,
-      rolled: action.rolled,
+      otpEnabled: action.otp_enabled,
     };
   }
 
-  if (action.type === 'SET_DICE_NUMBER') {
+  if (action.type === "GET_ACCOUNT") {
     return {
       ...state,
-      diceNumbers: action.diceNumbers,
+      account: action.account,
     };
   }
 
-  if (action.type === 'SET_PLAYERS_NUMBER') {
+  if (action.type === "UPDATE_STATE") {
     return {
       ...state,
-      players: action.players,
+      ...action,
     };
   }
 
-  if (action.type === 'SET_CON_PLAYERS') {
+  if (action.type === "SET_LAST_CONNECTION_TYPE") {
     return {
       ...state,
-      connectedPlayers: action.connectedPlayers,
+      lastConnectionType: action.payload,
     };
   }
-
-  if (action.type === 'SET_ACTIVE_PLAYER') {
-    return {
-      ...state,
-      activePlayer: action.activePlayer,
-    };
-  }
-
-  if (action.type === 'SET_SLOTS_DATA') {
-    return {
-      ...state,
-      slotsData: action.slotsData
-    }
-  }
-
-  if (action.type === 'SET_NUMBERS') {
-    return {
-      ...state,
-      numbers: action.numbers
-    }
-  }
-
-  if (action.type === 'SET_OTHERS') {
-    return {
-      ...state,
-      otherPlayers: action.otherPlayers
-    }
-  }*/
-
   return state;
 };
-
-export default connectReducer;

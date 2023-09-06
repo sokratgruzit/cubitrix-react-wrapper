@@ -1,13 +1,62 @@
+@font-face {
+  font-family: "UberMove-Medium";
+  src: url("./assets/fonts/UberMove/UberMove-Medium.eot");
+  src: url("./assets/fonts/UberMove/UberMove-Medium.eot?#iefix")
+      format("embedded-opentype"),
+    url("./assets/fonts/UberMove/UberMove-Medium.svg#Lack-Regular") format("svg"),
+    url("./assets/fonts/UberMove/UberMove-Medium.ttf") format("truetype"),
+    url("./assets/fonts/UberMove/UberMove-Medium.woff") format("woff"),
+    url("./assets/fonts/UberMove/UberMove-Medium.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* @font-face {
+  font-family: 'UberMove-Regular';
+  src: url('./assets/fonts/UberMove/UberMove-Regular.eot');
+  src: url('./assets/fonts/UberMove/UberMove-Regular.eot?#iefix') format('embedded-opentype'),
+    url('./assets/fonts/UberMove/UberMove-Regular.svg#Lack-Regular') format('svg'),
+    url('./assets/fonts/UberMove/UberMove-Regular.ttf') format('truetype'),
+    url('./assets/fonts/UberMove/UberMove-Regular.woff') format('woff'),
+    url('./assets/fonts/UberMove/UberMove-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+} */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c38c5c #c38c5c;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2f3674;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #47f4ea;
+}
+#mini-symbol-overview-chart {
+  display: none!important;
+}
+.confirm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  background: rgba(16, 40, 43, 1);
+  padding: 20px;
+}
+.confirm-list-item span:first-child {
+  color: #9c9da3;
+  margin-right: 10px;
 }
