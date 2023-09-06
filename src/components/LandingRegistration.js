@@ -616,6 +616,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     setStakingLoading(false);
     toast.success("Staked successfully", { autoClose: 8000 });
     handleDepositAmount("");
+
     handleTimePeriod(0);
   }
 
@@ -641,6 +642,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               // } else {
               handleAfterStake();
               // }
+              setReferralState({
+                ...referralState,
+                value: "",
+              });
             })
             .catch((err) => {
               if (err?.response?.data) {
