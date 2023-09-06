@@ -886,6 +886,7 @@ function App() {
             <Route path="/reset-password/:code" element={<ResetPassword />} />
             <Route path="/extensions" element={<Extensions />} />
             <Route path="/extensions/:id" element={<ExtensionItem />} />
+            <Route path="/verify/:id" element={<VerifyEmail />} />
             <Route
               path="/dashboard"
               element={
