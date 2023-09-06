@@ -750,7 +750,7 @@ function App() {
           />
         )}
         <ToastContainer />
-        {account || (emailVerified && appState.connectionType === "email") ? (
+        {account || appState.connectionType === "email" ? (
           <Routes>
             <Route
               path="/"
