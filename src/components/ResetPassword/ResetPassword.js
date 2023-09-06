@@ -1,8 +1,8 @@
 import { ResetPasswordForm } from "@cubitrix/cubitrix-react-ui-module";
-import axios from "axios";
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./ResetPassword.module.css";
+import axios from "../../api/axios";
 
 const ResetPassword = () => {
   const params = useParams();

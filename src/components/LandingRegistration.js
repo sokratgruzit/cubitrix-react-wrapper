@@ -642,10 +642,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               // } else {
               handleAfterStake();
               // }
-              setReferralState({
-                ...referralState,
-                value: "",
-              });
             })
             .catch((err) => {
               if (err?.response?.data) {
@@ -749,7 +745,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }
 
   useEffect(() => {
-    if (!referralState.value && watchReferral) {
+    if (!referralState.value) {
       setCheckReferralCodeState((prev) => ({
         ...prev,
         loading: false,
@@ -759,43 +755,45 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       setReferralCodeChecked(false);
       return;
     }
-    setCheckReferralCodeState((prev) => ({
-      ...prev,
-      loading: true,
-    }));
-    axios
-      .post("/api/referral/check_referral_available", {
-        referral_address: referralState.value,
-        user_address: account,
-      })
-      .then((res) => {
-        setTimeout(() => {
-          setCheckReferralCodeState((prev) => ({
-            ...prev,
-            loading: false,
-            status: "success",
-            message: "This referral code is available.",
-          }));
-          setReferralCodeChecked(true);
-        }, 500);
-      })
-      .catch((e) => {
-        let message =
-          "Referral code is required, please check referral code before staking";
-        if (e?.response?.data?.message === "no space") {
-          setReferralCodeAlreadyUsed(true);
-          return;
-        }
-        setTimeout(() => {
-          setCheckReferralCodeState((prev) => ({
-            ...prev,
-            loading: false,
-            status: "warning",
-            message: message,
-          }));
-          setReferralCodeChecked(false);
-        }, 500);
-      });
+    if (watchReferral) {
+      setCheckReferralCodeState((prev) => ({
+        ...prev,
+        loading: true,
+      }));
+      axios
+        .post("/api/referral/check_referral_available", {
+          referral_address: referralState.value,
+          user_address: account,
+        })
+        .then((res) => {
+          setTimeout(() => {
+            setCheckReferralCodeState((prev) => ({
+              ...prev,
+              loading: false,
+              status: "success",
+              message: "This referral code is available.",
+            }));
+            setReferralCodeChecked(true);
+          }, 500);
+        })
+        .catch((e) => {
+          let message =
+            "Referral code is required, please check referral code before staking";
+          if (e?.response?.data?.message === "no space") {
+            setReferralCodeAlreadyUsed(true);
+            return;
+          }
+          setTimeout(() => {
+            setCheckReferralCodeState((prev) => ({
+              ...prev,
+              loading: false,
+              status: "warning",
+              message: message,
+            }));
+            setReferralCodeChecked(false);
+          }, 500);
+        });
+    }
   }, [referralState.value, mainAccount, account, watchReferral]);
 
   return (
