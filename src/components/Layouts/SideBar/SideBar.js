@@ -630,7 +630,7 @@ const SideBarRight = () => {
   async function handleStakeCurrency() {
     try {
       setStakingLoading(true);
-      await axios.post("/api/accounts/stake_currency", {
+      await axios.post("/api/transactions/stake_currency", {
         address: account,
         amount: Number(currentObject.amount),
         duration: confirm,
