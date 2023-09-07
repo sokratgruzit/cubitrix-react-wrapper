@@ -1480,40 +1480,46 @@ const SideBarRight = () => {
         <Popup
           popUpElement={
             <div className="confirm-list">
-              <div className="confirm-list-item">
-                <span>Transfer Type:</span>
-                <span>{currentObject.transferType}</span>
-              </div>
-              {currentObject.transferType === "external" && (
-                <div className="confirm-list-item">
-                  <span>Name:</span>
-                  <span>{recepientName ?? ""}</span>
-                </div>
-              )}
-              <div className="confirm-list-item">
-                <span>To:</span>
-                <span>
-                  {currentObject.transferType === "external"
-                    ? currentObject.transferAddress
-                    : currentObject.account}
-                </span>
-              </div>
-              <div className="confirm-list-item">
-                <span>Amount:</span>
-                <span>{currentObject.amount}</span>
-              </div>
+              {recepientName ? (
+                <>
+                  <div className="confirm-list-item">
+                    <span>Transfer Type:</span>
+                    <span>{currentObject.transferType}</span>
+                  </div>
+                  {currentObject.transferType === "external" && (
+                    <div className="confirm-list-item">
+                      <span>Name:</span>
+                      <span>{recepientName ?? ""}</span>
+                    </div>
+                  )}
+                  <div className="confirm-list-item">
+                    <span>To:</span>
+                    <span>
+                      {currentObject.transferType === "external"
+                        ? currentObject.transferAddress
+                        : currentObject.account}
+                    </span>
+                  </div>
+                  <div className="confirm-list-item">
+                    <span>Amount:</span>
+                    <span>{currentObject.amount}</span>
+                  </div>
 
-              <Button
-                element={"button"}
-                size={"btn-lg"}
-                type={"btn-primary"}
-                label={"Confirm"}
-                active={true}
-                customStyles={{
-                  width: "100%",
-                }}
-                onClick={handleTransferSubmit}
-              />
+                  <Button
+                    element={"button"}
+                    size={"btn-lg"}
+                    type={"btn-primary"}
+                    label={"Confirm"}
+                    active={true}
+                    customStyles={{
+                      width: "100%",
+                    }}
+                    onClick={handleTransferSubmit}
+                  />
+                </>
+              ) : (
+                <p>No such user exists with provided address</p>
+              )}
             </div>
           }
           label={"Confirm your transaction"}
