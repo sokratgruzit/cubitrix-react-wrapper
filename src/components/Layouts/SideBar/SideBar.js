@@ -1786,7 +1786,7 @@ const SideBarRight = () => {
               mainAccount?.assets?.[exchangeAccountType] *
               rates?.[exchangeAccountType]?.usd
             )?.toFixed(2)}`}
-            durationOptions={["360 D"]}
+            durationOptions={["30 D", "90 D", "180 D", "360 D"]}
             info={`3.0% APY On 360 Days.`}
           />
         )}
