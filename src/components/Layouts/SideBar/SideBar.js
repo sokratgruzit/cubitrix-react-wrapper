@@ -13,7 +13,7 @@ import {
   TransferFromAcc,
   Exchange,
   Deposit,
-  FeeWarning,
+  HelpText,
   Button,
   StakeCurrency,
 } from "@cubitrix/cubitrix-react-ui-module";
@@ -1518,7 +1518,13 @@ const SideBarRight = () => {
                   />
                 </>
               ) : (
-                <p>No such user exists with provided address</p>
+                <p>
+                  <HelpText
+                    title={"No such user exists with provided address"}
+                    status={"warning"}
+                    icon={true}
+                  />
+                </p>
               )}
             </div>
           }
