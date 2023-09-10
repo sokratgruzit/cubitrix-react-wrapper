@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useWeb3React } from "@web3-react/core";
 
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
@@ -11,6 +12,7 @@ export const useConnect = (props) => {
   const [connectionLoading, setConnectionLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isConnected = useSelector((state) => state.connect.isConnected);
   const providerType = useSelector((state) => state.connect.providerType);
 
@@ -162,6 +164,7 @@ export const useConnect = (props) => {
         account: "",
         providerType: "",
       });
+      navigate("/");
     } catch (error) {
       console.log("Error on disconnect: ", error);
     }
@@ -180,7 +183,18 @@ export const useConnect = (props) => {
       WalletConnectEagerly,
       switchToBscTestnet,
     }),
-    [account, active, connectionLoading, chainId, library],
+    [
+      account,
+      active,
+      connect,
+      disconnect,
+      connectionLoading,
+      chainId,
+      library,
+      MetaMaskEagerlyConnect,
+      WalletConnectEagerly,
+      switchToBscTestnet,
+    ],
   );
 
   return values;

@@ -23,6 +23,7 @@ const Dashboard = () => {
   const accountsData = useSelector((state) => state.appState?.accountsData);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
   const userData = useSelector((state) => state.appState?.userData);
+  const appState = useSelector((state) => state.appState);
   const dashboardTransactionsDataReload = useSelector(
     (state) => state.appState?.dashboardTransactionsDataReload,
   );
@@ -69,38 +70,33 @@ const Dashboard = () => {
     }
   };
 
-  let getTotalData = async (address) => {
+  let getTotalData = async () => {
     try {
-      const { data } = await axios.post("/api/referral/get_reerral_global_data", {
-        address: address,
-      });
+      const { data } = await axios.post("/api/referral/get_reerral_global_data");
       setTotalReferralData(data);
     } catch (err) {
       console.log(err);
     }
   };
-  const generateTotalReferralData = async () => {
-    try {
-      const { data } = await axios.post("/api/referral/get_referral_address", {
-        address: account?.toLowerCase(),
-      });
-      getTotalData(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const [referralLeftRight, setReferralLeftRight] = useState({});
   async function generateReferralLeftRight() {
     try {
-      const {
-        data: { results },
-      } = await axios.post("/api/referral/binary_comission_count_user", {
-        // address: account?.toLowerCase(),
-        address: userData?.address?.toLowerCase(),
-      });
-      setReferralLeftRight(results);
-    } catch (e) {}
+      const [binaryCommissionResponse, uniCommissionResponse] = await Promise.all([
+        axios.post("/api/referral/binary_comission_count_user", {
+          address: userData?.address?.toLowerCase(),
+        }),
+        axios.post("/api/referral/uni_comission_count_user", {
+          address: userData?.address?.toLowerCase(),
+        }),
+      ]);
+
+      const binaryResults = binaryCommissionResponse.data.results;
+      const uniResults = uniCommissionResponse.data.results;
+
+      setReferralLeftRight({ ...binaryResults, uni: uniResults });
+    } catch (e) {
+      console.error("An error occurred:", e);
+    }
   }
 
   const prevDashboardTransactionsDataReload = useRef(dashboardTransactionsDataReload);
@@ -114,13 +110,13 @@ const Dashboard = () => {
   }, [dashboardTransactionsDataReload]);
 
   useEffect(() => {
-    if (account && triedReconnect && active) {
+    if (appState?.accountSigned) {
       generateTransactionsData();
-      generateTotalReferralData();
+      getTotalData();
       generateReferralLeftRight();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, triedReconnect, active]);
+    // eslint-disable-next-line
+  }, [appState?.accountSigned]);
 
   const transactionHeader = [
     {
@@ -319,10 +315,10 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if (account && triedReconnect && active) {
+    if (appState?.accountSigned) {
       getReferralHistory(referralHistoryType ?? "uni");
     }
-  }, [account, active, triedReconnect, mainAccount?.address, referralHistoryType]);
+  }, [appState?.accountSigned, referralHistoryType]);
 
   async function getReferralHistory(type) {
     try {
@@ -333,7 +329,6 @@ const Dashboard = () => {
             ? `/api/referral/get_referral_uni_transactions`
             : `/api/referral/get_referral_binary_transactions`,
           {
-            address: mainAccount.address,
             limit: 3,
             page: 1,
           },

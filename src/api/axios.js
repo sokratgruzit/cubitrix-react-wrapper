@@ -1,14 +1,16 @@
 import axios from "axios";
 
-const BASE_URL = "https://cubitrix-node-server.onrender.com";
-// const BASE_URL = "http://localhost:4000";
+const BASE_URL = "http://localhost:4000";
+// const BASE_URL = "https://cubitrix-node-server.onrender.com";
 
-axios.defaults.baseURL = BASE_URL;
-axios.defaults.withCredentials = true;
-axios.defaults.headers = {
-  "Content-Type": "application/json",
-  credentials: true,
-};
-axios.defaults.timeout = 30000;
+const instance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    credentials: true,
+  },
+  withCredentials: true,
+  timeout: 30000,
+});
 
-export default axios;
+export default instance;

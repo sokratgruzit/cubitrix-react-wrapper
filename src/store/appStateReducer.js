@@ -1,5 +1,8 @@
 const INIT_STATE = {
+  connectionType: "",
+  accountSigned: false,
   sideBarOpen: false,
+  loggedWithEmail: false,
   sideBar: "",
   userData: null,
   triedReconnect: false,
@@ -11,6 +14,9 @@ const INIT_STATE = {
   dashboardAccountType: "main",
   exchangeAccountType: "",
   feeWarnAccountType: "",
+  access_token: "",
+  attemptSign: null,
+  metaMaskConneconLoading: false,
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -18,14 +24,61 @@ const appStateReducer = (state = INIT_STATE, action) => {
     case "SET_SIDE_BAR":
       return { ...state, ...action.payload };
 
+    case "SET_NEW_ACCESS_TOKEN":
+      return {
+        ...state,
+        access_token: action.payload,
+      };
+
+    case "SET_LOGGED_WITH_EMAIL":
+      return {
+        ...state,
+        loggedWithEmail: action.payload,
+      };
+
+    case "SET_LOGOUT_WITH_EMAIL":
+      return {
+        sideBarOpen: false,
+        loggedWithEmail: false,
+        sideBar: "",
+        userData: null,
+        triedReconnect: false,
+        isExtensionsLoaded: false,
+        coinbaseLoading: false,
+        connectionError: "",
+        accountsData: [],
+        dashboardTransactionsDataReload: {},
+        dashboardAccountType: "main",
+        exchangeAccountType: "",
+        feeWarnAccountType: "",
+        access_token: "",
+      };
     case "SET_USER_DATA":
       return {
         ...state,
         userData: action.payload,
-        emailVerified: action.payload?.meta?.email ? true : false,
+        emailVerified: action.payload?.meta?.verified,
         hasPasswordSet: action.payload.hasPasswordSet,
         otp_enabled: action.payload.otp_enabled,
         otp_verified: action.payload.otp_verified,
+      };
+
+    case "SET_USER_AUTH":
+      console.log(action.payload);
+      return {
+        ...state,
+        hasPasswordSet: action.payload.hasPasswordSet,
+        otp_enabled: action.payload.otp_enabled,
+        otp_verified: action.payload.otp_verified,
+      };
+    case "SET_META_DATA":
+      return {
+        ...state,
+        userData: {
+          ...state?.userData,
+          meta: action.payload,
+        },
+        emailVerified: action.payload?.verified,
       };
 
     case "SET_SYSTEM_ACCOUNT_DATA":
@@ -99,6 +152,26 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         feeWarnAccountType: action.payload,
+      };
+    case "SET_ACCOUNT_SIGNED":
+      return {
+        ...state,
+        accountSigned: action.payload,
+      };
+    case "SET_CONNECTION_TYPE":
+      return {
+        ...state,
+        connectionType: action.payload,
+      };
+    case "SET_ATTEMPT_SIGN":
+      return {
+        ...state,
+        attemptSign: { ...action.payload },
+      };
+    case "SET_METAMASK_CONNECT_LOADING":
+      return {
+        ...state,
+        metaMaskConnectionLoading: action.payload,
       };
     default:
       return state;

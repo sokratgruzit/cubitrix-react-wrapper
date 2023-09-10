@@ -34,13 +34,13 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { account, connect, disconnect, connectionLoading, library, active } =
-    useConnect();
+  const { account, connect, disconnect, library, active } = useConnect();
 
   // const [loading, setLoading] = useState(true);
 
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [hostedUrl, setHostedUrl] = useState("");
+  const [amountError, setAmountError] = useState("");
 
   const [receivePaymentAddress, setReceivePaymentAddress] = useState(
     "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
@@ -51,7 +51,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   );
 
   const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
-  const [savedBeforeStakingValues, setSavedBeforeStakingValues] = useState({});
 
   const [tokenBalance, setTokenBalance] = useState(0);
 
@@ -124,6 +123,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     emailSent: false,
   });
 
+  const [watchReferral, setWatchReferral] = useState(true);
+
   useEffect(() => {
     if (account && triedReconnect && active) {
       setRegistrationState({
@@ -138,13 +139,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   async function handleRegistration({ fullName, email, referral }) {
     const errors = {};
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
     if (!fullName) {
       errors.fullNameError = "Full Name is required";
     }
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
     if (email && !emailRegex.test(email)) {
       errors.emailError = "Invalid email";
     }
+
     if (!email) {
       errors.emailError = "Email is required";
     }
@@ -162,41 +166,42 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       loading: true,
     });
 
-    // axios
-    //   .post("api/referral/register_referral", {
-    //     referral_address: referral,
-    //     user_address: account,
-    //     side: "auto",
-    //   })
-    //   .then((res) => {
-    //     update_profile();
-    //   })
-    //   .catch((err) => {
-    //     update_profile();
+    const checkEmail = async () => {
+      try {
+        const res = await axios.post("/api/accounts/check-email", {
+          email: email,
+        });
+        let { status, msg } = res?.data;
 
-    //     let error = "Referral code could not be assigned";
-    //     if (err?.response?.data === "Referral code doesnot exist") {
-    //       error = "Referral code does not exist";
-    //     }
-    //     let errorsMessages = [
-    //       "User already activated both referral code",
-    //       "User already activated uni level referral code",
-    //       "User already activated binary level referral code",
-    //     ];
-    //     if (errorsMessages.includes(err?.response?.data)) {
-    //       update_profile();
-    //       return;
-    //     }
+        if (!status) {
+          setRegistrationState({
+            ...registrationState,
+            emailError: msg,
+          });
+          setRegistrationState({
+            ...registrationState,
+            emailError: msg,
+            loading: false,
+          });
+          return false;
+        }
+        return true;
+      } catch (e) {
+        setRegistrationState({
+          ...registrationState,
+          loading: false,
+        });
+        return false;
+      }
+    };
 
-    //     setRegistrationState({
-    //       ...registrationState,
-    //       loading: false,
-    //     });
-    //     toast.error(error, { autoClose: 8000 });
-    //   });
+    const emailIsValid = await checkEmail();
+    console.log(emailIsValid);
+    if (!emailIsValid) {
+      return;
+    }
 
     update_profile();
-
     async function update_profile() {
       axios
         .post("/api/accounts/update_profile", {
@@ -212,32 +217,29 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               loading: false,
             }));
           }
-          if (res?.data === "account updated") {
-            getBalance().then((balance) => {
-              let step = 3;
-              setTokenBalance(balance);
-              if (balance >= 100) {
-                step = 4;
-              }
-
-              axios
-                .post("/api/accounts/handle-step", { step, address: account })
-                .then((e) => {
-                  setStep(e?.data?.account?.step ?? 3);
-                  setRegistrationState({
-                    ...registrationState,
-                    loading: false,
-                  });
-                })
-                .catch((e) => {
-                  setRegistrationState({
-                    ...registrationState,
-                    loading: false,
-                  });
-                  toast.error("Something went wrong!", { autoClose: 8000 });
+          getBalance().then((balance) => {
+            let step = 3;
+            setTokenBalance(balance);
+            if (balance >= 100) {
+              step = 4;
+            }
+            axios
+              .post("/api/accounts/handle-step", { step, address: account })
+              .then((e) => {
+                setStep(e?.data?.account?.step ?? 3);
+                setRegistrationState({
+                  ...registrationState,
+                  loading: false,
                 });
-            });
-          }
+              })
+              .catch((e) => {
+                setRegistrationState({
+                  ...registrationState,
+                  loading: false,
+                });
+                toast.error("Something went wrong!", { autoClose: 8000 });
+              });
+          });
         })
         .catch((err) => {
           if (err?.response?.data === "email already exists & is verified") {
@@ -273,7 +275,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       setFormData({
         fullName: appState?.userData?.meta?.name ?? "",
         email: appState?.userData?.meta?.email ?? "",
-        // referral: appState?.userData?.referral?.[0]?.referral ?? "",
       });
     }
   }, [appState?.userData]);
@@ -368,13 +369,30 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   ];
 
   function amountProgressOnchange(e) {
-    handleDepositAmount(e.target.value);
+    const originalValue = e.target.value;
+    let value = parseInt(originalValue);
+
+    if (originalValue !== value.toString()) {
+      setAmountError("Please enter a valid number");
+    } else if (value < 0) {
+      setAmountError("Please enter a positive number");
+    } else if (value < 100) {
+      setAmountError("Minimum amount is 100");
+    } else if (value >= 100 && value <= 500) {
+      setAmountError("");
+    } else if (value > 500 && value % 5000 !== 0) {
+      setAmountError("Above 500, the amount must be a multiple of 5000");
+    } else if (value > 500000) {
+      setAmountError("Maximum limit is 500,000");
+    } else {
+      setAmountError("");
+    }
+
+    handleDepositAmount(value);
   }
 
-  const [progressValue, setProgressValue] = useState(300);
-
   useEffect(() => {
-    if (step !== 3) {
+    if (step !== 3 && step !== 4) {
       return;
     }
 
@@ -385,7 +403,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       if (library) {
         getBalance().then((balance) => {
           setTokenBalance(balance);
-          if (balance >= 100) {
+          if (balance >= 100 && step === 3) {
             clearInterval(timer);
             axios
               .post("/api/accounts/handle-step", { step: 4, address: account })
@@ -422,22 +440,36 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     };
   }, [step, library]); // Add step as a dependency
 
-  const generateAccountsData = async () => {
-    try {
-      const apiUrl = "/api/accounts/get_account_balances";
-      const requestBody = {
-        address: account?.toLowerCase(),
-      };
+  const updateState = async (callback) => {
+    await axios
+      .post("/api/accounts/get_account", {})
+      .then((res) => {
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
 
-      const response = await axios.post(apiUrl, requestBody);
-      const data = response.data;
-      dispatch({
-        type: "SET_ACCOUNTS_DATA",
-        payload: data?.data,
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.data.accounts[0],
+        });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: exts1,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
+      })
+      .catch((e) => {
+        console.log(e);
       });
-    } catch (error) {
-      console.error("Error:", error);
-    }
   };
 
   const [stakingLoading, setStakingLoading] = useState(false);
@@ -474,32 +506,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       })
       .catch((e) => {});
   }
-
-  const updateState = () => {
-    dispatch({
-      type: "SET_USER_DATA",
-      payload: {},
-    });
-    axios
-      .post("/api/accounts/get_account", {
-        address: account,
-      })
-      .then((res) => {
-        dispatch({
-          type: "SET_USER_DATA",
-          payload: res.data.success.data.accounts[0],
-        });
-        dispatch({
-          type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: res.data.success.data.accounts[0].extensions,
-        });
-        dispatch({
-          type: "SET_EXTENSIONS_LOADED",
-          payload: true,
-        });
-      })
-      .catch((e) => {});
-  };
 
   const handleDepositSubmit = async () => {
     setStakingLoading(true);
@@ -567,41 +573,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         return;
       }
 
-      setSavedBeforeStakingValues({ buyAmount, referralValue: referralState.value });
       proceedStake(referralState.value);
-
-      // if (buyAmount > 500 && referralState.value) {
-      //   axios
-      //     .post("api/referral/register_referral", {
-      //       referral_address: referralState.value,
-      //       user_address: account,
-      //       side: "auto",
-      //     })
-      //     .then((res) => {
-      //       if (res?.data?.auto_place === "code is already used") {
-      //         setReferralCodeAlreadyUsed(true);
-      //         toast.error("Referral code is already used", {
-      //           autoClose: 8000,
-      //         });
-      //         setStakingLoading(false);
-      //       } else {
-      // proceedStake();
-      //       }
-      //     })
-      //     .catch((err) => {
-      //       if (err?.response?.data) {
-      //         toast.error(err?.response?.data, {
-      //           autoClose: 8000,
-      //         });
-      //         setStakingLoading(false);
-      //         return;
-      //       }
-      //       setStakingLoading(false);
-      //       toast.error("something went wrong", { autoClose: 8000 });
-      //     });
-      // } else {
-      //   proceedStake();
-      // }
     }
   };
 
@@ -640,31 +612,20 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         activateAccount();
         console.log(e.response);
       });
-    axios
-      .post("/api/accounts/get_account_balances", {
-        address: account?.toLowerCase(),
-      })
-      .then((res) => {
-        dispatch({
-          type: "SET_ACCOUNTS_DATA",
-          payload: res?.data?.data,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    updateState();
     setStakingLoading(false);
     toast.success("Staked successfully", { autoClose: 8000 });
     handleDepositAmount("");
+
     handleTimePeriod(0);
   }
 
   async function proceedStake(referralCode) {
+    setWatchReferral(false);
     stake(
       async () => {
         const buyAmount = Number(depositAmount);
         if (buyAmount > 500) {
-          console.log("runs");
           await axios
             .post("api/referral/register_referral", {
               referral_address: referralCode,
@@ -699,6 +660,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         }
       },
       () => {
+        setWatchReferral(true);
         setStakingLoading(false);
         toast.error("Staking failed, please try again.", { autoClose: 8000 });
       },
@@ -744,22 +706,43 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   }
 
-  const [accountLoading, setaccountLoading] = useState(false);
-  useEffect(() => {
-    if (connectionLoading) {
-      setaccountLoading(true);
-    }
-    if (appState?.userData?.address) {
-      setaccountLoading(false);
-    }
-  }, [connectionLoading, appState?.userData?.address]);
-
   const [referralCodeChecked, setReferralCodeChecked] = useState(false);
   const [checkReferralCodeState, setCheckReferralCodeState] = useState({
     loading: false,
     message: "Referral code is required, please check referral code before staking",
     status: "warning",
   });
+
+  async function handlePersonalSign() {
+    dispatch({
+      type: "SET_METAMASK_CONNECT_LOADING",
+      payload: true,
+    });
+    dispatch({
+      type: "SET_ATTEMPT_SIGN",
+      payload: {},
+    });
+  }
+
+  async function logout() {
+    dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({
+      type: "SET_SIDE_BAR",
+      payload: { sideBarOpen: false },
+    });
+    disconnect();
+    dispatch({
+      type: "SET_LAST_CONNECTION_TYPE",
+      payload: "",
+    });
+    localStorage.removeItem("walletconnect");
+    axios
+      .post("/api/accounts/logout", {})
+      .then((res) => {
+        navigate("/");
+      })
+      .catch((e) => {});
+  }
 
   useEffect(() => {
     if (!referralState.value) {
@@ -772,53 +755,55 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       setReferralCodeChecked(false);
       return;
     }
-    setCheckReferralCodeState((prev) => ({
-      ...prev,
-      loading: true,
-    }));
-    axios
-      .post("/api/referral/check_referral_available", {
-        referral_address: referralState.value,
-        user_address: account,
-      })
-      .then((res) => {
-        setTimeout(() => {
-          setCheckReferralCodeState((prev) => ({
-            ...prev,
-            loading: false,
-            status: "success",
-            message: "This referral code is available.",
-          }));
-          setReferralCodeChecked(true);
-        }, 500);
-      })
-      .catch((e) => {
-        let message =
-          "Referral code is required, please check referral code before staking";
-        if (e?.response?.data?.message === "no space") {
-          // message = "Binary spot for the referral code you entered is already taken.";
-          setReferralCodeAlreadyUsed(true);
-          return;
-        }
-        setTimeout(() => {
-          setCheckReferralCodeState((prev) => ({
-            ...prev,
-            loading: false,
-            status: "warning",
-            message: message,
-          }));
-          setReferralCodeChecked(false);
-        }, 500);
-      });
-  }, [referralState.value, mainAccount, account]);
+    if (watchReferral) {
+      setCheckReferralCodeState((prev) => ({
+        ...prev,
+        loading: true,
+      }));
+      axios
+        .post("/api/referral/check_referral_available", {
+          referral_address: referralState.value,
+          user_address: account,
+        })
+        .then((res) => {
+          setTimeout(() => {
+            setCheckReferralCodeState((prev) => ({
+              ...prev,
+              loading: false,
+              status: "success",
+              message: "This referral code is available.",
+            }));
+            setReferralCodeChecked(true);
+          }, 500);
+        })
+        .catch((e) => {
+          let message =
+            "Referral code is required, please check referral code before staking";
+          if (e?.response?.data?.message === "no space") {
+            setReferralCodeAlreadyUsed(true);
+            return;
+          }
+          setTimeout(() => {
+            setCheckReferralCodeState((prev) => ({
+              ...prev,
+              loading: false,
+              status: "warning",
+              message: message,
+            }));
+            setReferralCodeChecked(false);
+          }, 500);
+        });
+    }
+  }, [referralState.value, mainAccount, account, watchReferral]);
 
   return (
     <>
       <LandingSteps
         account={account}
+        amountError={amountError}
         receivePaymentAddress={receivePaymentAddress}
         handleMetamaskConnect={async () => {
-          await connect("metaMask", injected);
+          await connect("metaMask", injected, handlePersonalSign);
         }}
         handleWalletConnect={async () => {
           const walletConnect = new WalletConnectV2Connector({
@@ -830,9 +815,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             },
           });
 
-          await connect("walletConnect", walletConnect);
+          await connect("walletConnect", walletConnect, handlePersonalSign);
         }}
-        connectionLoading={accountLoading}
+        connectionLoading={appState?.metaMaskConnectionLoading}
         step={step}
         setStep={setStep}
         initialLoading={false}
@@ -847,8 +832,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         setFormData={setFormData}
         resendEmail={resendEmail}
         disconnect={() => {
-          disconnect();
-          localStorage.removeItem("walletconnect");
+          logout();
         }}
         closeLandingSteps={() => setInitialRegister(false)}
         qrcode={qrCodeUrl}
@@ -884,7 +868,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
             })
             .then((res) => {
               let sendObj = { dashboard: "true" };
-              console.log("before finish", res?.data?.account?.tier?.value);
               if (
                 res?.data?.account?.tier?.value !== "Novice Navigator" &&
                 res?.data?.account?.tier?.value
@@ -897,7 +880,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                 payload: sendObj,
               });
               setStep(6);
-              generateAccountsData();
               updateState();
               setTimeout(() => {
                 navigate("/dashboard");

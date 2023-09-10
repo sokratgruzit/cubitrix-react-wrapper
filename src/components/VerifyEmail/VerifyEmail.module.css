@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    background: #2F3674;
+    background: #0e2225;
     text-align: center;
     position: relative;
     z-index: 1000;
@@ -54,7 +54,7 @@
 }
 
 .spinnerContainer {
-    background: #2F3674;
+    background: #0e2225;
     display: flex;
     align-items: center;
     justify-content: center;
