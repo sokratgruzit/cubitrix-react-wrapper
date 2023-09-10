@@ -13,7 +13,7 @@ import {
   TransferFromAcc,
   Exchange,
   Deposit,
-  FeeWarning,
+  HelpText,
   Button,
   StakeCurrency,
 } from "@cubitrix/cubitrix-react-ui-module";
@@ -29,6 +29,7 @@ const SideBarRight = () => {
   const userMetaData = useSelector((state) => state.appState?.userData?.meta);
   const userBalances = useSelector((state) => state.appState?.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
+  const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
   const exchangeAccountType = useSelector((state) => state.appState?.exchangeAccountType);
   const { activeExtensions } = useSelector((state) => state.extensions);
@@ -171,8 +172,6 @@ const SideBarRight = () => {
         if (res.data === "email sent") {
           setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
         }
-
-        console.log(res.data);
 
         dispatch({
           type: "SET_META_DATA",
@@ -462,13 +461,21 @@ const SideBarRight = () => {
       setTransferSubmitLoading(false);
       return;
     }
+
     if (confirm) {
       try {
         let transferPromise;
-
-        if (currentObject.transferType === "external") {
+        if (accountType === "main" && exchangeAccountType !== "ATAR") {
           transferPromise = axios.post("/api/transactions/make_transfer", {
-            from: account,
+            to: currentObject.transferAddress,
+            amount: currentObject.amount,
+            currency: exchangeAccountType,
+            tx_currency: "ether",
+            account_category_from: "main",
+            account_category_to: "main",
+          });
+        } else if (currentObject.transferType === "external") {
+          transferPromise = axios.post("/api/transactions/make_transfer", {
             to: currentObject.transferAddress,
             amount: currentObject.amount,
             tx_currency: "ether",
@@ -477,7 +484,6 @@ const SideBarRight = () => {
           });
         } else if (currentObject.transferType === "internal") {
           transferPromise = axios.post("/api/transactions/make_transfer", {
-            from: account,
             to: account,
             amount: currentObject.amount,
             tx_currency: "ether",
@@ -489,6 +495,7 @@ const SideBarRight = () => {
 
         const [res] = await Promise.all([transferPromise]);
 
+        updateState();
         if (res.data?.data?.updatedAcc) {
           if (currentObject.transferType === "external") {
             dispatch({
@@ -513,7 +520,6 @@ const SideBarRight = () => {
             }, 3000);
             setConfirm(false);
           } else if (currentObject.transferType === "internal") {
-            updateState();
             dispatch({
               type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
               payload: {},
@@ -624,7 +630,7 @@ const SideBarRight = () => {
   async function handleStakeCurrency() {
     try {
       setStakingLoading(true);
-      await axios.post("/api/accounts/stake_currency", {
+      await axios.post("/api/transactions/stake_currency", {
         address: account,
         amount: Number(currentObject.amount),
         duration: confirm,
@@ -713,7 +719,9 @@ const SideBarRight = () => {
 
       setChosenAccount(chosenAcc);
     }
+  }, [userBalances, accountType]);
 
+  useEffect(() => {
     if (accountType === "main") {
       setCurrentObject((prev) => ({
         ...prev,
@@ -726,7 +734,17 @@ const SideBarRight = () => {
         account: "main",
       }));
     }
-  }, [accountType, userBalances]);
+  }, [accountType, exchangeAccountType]);
+
+  useEffect(() => {
+    if (sideBarOpen) {
+      dispatch({
+        type: "SET_SIDE_BAR",
+        payload: { sideBarOpen: false },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountType]);
 
   useEffect(() => {
     if (card && rates.btc && exchangeAccountType) {
@@ -844,12 +862,45 @@ const SideBarRight = () => {
       editable: true,
       options:
         accountType === "main"
-          ? userBalances.filter(
-              (acc) =>
-                acc.account_category !== "main" &&
-                acc.account_category !== "external" &&
-                acc.account_category !== "system",
-            ).length > 0
+          ? exchangeAccountType !== "ATAR"
+            ? [
+                {
+                  name: "Transfer to another user",
+                  value: "external",
+                  svg: (
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="#C38C5C"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <g clipPath="url(#clip0_40_6461)">
+                        <path
+                          d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path d="M5.57491 9.02673H5.40473C4.70373 9.00557 4.03887 8.71087 3.55241 8.2057C3.06595 7.70053 2.79654 7.02502 2.80183 6.32373C2.80183 4.83207 4.01318 3.62073 5.50484 3.62073C6.2119 3.62416 6.8895 3.9044 7.39242 4.40142C7.89534 4.89843 8.18357 5.57267 8.19536 6.27964C8.20714 6.98661 7.94153 7.67008 7.45545 8.18358C6.96937 8.69707 6.3015 8.99975 5.59494 9.02673H5.57491ZM5.50484 5.1224C4.8441 5.1224 4.3035 5.663 4.3035 6.32373C4.3035 6.97445 4.81407 7.50504 5.45478 7.52507C5.45478 7.51505 5.51485 7.51505 5.58493 7.52507C6.21563 7.48502 6.70617 6.96444 6.70617 6.32373C6.70617 5.663 6.16557 5.1224 5.50484 5.1224Z" />
+                        <path d="M5.50501 16.0344C4.36374 16.0344 3.22247 15.734 2.33148 15.1434C1.49055 14.5827 1 13.7718 1 12.9109C1 12.0499 1.48053 11.229 2.33148 10.6684C4.11346 9.48708 6.89655 9.48708 8.66852 10.6684C9.50945 11.229 10 12.0499 10 12.9009C10 13.7618 9.51947 14.5727 8.66852 15.1434C7.78754 15.744 6.64627 16.0344 5.50501 16.0344ZM3.1624 11.9198C2.73192 12.2101 2.50167 12.5605 2.50167 12.9109C2.50167 13.2613 2.74194 13.6117 3.1624 13.902C4.43382 14.7529 6.56618 14.7529 7.8376 13.902C8.26808 13.6117 8.50834 13.2613 8.49833 12.9109C8.49833 12.5605 8.25806 12.2101 7.8376 11.9198C6.5762 11.0688 4.43382 11.0688 3.1624 11.9198Z" />
+                        <path d="M18.0842 8.00667H17.8951C17.1162 7.98315 16.3775 7.65571 15.837 7.09441C15.2965 6.53311 14.9971 5.78255 15.003 5.00334C15.003 3.34594 16.349 2 18.0064 2C18.792 2.00381 19.5449 2.3152 20.1037 2.86743C20.6625 3.41967 20.9827 4.16882 20.9958 4.95435C21.0089 5.73987 20.7138 6.49928 20.1737 7.06983C19.6336 7.64038 18.8915 7.97669 18.1065 8.00667H18.0842ZM18.0064 3.66852C17.2722 3.66852 16.6715 4.26919 16.6715 5.00334C16.6715 5.72636 17.2388 6.31591 17.9507 6.33815C17.9507 6.32703 18.0175 6.32703 18.0953 6.33815C18.7961 6.29366 19.3412 5.71524 19.3412 5.00334C19.3412 4.26919 18.7405 3.66852 18.0064 3.66852Z" />
+                        <path d="M18.0056 15.7932C16.7375 15.7932 15.4694 15.4595 14.4794 14.8032C13.5451 14.1803 13 13.2793 13 12.3227C13 11.3661 13.5339 10.454 14.4794 9.83105C16.4594 8.51848 19.5517 8.51848 21.5206 9.83105C22.455 10.454 23 11.3661 23 12.3116C23 13.2682 22.4661 14.1692 21.5206 14.8032C20.5417 15.4706 19.2736 15.7932 18.0056 15.7932ZM15.4027 11.2215C14.9244 11.5441 14.6685 11.9334 14.6685 12.3227C14.6685 12.712 14.9355 13.1013 15.4027 13.4239C16.8154 14.3694 19.1846 14.3694 20.5973 13.4239C21.0756 13.1013 21.3426 12.712 21.3315 12.3227C21.3315 11.9334 21.0645 11.5441 20.5973 11.2215C19.1958 10.276 16.8154 10.276 15.4027 11.2215Z" />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_40_6461">
+                          <rect width="24" height="24" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  ),
+                },
+              ]
+            : userBalances.filter(
+                (acc) =>
+                  acc.account_category !== "main" &&
+                  acc.account_category !== "external" &&
+                  acc.account_category !== "system",
+              ).length > 0
             ? [
                 {
                   name: "Transfer to another user",
@@ -1429,40 +1480,52 @@ const SideBarRight = () => {
         <Popup
           popUpElement={
             <div className="confirm-list">
-              <div className="confirm-list-item">
-                <span>Transfer Type:</span>
-                <span>{currentObject.transferType}</span>
-              </div>
-              {currentObject.transferType === "external" && (
-                <div className="confirm-list-item">
-                  <span>Name:</span>
-                  <span>{recepientName ?? ""}</span>
-                </div>
-              )}
-              <div className="confirm-list-item">
-                <span>To:</span>
-                <span>
-                  {currentObject.transferType === "external"
-                    ? currentObject.transferAddress
-                    : currentObject.account}
-                </span>
-              </div>
-              <div className="confirm-list-item">
-                <span>Amount:</span>
-                <span>{currentObject.amount}</span>
-              </div>
+              {recepientName ? (
+                <>
+                  <div className="confirm-list-item">
+                    <span>Transfer Type:</span>
+                    <span>{currentObject.transferType}</span>
+                  </div>
+                  {currentObject.transferType === "external" && (
+                    <div className="confirm-list-item">
+                      <span>Name:</span>
+                      <span>{recepientName ?? ""}</span>
+                    </div>
+                  )}
+                  <div className="confirm-list-item">
+                    <span>To:</span>
+                    <span>
+                      {currentObject.transferType === "external"
+                        ? currentObject.transferAddress
+                        : currentObject.account}
+                    </span>
+                  </div>
+                  <div className="confirm-list-item">
+                    <span>Amount:</span>
+                    <span>{currentObject.amount}</span>
+                  </div>
 
-              <Button
-                element={"button"}
-                size={"btn-lg"}
-                type={"btn-primary"}
-                label={"Confirm"}
-                active={true}
-                customStyles={{
-                  width: "100%",
-                }}
-                onClick={handleTransferSubmit}
-              />
+                  <Button
+                    element={"button"}
+                    size={"btn-lg"}
+                    type={"btn-primary"}
+                    label={"Confirm"}
+                    active={true}
+                    customStyles={{
+                      width: "100%",
+                    }}
+                    onClick={handleTransferSubmit}
+                  />
+                </>
+              ) : (
+                <p>
+                  <HelpText
+                    title={"No such user exists with provided address"}
+                    status={"warning"}
+                    icon={true}
+                  />
+                </p>
+              )}
             </div>
           }
           label={"Confirm your transaction"}
@@ -1695,13 +1758,26 @@ const SideBarRight = () => {
             sideBarClose={handleClose}
             inputs={transferInputs}
             currentObject={currentObject}
-            cardImg={"/img/dashboard/atar.png"}
+            cardImg={`/img/dashboard/${
+              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+            }.png`}
             handleSubmit={handleTransferSubmit}
             buttonLabel={transferSubmitLoading ? "Loading..." : "Transfer"}
             transferSubmitLoading={transferSubmitLoading}
-            accountType={"Atar"}
-            accountBalance={chosenAccount?.balance?.toFixed(2)}
-            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            accountType={exchangeAccountType}
+            accountBalance={
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance?.toFixed(2)
+                : mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)
+            }
+            accountBalanceSecond={`$${
+              exchangeAccountType === "ATAR"
+                ? chosenAccount?.balance * 2?.toFixed(2)
+                : (
+                    mainAccount?.assets?.[exchangeAccountType] *
+                    rates?.[exchangeAccountType]?.usd
+                  )?.toFixed(2)
+            }`}
           />
         )}
         {sideBar === "stake" && (
@@ -1722,7 +1798,7 @@ const SideBarRight = () => {
               mainAccount?.assets?.[exchangeAccountType] *
               rates?.[exchangeAccountType]?.usd
             )?.toFixed(2)}`}
-            durationOptions={["360 D"]}
+            durationOptions={["30 D", "90 D", "180 D", "360 D"]}
             info={`3.0% APY On 360 Days.`}
           />
         )}

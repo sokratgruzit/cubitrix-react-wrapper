@@ -288,19 +288,23 @@ const Dashboard = () => {
         type: "SET_EXCHANGE_ACCOUNT_TYPE",
         payload: accountType,
       });
-    }
-    if (sideBar === "withdraw" && accountType) {
+    } else if (sideBar === "withdraw" && accountType) {
+      dispatch({
+        type: "SET_EXCHANGE_ACCOUNT_TYPE",
+        payload: accountType,
+      });
+    } else if (sideBar === "stake" && accountType) {
+      dispatch({
+        type: "SET_EXCHANGE_ACCOUNT_TYPE",
+        payload: accountType,
+      });
+    } else if (sideBar === "transfer" && accountType) {
       dispatch({
         type: "SET_EXCHANGE_ACCOUNT_TYPE",
         payload: accountType,
       });
     }
-    if (sideBar === "stake" && accountType) {
-      dispatch({
-        type: "SET_EXCHANGE_ACCOUNT_TYPE",
-        payload: accountType,
-      });
-    }
+
     dispatch({
       type: "SET_SIDE_BAR",
       payload: { sideBarOpen: true, sideBar },
@@ -409,7 +413,7 @@ const Dashboard = () => {
       handleDeposit={() => handleSidebarOpen("deposit")}
       handleExchange={(a, b) => handleSidebarOpen("exchange", b)}
       handleWithdraw={(a, b) => handleSidebarOpen("withdraw", b)}
-      handleTransfer={() => handleSidebarOpen("transfer")}
+      handleTransfer={(a, b) => handleSidebarOpen("transfer", b)}
       handleStake={(a, b) => handleSidebarOpen("stake", b)}
       referralHistoryButtonsRight={referralHistoryRightButtons}
       tier={userData?.tier?.value}

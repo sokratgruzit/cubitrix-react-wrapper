@@ -189,6 +189,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       } catch (e) {
         setRegistrationState({
           ...registrationState,
+          emailError:
+            "This email provider is not supported. Please use a different email provider.",
           loading: false,
         });
         return false;
@@ -856,6 +858,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         referralState={referralState}
         setReferralState={setReferralState}
         amountProgressOnchange={amountProgressOnchange}
+        setAmountProgressValue={(value) => {
+          console.log(value);
+          handleDepositAmount(value);
+        }}
         amountProgressValue={depositAmount}
         referralCodeChecked={referralCodeChecked}
         checkReferralCodeState={checkReferralCodeState}
