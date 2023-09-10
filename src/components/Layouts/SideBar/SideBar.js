@@ -13,7 +13,7 @@ import {
   TransferFromAcc,
   Exchange,
   Deposit,
-  FeeWarning,
+  HelpText,
   Button,
   StakeCurrency,
 } from "@cubitrix/cubitrix-react-ui-module";
@@ -630,7 +630,7 @@ const SideBarRight = () => {
   async function handleStakeCurrency() {
     try {
       setStakingLoading(true);
-      await axios.post("/api/accounts/stake_currency", {
+      await axios.post("/api/transactions/stake_currency", {
         address: account,
         amount: Number(currentObject.amount),
         duration: confirm,
@@ -1480,40 +1480,52 @@ const SideBarRight = () => {
         <Popup
           popUpElement={
             <div className="confirm-list">
-              <div className="confirm-list-item">
-                <span>Transfer Type:</span>
-                <span>{currentObject.transferType}</span>
-              </div>
-              {currentObject.transferType === "external" && (
-                <div className="confirm-list-item">
-                  <span>Name:</span>
-                  <span>{recepientName ?? ""}</span>
-                </div>
-              )}
-              <div className="confirm-list-item">
-                <span>To:</span>
-                <span>
-                  {currentObject.transferType === "external"
-                    ? currentObject.transferAddress
-                    : currentObject.account}
-                </span>
-              </div>
-              <div className="confirm-list-item">
-                <span>Amount:</span>
-                <span>{currentObject.amount}</span>
-              </div>
+              {recepientName ? (
+                <>
+                  <div className="confirm-list-item">
+                    <span>Transfer Type:</span>
+                    <span>{currentObject.transferType}</span>
+                  </div>
+                  {currentObject.transferType === "external" && (
+                    <div className="confirm-list-item">
+                      <span>Name:</span>
+                      <span>{recepientName ?? ""}</span>
+                    </div>
+                  )}
+                  <div className="confirm-list-item">
+                    <span>To:</span>
+                    <span>
+                      {currentObject.transferType === "external"
+                        ? currentObject.transferAddress
+                        : currentObject.account}
+                    </span>
+                  </div>
+                  <div className="confirm-list-item">
+                    <span>Amount:</span>
+                    <span>{currentObject.amount}</span>
+                  </div>
 
-              <Button
-                element={"button"}
-                size={"btn-lg"}
-                type={"btn-primary"}
-                label={"Confirm"}
-                active={true}
-                customStyles={{
-                  width: "100%",
-                }}
-                onClick={handleTransferSubmit}
-              />
+                  <Button
+                    element={"button"}
+                    size={"btn-lg"}
+                    type={"btn-primary"}
+                    label={"Confirm"}
+                    active={true}
+                    customStyles={{
+                      width: "100%",
+                    }}
+                    onClick={handleTransferSubmit}
+                  />
+                </>
+              ) : (
+                <p>
+                  <HelpText
+                    title={"No such user exists with provided address"}
+                    status={"warning"}
+                    icon={true}
+                  />
+                </p>
+              )}
             </div>
           }
           label={"Confirm your transaction"}
@@ -1786,7 +1798,7 @@ const SideBarRight = () => {
               mainAccount?.assets?.[exchangeAccountType] *
               rates?.[exchangeAccountType]?.usd
             )?.toFixed(2)}`}
-            durationOptions={["360 D"]}
+            durationOptions={["30 D", "90 D", "180 D", "360 D"]}
             info={`3.0% APY On 360 Days.`}
           />
         )}

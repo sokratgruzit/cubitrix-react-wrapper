@@ -79,6 +79,38 @@ const Staking = () => {
     timeperiodDate,
   } = useSelector((state) => state.stake);
 
+  const updateState = async (callback) => {
+    await axios
+      .post("/api/accounts/get_account", {})
+      .then((res) => {
+        let exts1 = res.data.data?.accounts?.[0].extensions;
+        if (res.data.data?.accounts?.[0]?.active) {
+          exts1.dashboard = "true";
+        }
+
+        dispatch({
+          type: "SET_USER_DATA",
+          payload: res.data.data.accounts[0],
+        });
+        dispatch({
+          type: "UPDATE_ACTIVE_EXTENSIONS",
+          payload: exts1,
+        });
+        dispatch({
+          type: "SET_EXTENSIONS_LOADED",
+          payload: true,
+        });
+        dispatch({
+          type: "SET_ACCOUNTS_DATA",
+          payload: res.data.data.accountBalances,
+        });
+        if (callback) callback();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   useEffect(() => {
     if (account && triedReconnect && active) {
       getStackerInfo(0 + 5 * fetchCount, 10 + 5 * fetchCount)
@@ -302,10 +334,7 @@ const Staking = () => {
             )
             .then((res) => {
               if (res.data?.account) {
-                dispatch({
-                  type: "SET_SYSTEM_ACCOUNT_DATA",
-                  payload: res.data.account,
-                });
+                updateState();
               }
             })
             .catch((e) => {});
