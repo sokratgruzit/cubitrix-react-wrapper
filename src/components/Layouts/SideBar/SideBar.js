@@ -2,11 +2,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import QRCode from "qrcode";
 import {
-  Connect,
   SideBar,
   UserAccount,
   UserOptions,
-  SignIn,
   TwoFactorAuthentication,
   ResetPassword,
   Popup,
@@ -33,6 +31,7 @@ const SideBarRight = () => {
   const accountType = useSelector((state) => state.appState?.dashboardAccountType);
   const exchangeAccountType = useSelector((state) => state.appState?.exchangeAccountType);
   const { activeExtensions } = useSelector((state) => state.extensions);
+  const rates = useSelector((state) => state.appState?.rates);
 
   const [personalData, setPersonalData] = useState(null);
   const [confirm, setConfirm] = useState(false);
@@ -57,7 +56,6 @@ const SideBarRight = () => {
     error: "",
     success: "",
   });
-  const [rates, setRates] = useState({});
   const [signInAddress, setSignInAddress] = useState("");
   const [twoFactorSetUpState, setTwoFactorSetUpState] = useState("");
   const [currentObject, setCurrentObject] = useState({
@@ -82,7 +80,7 @@ const SideBarRight = () => {
   const [stakingLoading, setStakingLoading] = useState(false);
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
 
-  const { account, connect, disconnect, library } = useConnect();
+  const { account, disconnect, library } = useConnect();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -416,7 +414,10 @@ const SideBarRight = () => {
         address_to: currentObject.address,
         amount: currentObject.amount,
         accountType: exchangeAccountType,
-        rate: exchangeAccountType === "ATAR" ? 2 : rates?.[exchangeAccountType]?.usd,
+        rate:
+          exchangeAccountType === "ATAR"
+            ? rates?.["atr"]?.usd
+            : rates?.[exchangeAccountType]?.usd,
       })
       .then(async (res) => {
         toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
@@ -672,21 +673,6 @@ const SideBarRight = () => {
   }, [appState.otp_verified]);
 
   useEffect(() => {
-    const fecthRates = async () => {
-      axios
-        .get("/api/accounts/get_rates")
-        .then((res) => {
-          setRates(res.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    };
-
-    fecthRates();
-  }, []);
-
-  useEffect(() => {
     if (userMetaData) {
       setSignInAddress(appState?.userData?.account_owner);
       setPersonalData({
@@ -709,6 +695,7 @@ const SideBarRight = () => {
         avatar: "",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userMetaData]);
 
   useEffect(() => {
@@ -751,8 +738,12 @@ const SideBarRight = () => {
       setRatedExchange(
         Number(
           (
-            (card.title === "ATAR" ? 2 : rates[card.title.toLowerCase()].usd) /
-            (exchangeAccountType === "ATAR" ? 2 : rates[exchangeAccountType].usd)
+            (card.title === "ATAR"
+              ? rates?.["atr"]?.usd
+              : rates[card.title.toLowerCase()].usd) /
+            (exchangeAccountType === "ATAR"
+              ? rates?.["atr"]?.usd
+              : rates[exchangeAccountType].usd)
           ).toFixed(6),
         ),
       );
@@ -1529,7 +1520,10 @@ const SideBarRight = () => {
             </div>
           }
           label={"Confirm your transaction"}
-          handlePopUpClose={() => (setConfirm(false), setTransferSubmitLoading(false))}
+          handlePopUpClose={() => {
+            setConfirm(false);
+            setTransferSubmitLoading(false);
+          }}
         />
       )}
       {sideBar === "exchange" && confirm && (
@@ -1566,7 +1560,10 @@ const SideBarRight = () => {
             </div>
           }
           label={"Confirm your transaction"}
-          handlePopUpClose={() => (setConfirm(false), setExchangeLoading(false))}
+          handlePopUpClose={() => {
+            setConfirm(false);
+            setExchangeLoading(false);
+          }}
         />
       )}
       {sideBar === "stake" && confirm && (
@@ -1600,7 +1597,10 @@ const SideBarRight = () => {
             </div>
           }
           label={"Confirm your transaction"}
-          handlePopUpClose={() => (setConfirm(false), setTransferSubmitLoading(false))}
+          handlePopUpClose={() => {
+            setConfirm(false);
+            setTransferSubmitLoading(false);
+          }}
         />
       )}
       <SideBar open={appState.sideBarOpen}>
@@ -1689,7 +1689,7 @@ const SideBarRight = () => {
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
-                ? chosenAccount?.balance * 2?.toFixed(2)
+                ? chosenAccount?.balance * rates?.["atr"]?.usd?.toFixed(2)
                 : (
                     mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd
@@ -1726,7 +1726,7 @@ const SideBarRight = () => {
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
-                ? chosenAccount?.balance * 2?.toFixed(2)
+                ? chosenAccount?.balance * rates?.["atr"]?.usd?.toFixed(2)
                 : (
                     mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd
@@ -1746,7 +1746,9 @@ const SideBarRight = () => {
             depositLoading={depositLoading}
             accountType={"Atar"}
             accountBalance={chosenAccount?.balance?.toFixed(2)}
-            accountBalanceSecond={`$${(chosenAccount?.balance * 2)?.toFixed(2)}`}
+            accountBalanceSecond={`$${(
+              chosenAccount?.balance * rates?.["atr"]?.usd?.toFixed(2)
+            )?.toFixed(2)}`}
             library={library}
             account={account}
             getBalance={getBalance}
@@ -1772,7 +1774,7 @@ const SideBarRight = () => {
             }
             accountBalanceSecond={`$${
               exchangeAccountType === "ATAR"
-                ? chosenAccount?.balance * 2?.toFixed(2)
+                ? chosenAccount?.balance * rates?.["atr"]?.usd?.toFixed(2)
                 : (
                     mainAccount?.assets?.[exchangeAccountType] *
                     rates?.[exchangeAccountType]?.usd

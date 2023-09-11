@@ -366,6 +366,25 @@ function App() {
     }));
   };
 
+  useEffect(() => {
+    const fecthRates = async () => {
+      axios
+        .get("/api/accounts/get_rates")
+        .then((res) => {
+          dispatch({
+            type: "SET_RATES",
+            payload: res.data,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    };
+
+    fecthRates();
+    // eslint-disable-next-line
+  }, []);
+
   const handleResetPassword = (email) => {
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
