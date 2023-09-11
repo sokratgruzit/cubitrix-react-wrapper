@@ -16,8 +16,6 @@ function HomePage({ children }) {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
 
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
-
   // useEffect(() => {
   //   if (triedReconnect) {
   //     if (account) {
@@ -79,7 +77,10 @@ function HomePage({ children }) {
   // }
 
   async function getBalance() {
-    var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
+    var tokenContract = new web3Obj.eth.Contract(
+      WBNB,
+      process.env.REACT_APP_TOKEN_ADDRESS,
+    );
     var decimals = await tokenContract.methods.decimals().call();
     var getBalance = await tokenContract.methods.balanceOf(account).call();
 

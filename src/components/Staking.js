@@ -51,8 +51,7 @@ const Staking = () => {
   const { width } = useMobileWidth();
 
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  var Router = process.env.REACT_APP_STAKING_CONTRACT_ADDRESS;
   const {
     approve,
     stake,
@@ -64,7 +63,7 @@ const Staking = () => {
     handleTimePeriod,
     getStackerInfo,
     checkAllowance,
-  } = useStake({ Router, tokenAddress });
+  } = useStake({ Router, tokenAddress: process.env.REACT_APP_TOKEN_ADDRESS });
 
   const dispatch = useDispatch();
 

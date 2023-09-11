@@ -86,7 +86,7 @@ const SideBarRight = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS; // Staking Token Address
 
   const updateState = async (callback) => {
     await axios
