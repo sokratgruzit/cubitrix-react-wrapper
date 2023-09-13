@@ -255,6 +255,81 @@ const Staking = () => {
     },
   ];
 
+  const currencyStakesTableHead = [
+    {
+      name: "Staked Amount",
+      width: 25,
+      mobileWidth: width > 400 ? 45 : 100,
+      id: 0,
+    },
+    {
+      name: "Stake Date",
+      width: 25,
+      id: 1,
+    },
+    {
+      name: "Unstake Date",
+      width: 25,
+      id: 2,
+    },
+    {
+      name: "Percentage",
+      width: 25,
+      mobileWidth: width > 400 ? 45 : false,
+      id: 4,
+    },
+    {
+      name: "",
+      width: 10,
+      id: 5,
+      mobileWidth: 35,
+      className: "table-button-none",
+      onClick: (index) => {
+        setUnstakeLoading(true);
+        unstake(
+          index,
+          () => {
+            setUnstakeLoading(false);
+            axios
+              .post("api/transactions/unstake_transaction", {
+                address: account,
+                index,
+              })
+              .then((res) => {
+                refetchStakersRecord();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          },
+          () => {
+            setUnstakeLoading(false);
+          },
+        );
+      },
+    },
+    {
+      name: "",
+      width: 7,
+      id: 6,
+      mobileWidth: 20,
+      className: "table-button-none",
+      onClick: (index) => {
+        setHarvestLoading(true);
+        harvest(
+          index,
+          () => {
+            setHarvestLoading(false);
+            refetchStakersRecord();
+          },
+          () => {
+            setHarvestLoading(false);
+          },
+        );
+      },
+    },
+  ];
+
   const { durationOptions } = useTableParameters("staking");
 
   const accountSummaryData = [
@@ -359,7 +434,7 @@ const Staking = () => {
   };
 
   const tableEmptyData = {
-    label: "Stake to earn Complend reward",
+    label: "Stake to earn Atar reward",
     button: (
       <Button
         element={"referral-button"}
@@ -389,6 +464,27 @@ const Staking = () => {
     }
   }, [isLoadMoreButtonOnScreen]);
 
+  const [currencyStakes, setCurrencyStakes] = useState([]);
+  const [currencyStakesLoading, setCurrencyStakesLoading] = useState(false);
+  useEffect(() => {
+    async function getCurrencyStakes() {
+      setCurrencyStakesLoading(true);
+      axios
+        .post("/api/transactions/get_currency_stakes", {})
+        .then((res) => {
+          setCurrencyStakes(res?.data);
+          setCurrencyStakesLoading(false);
+        })
+        .catch((e) => {
+          setCurrencyStakesLoading(false);
+        });
+    }
+    getCurrencyStakes();
+  }, []);
+
+  async function handleWalletSubmit() {}
+
+  console.log("stakersRecord", stakersRecord, currencyStakes);
   return (
     <>
       <input />
@@ -398,6 +494,7 @@ const Staking = () => {
         loading={loading}
         accountSummaryData={accountSummaryData}
         tableHead={th}
+        currencyStakesTableHead={currencyStakesTableHead}
         stakersRecord={stakersRecord}
         tableEmptyData={tableEmptyData}
         handlePopUpOpen={handlePopUpOpen}
@@ -407,6 +504,8 @@ const Staking = () => {
         unstakeLoading={unstakeLoading}
         harvestLoading={harvestLoading}
         isActive={isActive}
+        currencyStakes={currencyStakes}
+        currencyStakesLoading={currencyStakesLoading}
       />
       {createStakingPopUpActive && (
         <Popup
@@ -426,6 +525,7 @@ const Staking = () => {
                 timeperiodDate,
                 handleTimeperiodDate,
                 stakingLoading,
+                handleWalletSubmit,
               }}
               approveResonse={approveResonse}
               isActive={isActive}

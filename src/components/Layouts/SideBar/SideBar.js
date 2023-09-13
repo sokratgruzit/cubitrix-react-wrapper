@@ -636,6 +636,7 @@ const SideBarRight = () => {
         amount: Number(currentObject.amount),
         duration: confirm,
         currency: exchangeAccountType,
+        percentage: 3,
       });
       setStakingLoading(false);
       setConfirm(false);
