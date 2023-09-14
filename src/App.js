@@ -366,23 +366,50 @@ function App() {
     }));
   };
 
-  useEffect(() => {
-    const fecthRates = async () => {
-      axios
-        .get("/api/accounts/get_rates")
-        .then((res) => {
-          dispatch({
-            type: "SET_RATES",
-            payload: res.data,
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    };
+  // useEffect(() => {
+  // const fecthRates = async () => {
+  //   axios
+  //     .get("/api/accounts/get_rates")
+  //     .then((res) => {
+  //       dispatch({
+  //         type: "SET_RATES",
+  //         payload: res.data,
+  //       });
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
 
-    fecthRates();
-    // eslint-disable-next-line
+  //   fecthRates();
+  //   // eslint-disable-next-line
+  // }, []);
+
+  const fetchRates = async () => {
+    try {
+      const res = await axios.get("/api/accounts/get_rates");
+      dispatch({
+        type: "SET_RATES",
+        payload: res.data,
+      });
+    } catch (e) {
+      console.log(e);
+      // Wait 5 seconds before retrying
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      fetchRates(); // Retry fetching rates
+    }
+  };
+
+  async function longPolling() {
+    while (true) {
+      await fetchRates();
+      // Wait 5 seconds before the next fetch
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+
+  useEffect(() => {
+    longPolling();
   }, []);
 
   const handleResetPassword = (email) => {
@@ -516,12 +543,12 @@ function App() {
     // eslint-disable-next-line
   }, [appState?.accountSigned, account]);
 
-  useEffect(() => {
-    if (account && active && triedReconnect) {
-      fetchData();
-    }
-    // eslint-disable-next-line
-  }, [account, active, triedReconnect]);
+  // useEffect(() => {
+  //   if (account && active && triedReconnect) {
+  //     fetchData();
+  //   }
+  //   // eslint-disable-next-line
+  // }, [account, active, triedReconnect]);
 
   const logout = () => {
     dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });

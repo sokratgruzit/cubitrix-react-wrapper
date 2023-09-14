@@ -735,7 +735,7 @@ const SideBarRight = () => {
   }, [accountType]);
 
   useEffect(() => {
-    if (card && rates.btc && exchangeAccountType) {
+    if (card && rates?.btc && exchangeAccountType) {
       setRatedExchange(
         Number(
           (
