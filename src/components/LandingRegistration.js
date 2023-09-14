@@ -1,16 +1,7 @@
-import {
-  Button,
-  HelpText,
-  LandingSteps,
-  Popup,
-} from "@cubitrix/cubitrix-react-ui-module";
+import { Button, LandingSteps, Popup } from "@cubitrix/cubitrix-react-ui-module";
 import React, { useState, useEffect, useMemo } from "react";
 
-import {
-  useConnect,
-  //  useStake
-} from "@cubitrix/cubitrix-react-connect-module";
-// import { useConnect } from "../hooks/use-connect";
+import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
 
 import { WalletConnectV2Connector } from "../utils/walletconnectV2Connector";
 
@@ -23,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { useTableParameters } from "../hooks/useTableParameters";
 
 import axios from "../api/axios";
-import QRCode from "qrcode";
 import WBNB from "../abi/WBNB.json";
 
 import { toast } from "react-toastify";
@@ -31,20 +21,17 @@ import { toast } from "react-toastify";
 const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
+  const rates = useSelector((state) => state.appState?.rates);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { account, connect, disconnect, library, active } = useConnect();
 
-  // const [loading, setLoading] = useState(true);
+  const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS;
 
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [hostedUrl, setHostedUrl] = useState("");
   const [amountError, setAmountError] = useState("");
 
-  const [receivePaymentAddress, setReceivePaymentAddress] = useState(
-    "0x43f59F41518903A274c7897dfFB24DB86a0dd23a",
-  );
   const mainAccount = useMemo(
     () => appState?.accountsData?.find((acc) => acc?.account_category === "main"),
     [appState?.accountsData],
@@ -55,46 +42,12 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [tokenBalance, setTokenBalance] = useState(0);
 
   useEffect(() => {
-    if (receivePaymentAddress) {
-      QRCode.toDataURL(receivePaymentAddress)
-        .then((url) => {
-          setQrCodeUrl(url);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [receivePaymentAddress]);
-
-  useEffect(() => {
     if (hostedUrl) {
       window.location.href = hostedUrl;
     }
   }, [hostedUrl]);
 
-  async function handlePaymentConfirm(userAddress, selectedMethod, amount, date) {
-    axios
-      .post("api/transactions/pending_deposit_transaction", {
-        from: account,
-        amount: amount,
-        amountTransferedFrom: userAddress,
-        receivePaymentAddress: receivePaymentAddress,
-        startDate: date,
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
   const methods = [
-    // {
-    //   id: "Manual",
-    //   title: "Manual",
-    //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-    // },
     {
       id: "Coinbase",
       title: "Coinbase",
@@ -103,11 +56,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   ];
 
   const paymentTypes = [
-    // {
-    //   id: 1,
-    //   title: "Pay via Crypto",
-    //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-    // },
     {
       id: 2,
       title: "Pay with CoinBase",
@@ -198,7 +146,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     };
 
     const emailIsValid = await checkEmail();
-    console.log(emailIsValid);
     if (!emailIsValid) {
       return;
     }
@@ -296,7 +243,12 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
-    const buyAmount = (Number(amount) - 1) / 2;
+    if (!rates) {
+      toast.error("Something went wrong!", { autoClose: 8000 });
+      setStakingLoading(false);
+      return;
+    }
+    const buyAmount = (Number(amount) - 1) / Number(rates?.["atr"]?.usd);
 
     if (buyAmount < 100) {
       toast.error("Minimum amount is 100", { autoClose: 8000 });
@@ -346,11 +298,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
 
   const { durationOptions } = useTableParameters("staking");
 
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
   const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
     useStake({
-      Router,
+      Router: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
       tokenAddress,
     });
 
@@ -440,6 +390,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     return () => {
       clearInterval(timer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, library]); // Add step as a dependency
 
   const updateState = async (callback) => {
@@ -803,17 +754,16 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       <LandingSteps
         account={account}
         amountError={amountError}
-        receivePaymentAddress={receivePaymentAddress}
         handleMetamaskConnect={async () => {
           await connect("metaMask", injected, handlePersonalSign);
         }}
         handleWalletConnect={async () => {
           const walletConnect = new WalletConnectV2Connector({
-            projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+            projectId: process.env.REACT_APP_INFURA_PROJECT_ID_V3,
             showQrModal: true,
             chains: [97],
             rpcMap: {
-              97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+              97: process.env.REACT_APP_WEB3_PROVIDER_URL,
             },
           });
 
@@ -828,7 +778,6 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         handleRegistration={handleRegistration}
         registrationState={registrationState}
         setRegistrationState={setRegistrationState}
-        handlePaymentConfirm={handlePaymentConfirm}
         handleCoindbasePayment={(amount) => handleCoindbasePayment(amount)}
         formData={formData}
         setFormData={setFormData}
@@ -837,9 +786,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           logout();
         }}
         closeLandingSteps={() => setInitialRegister(false)}
-        qrcode={qrCodeUrl}
         handlePurchaseEvent={handlePurchaseEvent}
-        exchangeRate={2}
+        exchangeRate={Number(rates?.["atr"]?.usd)}
         tranasctionFee={1}
         timeperiod={timeperiod}
         timeperiodDate={timeperiodDate}

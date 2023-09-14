@@ -7,10 +7,10 @@ export const injected = new InjectedConnector({
 });
 
 export const walletConnect = new WalletConnectV2Connector({
-  projectId: "6b63a429a76c4699c8e90bd36a1c93b0",
+  projectId: process.env.REACT_APP_INFURA_PROJECT_ID_V3,
   showQrModal: true,
   chains: [97],
   rpcMap: {
-    97: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+    97: process.env.REACT_APP_WEB3_PROVIDER_URL,
   },
 });
