@@ -482,9 +482,27 @@ const Staking = () => {
     getCurrencyStakes();
   }, []);
 
-  async function handleWalletSubmit() {}
+  async function handleWalletSubmit() {
+    try {
+      axios
+        .post("/api/transactions/make_withdrawal", {
+          address_to: account,
+          amount: depositAmount,
+          accountType: "ATAR",
+          rate: appState?.rates?.["atr"]?.usd,
+        })
+        .then((res) => {
+          if (res?.data?.message === "successfull transaction") {
+            //proceed staking
+            // handleCalculatorSubmit();
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } catch {}
+  }
 
-  console.log("stakersRecord", stakersRecord, currencyStakes);
   return (
     <>
       <input />
