@@ -10,7 +10,7 @@ const Card = ({ type, data, handleSubmit, customStyles, projectsData }) => {
   if (type === "default") {
     element = (
       <div className={styles.cardContent} style={customStyles}>
-        <h2 className={styles.cardHeader}>why complend?</h2>
+        <h2 className={styles.cardHeader}>why Atar?</h2>
         <div className={styles.cardsWrapper}>
           {data.map((item) => (
             <div className={styles.card} key={item.id}>
@@ -110,7 +110,7 @@ const Card = ({ type, data, handleSubmit, customStyles, projectsData }) => {
                 world class
                 <span className={styles.titleSpan}> trading platform.</span> Buy
                 & sell the crypto with
-                <span className={styles.titleSpan}> complend.</span>
+                <span className={styles.titleSpan}> atar.</span>
               </h1>
               <p className={styles.platformText}>{item.description}</p>
               <button onClick={handleSubmit} className={styles.blueButton}>

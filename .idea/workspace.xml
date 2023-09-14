@@ -6,26 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="b10c5f4b-f588-47f2-a5cc-291ae786b163" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/axios.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Dashboard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/LandingRegistration.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LandingRegistration.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Layouts/SideBar/SideBar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Referral.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Referral.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ResetPassword/ResetPassword.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ResetPassword/ResetPassword.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Transactions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Transactions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.module.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VerifyEmail/VerifyEmail.module.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/connector.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/connector.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/use-connect.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/use-connect.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useExtensionsData.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/appStateReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/appStateReducer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/connectReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/connectReducer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Landing/Card/Card.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Landing/Card/Card.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Staking.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Staking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/translates.json" beforeDir="false" afterPath="$PROJECT_DIR$/translates.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,20 +42,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Merging mucho&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "mucho",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/assets/img" />
@@ -105,7 +89,7 @@
       <workItem from="1690143931318" duration="10530000" />
       <workItem from="1690225908683" duration="24527000" />
       <workItem from="1693993435434" duration="1902000" />
-      <workItem from="1694252561324" duration="7708000" />
+      <workItem from="1694252561324" duration="11871000" />
     </task>
     <servers />
   </component>

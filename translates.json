@@ -323,37 +323,253 @@
   "email" : {
     "en": "Email"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "dashboard" : {
+    "en": "Dashboard"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "trade" : {
+    "en": "Trade"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "referral" : {
+    "en": "Referral"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "staking" : {
+    "en": "Staking"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "extensions" : {
+    "en": "Extensions"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "accounts" : {
+    "en": "Accounts"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "transaction_history" : {
+    "en": "Transaction History"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "purchase" : {
+    "en": "Purchase"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "main_account" : {
+    "en": "Main account"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "trade_account" : {
+    "en": "Trade account"
   },
-  "access_to_members_only" : {
-    "en": "Access to Members-Only Financial Seminars"
+  "transfer" : {
+    "en": "Transfer"
+  },
+  "withdraw" : {
+    "en": "Withdraw"
+  },
+  "exchange" : {
+    "en": "Exchange"
+  },
+  "expected_bonus" : {
+    "en": "Expected Bonus"
+  },
+  "total_left" : {
+    "en": "Total Left"
+  },
+  "total_right" : {
+    "en": "Total Right"
+  },
+  "transactions" : {
+    "en": "Transactions"
+  },
+  "total_number_of_operations" : {
+    "en": "Total number of operations:"
+  },
+  "incoming" : {
+    "en": "Incoming"
+  },
+  "outgoing" : {
+    "en": "Outgoing"
+  },
+  "all_transactions" : {
+    "en": "All Transactions"
+  },
+  "referral_history" : {
+    "en": "Referral History"
+  },
+  "the_airdrop_history" : {
+    "en": "The airdrop history of your weekly referral rebates."
+  },
+  "no_referral_rebates_history" : {
+    "en": "No Referral Rebates History"
+  },
+  "uni" : {
+    "en": "Uni"
+  },
+  "binary" : {
+    "en": "Binary"
+  },
+  "select_the_payment_method " : {
+    "en": "Select the payment method and calculate ATR price"
+  },
+  "set_amount_of" : {
+    "en": "Set amount of ATR you would like to purchase"
+  },
+  "enter_the_amount_you_would_like" : {
+    "en": "Enter the amount you would like to contribute in order to calculate the amount of ATR you will receive. The calculator below helps to convert the required quantity of ATR into the amount of your selected currency."
+  },
+  "purchase_information" : {
+    "en": "Purchase Information"
+  },
+  "amount" : {
+    "en": "Amount"
+  },
+  "transaction_fee" : {
+    "en": "Transaction Fee"
+  },
+  "total" : {
+    "en": "total"
+  },
+  "you_can_earn_rebates" : {
+    "en": "You can earn rebates by inviting traders to trade on Atar"
+  },
+  "after_creating_your_first_code" : {
+    "en": "After creating your first code, you will receive a Casual status to start, granting you a 2.5% rebate on your referee’s trading fees."
+  },
+  "level_system" : {
+    "en": "Level System"
+  },
+  "referrer_level_system" : {
+    "en": "Referrer Level System"
+  },
+  "everyone_starts_with_the_casual" : {
+    "en": "Everyone starts with the Casual tier, and you can level up the tier by increasing your Comland holding"
+  },
+  "your_referral_code" : {
+    "en": "Your Referral Code"
+  },
+  "total_referral_rebates" : {
+    "en": "Total Referral Rebates"
+  },
+  "binary_users" : {
+    "en": "Binary Users"
+  },
+  "binary_comission_this_month" : {
+    "en": "Binary Comission This Month"
+  },
+  "binary_comission_total" : {
+    "en": "Binary Comission Total"
+  },
+  "uni_users" : {
+    "en": "Uni Users"
+  },
+  "uni_comission_this_month" : {
+    "en": "Uni Comission This Month"
+  },
+  "uni_comission_total" : {
+    "en": "Uni Comission Total"
+  },
+  "you_can_stake_and" : {
+    "en": "You can stake and then earn atar reward"
+  },
+  "current_stake" : {
+    "en": "Current Stake"
+  },
+  "earn" : {
+    "en": "Earn"
+  },
+  "claimed_reward" : {
+    "en": "Claimed Reward"
+  },
+  "your_wallet_balance" : {
+    "en": "Your Wallet Balance"
+  },
+  "total_staked" : {
+    "en": "Total Staked"
+  },
+  "total_unstaked" : {
+    "en": "Total Unstaked"
+  },
+  "staked_amount" : {
+    "en": "Staked Amount"
+  },
+  "stake_date" : {
+    "en": "Stake Date"
+  },
+  "unstake_date" : {
+    "en": "Unstake Date"
+  },
+  "harvest" : {
+    "en": "Harvest"
+  },
+  "unstake" : {
+    "en": "Unstake"
+  },
+  "earn_reward" : {
+    "en": "Earn Reward"
+  },
+  "create_staking" : {
+    "en": "Create Staking"
+  },
+  "staking_calculator" : {
+    "en": "Staking Calculator"
+  },
+  "stake_atr" : {
+    "en": "Stake ATR to earn Atar reward"
+  },
+  "calculated" : {
+    "en": "Calculated"
+  },
+  "stake_from_your_wallet" : {
+    "en": "Stake from your wallet"
+  },
+  "stake" : {
+    "en": "Stake"
+  },
+  "extensions_are_optional" : {
+    "en": "Extensions are optional add-ons, built by community developers, that enhance the Compound experience. Enabling extensions allows for new features to be added to your account–such as automation, composability with other DeFi protocols, or position management."
+  },
+  "back_extensions" : {
+    "en": "Back Extensions"
+  },
+  "welcome" : {
+    "en": "Welcome!"
+  },
+  "complete_the_onboarding" : {
+    "en": "Complete the onboarding flow to start trading on ATAR"
+  },
+  "complete_account" : {
+    "en": "Complete Account"
+  },
+  "date_of_birth" : {
+    "en": "Date of Birth"
+  },
+  "verify_email" : {
+    "en": "Verify Email"
+  },
+  "personal_data" : {
+    "en": "Personal data"
+  },
+  "save" : {
+    "en": "Save"
+  },
+  "stake_your_investment" : {
+    "en": "Stake your investment"
+  },
+  "staking_atr_is_unapproved" : {
+    "en": "Staking ATR is unapproved, please approve the ATR before staking"
+  },
+  "locked_until" : {
+    "en": "Locked until"
+  },
+  "Your_currently_possess" : {
+    "en": "Transfer"
+  },
+  "congratulations_on_successfully" : {
+    "en": "Congratulations on successfully purchasing and staking your tokens! You're just one step away from completing your registration and gaining access to our crypto banking services."
+  },
+  "successfully_registered" : {
+    "en": "Successfully registered!"
+  },
+  "finish" : {
+    "en": "Finish"
+  },
+  "please_enter_a_valid_email" : {
+    "en": "Please enter a valid email"
+  },
+  "help_support" : {
+    "en": "Help & Support"
   }
 }
