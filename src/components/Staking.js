@@ -434,7 +434,7 @@ const Staking = () => {
   };
 
   const tableEmptyData = {
-    label: "Stake to earn Atar reward",
+    label: "Stake to earn A1 reward",
     button: (
       <Button
         element={"referral-button"}
@@ -551,7 +551,7 @@ const Staking = () => {
           }
           label={"Staking Calculator"}
           handlePopUpClose={handleClose}
-          description={"Stake ATR to earn Atar reward"}
+          description={"Stake ATR to earn A1 reward"}
         />
       )}
     </>

@@ -14,6 +14,7 @@ import card1 from "../assets/img/landing/atr.svg";
 import card2 from "../assets/img/landing/eth.svg";
 import card3 from "../assets/img/landing/btc.svg";
 import card4 from "../assets/img/landing/gold.svg";
+import card5 from "../assets/img/landing/platinum.svg";
 import contentBg1 from "../assets/img/landing/contentBg1.png";
 import contentBg2 from "../assets/img/landing/contentBg2.png";
 import contentBg3 from "../assets/img/landing/contentBg3.png";
@@ -230,7 +231,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
     {
       question: "What is this platform about?",
       answer:
-        '"Atar" is a unique trading platform that seamlessly merges the premier attributes of both centralized and decentralized platforms. It enables seamless trading across forex, stocks, commodities, and cryptocurrencies under one account, removing the burden of onerous KYC obligations. The platform aims to transcend borders, empowering everyone to shape their financial destiny.',
+        '"A1" is a unique trading platform that seamlessly merges the premier attributes of both centralized and decentralized platforms. It enables seamless trading across forex, stocks, commodities, and cryptocurrencies under one account, removing the burden of onerous KYC obligations. The platform aims to transcend borders, empowering everyone to shape their financial destiny.',
     },
     {
       question: "Who can use this platform?",
@@ -278,9 +279,9 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
         "Yes, we have a lucrative Referral Program. By inviting other traders to join our platform, you unlock the opportunity to earn more. The more traders you bring aboard, the higher the rewards you earn.",
     },
     {
-      question: 'What is the "Atar" Elite Membership?',
+      question: 'What is the "A1" Elite Membership?',
       answer:
-        'The "Atar" Elite Membership is a distinctive club that offers unique tools and perks to elevate your financial journey. These include an additional 1.2% APY on your savings, exclusive access to premium educational content at discounted rates, and access to members-only financial seminars. The membership is available at a reasonable fee of $20 monthly.',
+        'The "A1" Elite Membership is a distinctive club that offers unique tools and perks to elevate your financial journey. These include an additional 1.2% APY on your savings, exclusive access to premium educational content at discounted rates, and access to members-only financial seminars. The membership is available at a reasonable fee of $20 monthly.',
     },
   ];
   const howStart = [
@@ -379,7 +380,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             <Scroll.Item keyframes={keyframes.opacityIn}>
               <div className="landingCardsContainerInner">
                 <div className="landingCardBig landingCard">
-                  <img src={card1} alt="atar_gard" />
+                  <img src={card1} alt="A1_gard" />
                 </div>
                 <div className="landingCardLtls">
                   <div className="landingCard">
@@ -390,6 +391,9 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                   </div>
                   <div className="landingCard">
                     <img src={card4} alt="ltlcard3" />
+                  </div>
+                  <div className="landingCard">
+                    <img src={card5} alt="ltlcard4" />
                   </div>
                 </div>
               </div>
@@ -565,7 +569,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                   straightforward way to maximize your investment returns. <br />
                   While your primary focus remains on market maneuvers, staking ensures
                   your portfolio continues to grow passively. Let your tokens deliver the
-                  performance you desire with “"Atar"” Staking – a smart investment
+                  performance you desire with “"A1"” Staking – a smart investment
                   strategy for today's proactive trader.
                 </p>
               </div>
@@ -612,7 +616,16 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentHalf">
               <div className="landingContentDescription">
-                <h2 className="ttl">Trade (Gold/Stocks/Crypto/Forex) Without Borders</h2>
+                <h2 className="ttl">Trade
+                  <div className="ttlAnimated">
+                    <div className="ttlAnimatedIn">
+                      <span>Gold</span>
+                      <span>Stocks</span>
+                      <span>Crypto</span>
+                      <span>Forex</span>
+                    </div>
+                  </div>
+                  Without Borders</h2>
                 <p>
                   Experience the potency of hybrid trade platform, designed for seamless
                   cross-asset trading through one account.
@@ -772,18 +785,18 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             </div>
             <div className="landingContentBordered landingContentHalf">
               <h2 className="ttl">
-                "Atar" Elite Membership :Unlock the Vault of Prosperity
+                "A1" Elite Membership :Unlock the Vault of Prosperity
               </h2>
               <p>
                 Are you set to seize command of your financial voyage and unlock the full
-                potential of your wealth? Then, "Atar" Elite is the ultimate resource you
-                have been seeking. As a distinctive membership club, "Atar" Elite extends
+                potential of your wealth? Then, "A1" Elite is the ultimate resource you
+                have been seeking. As a distinctive membership club, "A1" Elite extends
                 an assortment of unique tools and perks designed to turbocharge your
                 financial maneuvers, all available for a reasonable fee of $20 monthly.
               </p>
               <h3 className="ttl">Elevate Your Savings with Premium APY</h3>
               <p>
-                "Atar" Elite enriches your saving strategy by providing an additional 1.2%
+                "A1" Elite enriches your saving strategy by providing an additional 1.2%
                 APY. This high yield is thoughtfully engineered to bolster your savings
                 and exponentially grow your wealth over time.
               </p>
@@ -791,7 +804,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                 Exclusive Access to Premium Educational Content at Discounted Rates
               </h3>
               <p>
-                "Atar" Elite is more than just a suite of financial tools and services.
+                "A1" Elite is more than just a suite of financial tools and services.
                 It's a hub for financial enlightenment. As a member, you reap the benefits
                 of exclusive discounts on first-class educational content. This carefully
                 curated assortment of financial literature and courses equips you with the
@@ -800,12 +813,12 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               </p>
               <h3 className="ttl">Access to Members-Only Financial Seminars</h3>
               <p>
-                "Atar" Elite symbolizes a groundbreaking and empowering paradigm in
+                "A1" Elite symbolizes a groundbreaking and empowering paradigm in
                 personal finance. For a nominal $20 a month, you unlock access to a
                 treasure trove of resources conceived to help you grow and govern your
-                money more proficiently. With "Atar" Elite, your investment transcends
+                money more proficiently. With "A1" Elite, your investment transcends
                 beyond a mere membership, it becomes a stake in your financial future.
-                Sign up for "Atar" Elite today and escalate your financial prowess.
+                Sign up for "A1" Elite today and escalate your financial prowess.
                 Together, let's construct a more robust financial future.
               </p>
             </div>
@@ -839,7 +852,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
             <div className="landingJoinContainerHalf">
               <h3 className="ttl">
                 Join the <br />
-                Atar
+                A1
               </h3>
             </div>
             <div className="landingJoinContainerHalf">
