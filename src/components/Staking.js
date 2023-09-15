@@ -497,7 +497,7 @@ const Staking = () => {
       axios
         .post("/api/transactions/make_withdrawal", {
           address_to: account,
-          amount: depositAmount,
+          amount: +depositAmount + 2,
           accountType: "ATAR",
           rate: appState?.rates?.["atr"]?.usd,
         })
@@ -511,8 +511,13 @@ const Staking = () => {
           handleCalculatorSubmit(true);
         })
         .catch((e) => {
+          toast.error(
+            e?.response?.data?.message ?? "Withdrawal failed, please try again.",
+            {
+              autoClose: 8000,
+            },
+          );
           setBalanceStakeLoading(false);
-          console.log(e);
         });
     } catch {}
   }

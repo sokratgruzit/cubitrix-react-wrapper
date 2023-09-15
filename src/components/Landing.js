@@ -21,7 +21,13 @@ import contentBg4 from "../assets/img/landing/contentBg4.png";
 import contentBg5 from "../assets/img/landing/contentBg5.png";
 import footerBg from "../assets/img/landing/footerBg.png";
 import { MiniChart } from "react-tradingview-widget-components";
-const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
+const Landing = ({
+  step,
+  setStep,
+  initialRegister,
+  setInitialRegister,
+  handleConnect,
+}) => {
   const account = useSelector((state) => state.connect.account);
 
   const defaultCardsData = [
@@ -333,7 +339,9 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
                     <span className="ttl">Buy, Sell & Trade</span>
                     <span className="ttl">Crypto</span>
                   </h1>
-                  <div className="landingSlideContainerBtn">
+                  <div
+                    className="landingSlideContainerBtn"
+                    onClick={() => handleConnect()}>
                     <svg
                       width="261"
                       height="79"
@@ -886,7 +894,7 @@ const Landing = ({ step, setStep, initialRegister, setInitialRegister }) => {
               </h3>
             </div>
             <div className="landingJoinContainerHalf">
-              <div className="landingSlideContainerBtn">
+              <div className="landingSlideContainerBtn" onClick={handleConnect}>
                 <svg
                   width="261"
                   height="79"
