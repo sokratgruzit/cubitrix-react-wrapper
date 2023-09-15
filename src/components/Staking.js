@@ -442,7 +442,7 @@ const Staking = () => {
   };
 
   const tableEmptyData = {
-    label: "Stake to earn Atar reward",
+    label: "Stake to earn A1 reward",
     button: (
       <Button
         element={"referral-button"}
@@ -503,7 +503,7 @@ const Staking = () => {
         })
         .then((res) => {
           toast.success(
-            "ATR tokens successfully withdrawn. Now you can continue staking.",
+            "A1 tokens successfully withdrawn. Now you can continue staking.",
             {
               autoClose: 8000,
             },
@@ -569,7 +569,7 @@ const Staking = () => {
           }
           label={"Staking Calculator"}
           handlePopUpClose={handleClose}
-          description={"Stake Complend to earn Complend reward"}
+          description={"Stake A1 to earn A1 reward"}
         />
       )}
     </>
