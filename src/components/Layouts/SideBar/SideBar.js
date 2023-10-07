@@ -805,7 +805,7 @@ const SideBarRight = () => {
       name: "amount",
       type: "default",
       rightText:
-        exchangeAccountType === "ATAR" ? "ATR" : exchangeAccountType?.toUpperCase(),
+        exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType?.toUpperCase(),
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -1053,7 +1053,7 @@ const SideBarRight = () => {
       title: "Transfer amount",
       name: "amount",
       type: "default",
-      rightText: "ATR",
+      rightText: "A1",
       placeholder: "enter",
       onChange: (e) =>
         setCurrentObject((prev) => ({
@@ -1401,7 +1401,7 @@ const SideBarRight = () => {
           name: "transfer_amount",
           type: "default",
           rightText:
-            exchangeAccountType === "ATAR" ? "ATR" : exchangeAccountType.toUpperCase(),
+            exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType.toUpperCase(),
           onChange: (e) => {
             setCurrentObject((prev) => ({
               ...prev,
@@ -1425,7 +1425,7 @@ const SideBarRight = () => {
           title: "Receive amount",
           name: "receive_amount",
           type: "default",
-          rightText: card.title,
+          rightText: card.title === "ATAR" ? "A1" : card.title.toUpperCase(),
           onChange: (e) => {
             setCurrentObject((prev) => ({
               ...prev,
@@ -1533,7 +1533,7 @@ const SideBarRight = () => {
             <div className="confirm-list">
               <div className="confirm-list-item">
                 <span>From Account:</span>
-                <span>{exchangeAccountType}</span>
+                <span>{exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType}</span>
               </div>
               <div className="confirm-list-item">
                 <span>From Amount:</span>
@@ -1541,7 +1541,7 @@ const SideBarRight = () => {
               </div>
               <div className="confirm-list-item">
                 <span>To Account:</span>
-                <span>{card.title === "ATAR" ? "ATAR" : card.title.toLowerCase()}</span>
+                <span>{card.title === "ATAR" ? "A!" : card.title}</span>
               </div>
               <div className="confirm-list-item">
                 <span>To Amount:</span>
@@ -1577,7 +1577,11 @@ const SideBarRight = () => {
               </div>
               <div className="confirm-list-item">
                 <span>Currency:</span>
-                <span>{exchangeAccountType?.toUpperCase()}</span>
+                <span>
+                  {exchangeAccountType === "ATAR"
+                    ? "A1"
+                    : exchangeAccountType?.toUpperCase()}
+                </span>
               </div>
               <div className="confirm-list-item">
                 <span>Duration:</span>
@@ -1698,7 +1702,7 @@ const SideBarRight = () => {
             }`}
             helpTitle={
               exchangeAccountType === "ATAR"
-                ? `Withdrawal from ATR balance is immediate. Fee is 2 ATR.`
+                ? `Withdrawal from A1 balance is immediate. Fee is 2 A1.`
                 : ""
             }
           />

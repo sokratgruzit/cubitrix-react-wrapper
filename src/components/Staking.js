@@ -370,30 +370,13 @@ const Staking = () => {
   ];
 
   const [stakingLoading, setStakingLoading] = useState(false);
-  const handleCalculatorSubmit = async () => {
+  const handleCalculatorSubmit = async (stakeAfterApprove) => {
     setApproveResonse(null);
     if (!account) {
       handleConnect();
     }
 
-    setStakingLoading(true);
-    if (account && isAllowance) {
-      approve(
-        () => {
-          setStakingLoading(false);
-          toast.success("Approved successfully, please stake desired amount.", {
-            autoClose: 8000,
-          });
-        },
-        () => {
-          setStakingLoading(false);
-          toast.error("Approval failed, please try again.", {
-            autoClose: 8000,
-          });
-        },
-      );
-    }
-    if (account && !isAllowance) {
+    async function handleStake() {
       stake(
         async () => {
           await axios
@@ -430,6 +413,31 @@ const Staking = () => {
           });
         },
       );
+    }
+
+    setStakingLoading(true);
+    if (account && isAllowance) {
+      approve(
+        () => {
+          setStakingLoading(false);
+          toast.success("Approved successfully, please stake desired amount.", {
+            autoClose: 8000,
+          });
+          if (stakeAfterApprove) {
+            handleStake();
+          }
+        },
+        () => {
+          setBalanceStakeLoading(false);
+          setStakingLoading(false);
+          toast.error("Approval failed, please try again.", {
+            autoClose: 8000,
+          });
+        },
+      );
+    }
+    if (account && !isAllowance) {
+      handleStake();
     }
   };
 
@@ -482,34 +490,44 @@ const Staking = () => {
     getCurrencyStakes();
   }, []);
 
+  const [balanceStakeLoading, setBalanceStakeLoading] = useState(false);
   async function handleWalletSubmit() {
+    setBalanceStakeLoading(true);
     try {
       axios
         .post("/api/transactions/make_withdrawal", {
           address_to: account,
-          amount: depositAmount,
+          amount: +depositAmount + 2,
           accountType: "ATAR",
           rate: appState?.rates?.["atr"]?.usd,
         })
         .then((res) => {
-          if (res?.data?.message === "successfull transaction") {
-            //proceed staking
-            // handleCalculatorSubmit();
-          }
+          toast.success(
+            "A1 tokens successfully withdrawn. Now you can continue staking.",
+            {
+              autoClose: 8000,
+            },
+          );
+          handleCalculatorSubmit(true);
         })
         .catch((e) => {
-          console.log(e);
+          toast.error(
+            e?.response?.data?.message ?? "Withdrawal failed, please try again.",
+            {
+              autoClose: 8000,
+            },
+          );
+          setBalanceStakeLoading(false);
         });
     } catch {}
   }
 
   return (
     <>
-      <input />
       <StakingUI
         account={account}
         stackContractInfo={stackContractInfo}
-        loading={loading}
+        loading={loading || balanceStakeLoading}
         accountSummaryData={accountSummaryData}
         tableHead={th}
         currencyStakesTableHead={currencyStakesTableHead}
@@ -551,7 +569,7 @@ const Staking = () => {
           }
           label={"Staking Calculator"}
           handlePopUpClose={handleClose}
-          description={"Stake ATR to earn A1 reward"}
+          description={"Stake A1 to earn A1 reward"}
         />
       )}
     </>

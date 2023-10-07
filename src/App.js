@@ -817,6 +817,13 @@ function App() {
                   setStep={setStep}
                   initialRegister={initialRegister}
                   setInitialRegister={setInitialRegister}
+                  handleConnect={() => {
+                    if (step < 6 && appState.connectionType !== "email") {
+                      setInitialRegister(true);
+                    } else {
+                      handleConnect();
+                    }
+                  }}
                 />
               }
             />
@@ -937,6 +944,13 @@ function App() {
                   setStep={setStep}
                   initialRegister={initialRegister}
                   setInitialRegister={setInitialRegister}
+                  handleConnect={() => {
+                    if (step < 6 && appState.connectionType !== "email") {
+                      setInitialRegister(true);
+                    } else {
+                      handleConnect();
+                    }
+                  }}
                 />
               }
             />
