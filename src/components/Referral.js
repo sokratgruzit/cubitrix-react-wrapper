@@ -67,6 +67,81 @@ const Referral = () => {
 
   const [referralTotal, setReferralTotal] = useState(false);
   const width = 1300;
+  const [tableFilterOutcomingData, setTableFilterOutcomingData] = useState({});
+  const tableFilterData = {
+    search: {
+      options: [
+        {
+          name: "Account Owner",
+          value: "account_owner",
+        },
+        {
+          name: "Account Type Id",
+          value: "account_type_id",
+        },
+        {
+          name: "Address",
+          value: "address",
+        },
+      ],
+    },
+    selects: [
+      {
+        name: "Tranx Type",
+        value: "tx_type",
+        options: [
+          {
+            name: "Transaction",
+            value: "transaction",
+          },
+          {
+            name: "Hash",
+            value: "hash",
+          },
+        ],
+      },
+      {
+        name: "Date Within",
+        value: "createdAt",
+        options: [
+          {
+            name: "Transaction",
+            value: "transaction",
+          },
+          {
+            name: "Hash",
+            value: "hash",
+          },
+        ],
+      },
+      {
+        name: "Transaction Status",
+        value: "ts_status",
+        options: [
+          {
+            name: "Pending",
+            value: "pending",
+          },
+          {
+            name: "Cenceled",
+            value: "canceled",
+          },
+          {
+            name: "Approved",
+            value: "approved",
+          },
+          {
+            name: "Bonuses",
+            value: "bonuses",
+          },
+          {
+            name: "Claimed",
+            value: "claimed",
+          },
+        ],
+      },
+    ],
+  };
   let tableVisualType =
     referralTableType === "binary" ? (
       <div className={`referral-inner-table-more`}>
@@ -322,7 +397,7 @@ const Referral = () => {
         }`,
         {
           limit: 20,
-          page: page || 1,
+          page: page || 1
         },
       );
       setReferralTableData(data);
@@ -787,6 +862,8 @@ const Referral = () => {
         uniLVLData={uniLVLData}
         stakedThisMonth={userData?.stakedThisMonth}
         disabledAccount={!userData?.active && userData?.step == "6"}
+        tableFilterData={tableFilterData}
+        tableFilterOutcomingData={tableFilterOutcomingData}
       />
       {createCodePopupActive && (
         <Popup
