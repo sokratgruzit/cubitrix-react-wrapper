@@ -51,8 +51,7 @@ const Staking = () => {
   const { width } = useMobileWidth();
 
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  var Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0"; // Staking contract Address
-  var tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb"; // Staking Token Address
+  var Router = process.env.REACT_APP_STAKING_CONTRACT_ADDRESS;
   const {
     approve,
     stake,
@@ -64,7 +63,7 @@ const Staking = () => {
     handleTimePeriod,
     getStackerInfo,
     checkAllowance,
-  } = useStake({ Router, tokenAddress });
+  } = useStake({ Router, tokenAddress: process.env.REACT_APP_TOKEN_ADDRESS });
 
   const dispatch = useDispatch();
 
@@ -256,6 +255,81 @@ const Staking = () => {
     },
   ];
 
+  const currencyStakesTableHead = [
+    {
+      name: "Staked Amount",
+      width: 25,
+      mobileWidth: width > 400 ? 45 : 100,
+      id: 0,
+    },
+    {
+      name: "Stake Date",
+      width: 25,
+      id: 1,
+    },
+    {
+      name: "Unstake Date",
+      width: 25,
+      id: 2,
+    },
+    {
+      name: "Percentage",
+      width: 25,
+      mobileWidth: width > 400 ? 45 : false,
+      id: 4,
+    },
+    {
+      name: "",
+      width: 10,
+      id: 5,
+      mobileWidth: 35,
+      className: "table-button-none",
+      onClick: (index) => {
+        setUnstakeLoading(true);
+        unstake(
+          index,
+          () => {
+            setUnstakeLoading(false);
+            axios
+              .post("api/transactions/unstake_transaction", {
+                address: account,
+                index,
+              })
+              .then((res) => {
+                refetchStakersRecord();
+              })
+              .catch((e) => {
+                console.log(e);
+              });
+          },
+          () => {
+            setUnstakeLoading(false);
+          },
+        );
+      },
+    },
+    {
+      name: "",
+      width: 7,
+      id: 6,
+      mobileWidth: 20,
+      className: "table-button-none",
+      onClick: (index) => {
+        setHarvestLoading(true);
+        harvest(
+          index,
+          () => {
+            setHarvestLoading(false);
+            refetchStakersRecord();
+          },
+          () => {
+            setHarvestLoading(false);
+          },
+        );
+      },
+    },
+  ];
+
   const { durationOptions } = useTableParameters("staking");
 
   const accountSummaryData = [
@@ -296,30 +370,13 @@ const Staking = () => {
   ];
 
   const [stakingLoading, setStakingLoading] = useState(false);
-  const handleCalculatorSubmit = async () => {
+  const handleCalculatorSubmit = async (stakeAfterApprove) => {
     setApproveResonse(null);
     if (!account) {
       handleConnect();
     }
 
-    setStakingLoading(true);
-    if (account && isAllowance) {
-      approve(
-        () => {
-          setStakingLoading(false);
-          toast.success("Approved successfully, please stake desired amount.", {
-            autoClose: 8000,
-          });
-        },
-        () => {
-          setStakingLoading(false);
-          toast.error("Approval failed, please try again.", {
-            autoClose: 8000,
-          });
-        },
-      );
-    }
-    if (account && !isAllowance) {
+    async function handleStake() {
       stake(
         async () => {
           await axios
@@ -357,10 +414,35 @@ const Staking = () => {
         },
       );
     }
+
+    setStakingLoading(true);
+    if (account && isAllowance) {
+      approve(
+        () => {
+          setStakingLoading(false);
+          toast.success("Approved successfully, please stake desired amount.", {
+            autoClose: 8000,
+          });
+          if (stakeAfterApprove) {
+            handleStake();
+          }
+        },
+        () => {
+          setBalanceStakeLoading(false);
+          setStakingLoading(false);
+          toast.error("Approval failed, please try again.", {
+            autoClose: 8000,
+          });
+        },
+      );
+    }
+    if (account && !isAllowance) {
+      handleStake();
+    }
   };
 
   const tableEmptyData = {
-    label: "Stake to earn Complend reward",
+    label: "Stake to earn A1 reward",
     button: (
       <Button
         element={"referral-button"}
@@ -390,15 +472,65 @@ const Staking = () => {
     }
   }, [isLoadMoreButtonOnScreen]);
 
+  const [currencyStakes, setCurrencyStakes] = useState([]);
+  const [currencyStakesLoading, setCurrencyStakesLoading] = useState(false);
+  useEffect(() => {
+    async function getCurrencyStakes() {
+      setCurrencyStakesLoading(true);
+      axios
+        .post("/api/transactions/get_currency_stakes", {})
+        .then((res) => {
+          setCurrencyStakes(res?.data);
+          setCurrencyStakesLoading(false);
+        })
+        .catch((e) => {
+          setCurrencyStakesLoading(false);
+        });
+    }
+    getCurrencyStakes();
+  }, []);
+
+  const [balanceStakeLoading, setBalanceStakeLoading] = useState(false);
+  async function handleWalletSubmit() {
+    setBalanceStakeLoading(true);
+    try {
+      axios
+        .post("/api/transactions/make_withdrawal", {
+          address_to: account,
+          amount: +depositAmount + 2,
+          accountType: "ATAR",
+          rate: appState?.rates?.["atr"]?.usd,
+        })
+        .then((res) => {
+          toast.success(
+            "A1 tokens successfully withdrawn. Now you can continue staking.",
+            {
+              autoClose: 8000,
+            },
+          );
+          handleCalculatorSubmit(true);
+        })
+        .catch((e) => {
+          toast.error(
+            e?.response?.data?.message ?? "Withdrawal failed, please try again.",
+            {
+              autoClose: 8000,
+            },
+          );
+          setBalanceStakeLoading(false);
+        });
+    } catch {}
+  }
+
   return (
     <>
-      <input />
       <StakingUI
         account={account}
         stackContractInfo={stackContractInfo}
-        loading={loading}
+        loading={loading || balanceStakeLoading}
         accountSummaryData={accountSummaryData}
         tableHead={th}
+        currencyStakesTableHead={currencyStakesTableHead}
         stakersRecord={stakersRecord}
         tableEmptyData={tableEmptyData}
         handlePopUpOpen={handlePopUpOpen}
@@ -408,6 +540,8 @@ const Staking = () => {
         unstakeLoading={unstakeLoading}
         harvestLoading={harvestLoading}
         isActive={isActive}
+        currencyStakes={currencyStakes}
+        currencyStakesLoading={currencyStakesLoading}
       />
       {createStakingPopUpActive && (
         <Popup
@@ -427,6 +561,7 @@ const Staking = () => {
                 timeperiodDate,
                 handleTimeperiodDate,
                 stakingLoading,
+                handleWalletSubmit,
               }}
               approveResonse={approveResonse}
               isActive={isActive}
@@ -434,7 +569,7 @@ const Staking = () => {
           }
           label={"Staking Calculator"}
           handlePopUpClose={handleClose}
-          description={"Stake Complend to earn Complend reward"}
+          description={"Stake A1 to earn A1 reward"}
         />
       )}
     </>

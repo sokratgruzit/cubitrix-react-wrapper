@@ -110,11 +110,26 @@ body {
 .landingCardLtls .landingCard:nth-child(1) {
     animation: float1 3s ease-in-out infinite 2s;
 }
+.landingCardLtls .landingCard:nth-child(1) img{
+    transform: rotate(-10deg);
+}
 .landingCardLtls .landingCard:nth-child(2) {
     animation: float2 3s ease-in-out infinite 2s;
 }
+.landingCardLtls .landingCard:nth-child(2) img{
+    transform: rotate(5deg);
+}
 .landingCardLtls .landingCard:nth-child(3) {
     animation: float3 3s ease-in-out infinite 2s;
+}
+.landingCardLtls .landingCard:nth-child(3) img{
+    transform: rotate(-15deg);
+}
+.landingCardLtls .landingCard:nth-child(4) {
+    animation: float1 3s ease-in-out infinite 2s;
+}
+.landingCardLtls .landingCard:nth-child(4) img{
+    transform: rotate(5deg);
 }
 @keyframes float {
     0% {
@@ -188,6 +203,8 @@ body {
     line-height: 130%;
     margin-bottom: 15px;
     color: rgba(87,171,277);
+    display: flex;
+    flex-wrap: wrap;
 }
 .landingContentHalf p {
     font-size: 25px;
@@ -493,7 +510,47 @@ body {
 /*    left: 0px;*/
 /*    background: rgba(87,171,277);*/
 /*}*/
+.ttlAnimated {
+    display: flex;
+    height: 78px;
+    overflow: hidden;
+    margin: 0px 15px;
+    position: relative;
+}
+.ttlAnimatedIn {
+    display: flex;
+    flex-direction: column;
+    animation: scroll 10s cubic-bezier(0.98, 0.02, 0, 1.01) infinite;
+}
+@keyframes scroll {
+    0% {
+        transform: translateY(100%);
+    }
+    20% {
+        transform: translateY(0%);
+    }
+    40% {
+        transform: translateY(-100%);
+    }
+    60% {
+        transform: translateY(-200%);
+    }
+    80% {
+        transform: translateY(-300%);
+    }
+    100% {
+        transform: translateY(-400%);
+    }
+}
+.ttlAnimated span,.ttlAnimated,.ttlAnimatedIn {
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+}
 @media only screen and (max-width: 1680px){
+    .ttlAnimated {
+        height: 52px;
+    }
     .faqElementAnswer {
         font-size: 16px;
     }
@@ -523,7 +580,7 @@ body {
         width: 280px;
     }
     .landingCardLtls .landingCard img {
-        width: 250px;
+        width: 180px;
     }
     .landingLatestPricesDescr h2 {
         font-size: 40px;
@@ -545,6 +602,13 @@ body {
     }
 }
 @media only screen and (max-width: 1360px) {
+    .landingCardLtls .landingCard img {
+        width: 120px;
+    }
+    .ttlAnimated {
+        height: 39px;
+        margin: 0px 10px;
+    }
     .faqContainer.landingContentContainerTxt .landingContentHalf:nth-child(1){
         border-bottom: 0px;
         margin-bottom: 10px;
@@ -667,7 +731,7 @@ body {
         width: 100%;
     }
     .landingCardLtls .landingCard img {
-        width: 120px;
+        width: 65px;
     }
     .landingCard.landingCardBig img {
         width: 180px;
@@ -737,6 +801,9 @@ body {
     .patternBg5 {
         bottom: -35%;
         height: 50vh;
+    }
+    .ttlAnimated {
+        height: 32.5px;
     }
 }
 

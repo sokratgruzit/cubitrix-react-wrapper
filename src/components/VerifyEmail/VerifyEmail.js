@@ -104,7 +104,7 @@ const VerifyEmail = () => {
     <div className={styles.verifyEmailContainer}>
       <div className={styles.logoContainer}>
         <Logo />
-        <h2>ATAR</h2>
+        <h2>A1</h2>
       </div>
       {loading ? (
         <div className={styles.spinnerContainer}>

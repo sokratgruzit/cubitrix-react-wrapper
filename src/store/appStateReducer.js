@@ -17,6 +17,7 @@ const INIT_STATE = {
   access_token: "",
   attemptSign: null,
   metaMaskConneconLoading: false,
+  rates: null,
 };
 
 const appStateReducer = (state = INIT_STATE, action) => {
@@ -172,6 +173,11 @@ const appStateReducer = (state = INIT_STATE, action) => {
       return {
         ...state,
         metaMaskConnectionLoading: action.payload,
+      };
+    case "SET_RATES":
+      return {
+        ...state,
+        rates: action.payload,
       };
     default:
       return state;

@@ -36,7 +36,7 @@ import { Logo } from "./assets/svg";
 import { injected, walletConnect } from "./connector";
 import WBNB from "./abi/WBNB.json";
 import { useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 import "./App.css";
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
@@ -45,8 +45,7 @@ import "react-toastify/dist/ReactToastify.css";
 window.Buffer = window.Buffer || Buffer;
 
 function App() {
-  const Router = "0xd472C9aFa90046d42c00586265A3F62745c927c0";
-  const tokenAddress = "0xE807fbeB6A088a7aF862A2dCbA1d64fE0d9820Cb";
+  const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS;
   const links = [
     {
       to: "/dashboard",
@@ -150,7 +149,10 @@ function App() {
   const [initialRegister, setInitialRegister] = useState(false);
   const [step, setStep] = useState(1);
 
-  const { checkAllowance } = useStake({ Router, tokenAddress });
+  const { checkAllowance } = useStake({
+    Router: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
+    tokenAddress,
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -364,6 +366,52 @@ function App() {
     }));
   };
 
+  // useEffect(() => {
+  // const fecthRates = async () => {
+  //   axios
+  //     .get("/api/accounts/get_rates")
+  //     .then((res) => {
+  //       dispatch({
+  //         type: "SET_RATES",
+  //         payload: res.data,
+  //       });
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
+
+  //   fecthRates();
+  //   // eslint-disable-next-line
+  // }, []);
+
+  const fetchRates = async () => {
+    try {
+      const res = await axios.get("/api/accounts/get_rates");
+      dispatch({
+        type: "SET_RATES",
+        payload: res.data,
+      });
+    } catch (e) {
+      console.log(e);
+      // Wait 5 seconds before retrying
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      fetchRates(); // Retry fetching rates
+    }
+  };
+
+  async function longPolling() {
+    while (true) {
+      await fetchRates();
+      // Wait 5 seconds before the next fetch
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+
+  useEffect(() => {
+    longPolling();
+  }, []);
+
   const handleResetPassword = (email) => {
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -481,6 +529,7 @@ function App() {
         },
       );
     }
+    // eslint-disable-next-line
   }, [library, appState?.attemptSign]);
 
   useEffect(() => {
@@ -491,13 +540,15 @@ function App() {
         payload: { sideBarOpen: false },
       });
     }
+    // eslint-disable-next-line
   }, [appState?.accountSigned, account]);
 
-  useEffect(() => {
-    if (account && active && triedReconnect) {
-      fetchData();
-    }
-  }, [account, active, triedReconnect]);
+  // useEffect(() => {
+  //   if (account && active && triedReconnect) {
+  //     fetchData();
+  //   }
+  //   // eslint-disable-next-line
+  // }, [account, active, triedReconnect]);
 
   const logout = () => {
     dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
@@ -587,6 +638,7 @@ function App() {
         }
       };
     }
+    // eslint-disable-next-line
   }, [library]);
 
   useEffect(() => {
@@ -598,12 +650,14 @@ function App() {
         payload: "Please switch your network in wallet",
       });
     }
+    // eslint-disable-next-line
   }, [chainId]);
 
   useEffect(() => {
     if (appState?.accountSigned && library) {
       checkAllowance();
     }
+    // eslint-disable-next-line
   }, [appState?.accountSigned, library, depositAmount]);
 
   useEffect(() => {
@@ -642,6 +696,7 @@ function App() {
         setStep(2);
       }
     }
+    // eslint-disable-next-line
   }, [appState?.connectionType, mainAcc?.step, mainAcc?.account_owner, account, library]);
 
   useEffect(() => {
@@ -665,6 +720,7 @@ function App() {
         },
       });
     }
+    // eslint-disable-next-line
   }, [appState?.connectionType]);
 
   useEffect(() => {
@@ -672,6 +728,7 @@ function App() {
       type: "SET_SIDE_BAR",
       payload: { sideBarOpen: false },
     });
+    // eslint-disable-next-line
   }, [location]);
 
   async function init() {
@@ -760,6 +817,13 @@ function App() {
                   setStep={setStep}
                   initialRegister={initialRegister}
                   setInitialRegister={setInitialRegister}
+                  handleConnect={() => {
+                    if (step < 6 && appState.connectionType !== "email") {
+                      setInitialRegister(true);
+                    } else {
+                      handleConnect();
+                    }
+                  }}
                 />
               }
             />
@@ -768,7 +832,7 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && appState?.userData?.step == "6"
+                    !appState?.userData?.active && +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<Dashboard />}
@@ -780,7 +844,7 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && appState?.userData?.step == "6"
+                    !appState?.userData?.active && +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<Transactions />}
@@ -792,7 +856,7 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && appState?.userData?.step == "6"
+                    !appState?.userData?.active && +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<TopUp />}
@@ -859,7 +923,7 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && appState?.userData?.step == "6"
+                    !appState?.userData?.active && +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<CreateAccount />}
@@ -880,6 +944,13 @@ function App() {
                   setStep={setStep}
                   initialRegister={initialRegister}
                   setInitialRegister={setInitialRegister}
+                  handleConnect={() => {
+                    if (step < 6 && appState.connectionType !== "email") {
+                      setInitialRegister(true);
+                    } else {
+                      handleConnect();
+                    }
+                  }}
                 />
               }
             />
@@ -892,7 +963,7 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && appState?.userData?.step == "6"
+                    !appState?.userData?.active && +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<Dashboard />}
@@ -928,7 +999,19 @@ function App() {
                 });
               }}
               handleNetworkChange={() => {
-                switchToBscTestnet();
+                switchToBscTestnet([
+                  {
+                    chainId: "0x61",
+                    chainName: "BSC Testnet",
+                    nativeCurrency: {
+                      name: "tBNB",
+                      symbol: "tBNB",
+                      decimals: 18,
+                    },
+                    rpcUrls: [process.env.REACT_APP_WEB3_PROVIDER_URL],
+                    blockExplorerUrls: ["https://testnet.bscscan.com"],
+                  },
+                ]);
               }}
             />
           }

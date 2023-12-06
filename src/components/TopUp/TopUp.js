@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { TopUpDashboard } from "@cubitrix/cubitrix-react-ui-module";
-import QRCode from "qrcode";
 import axios from "../../api/axios";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const methods = [
-  // {
-  //   id: "Manual",
-  //   title: "Manual",
-  //   logo: "https://shopgeorgia.ge/assets/images/contribute/usdt.png",
-  // },
   {
     id: "Coinbase",
     title: "Coinbase",
@@ -18,11 +12,6 @@ const methods = [
 ];
 
 const paymentTypes = [
-  // {
-  //   id: 1,
-  //   title: "Pay via Crypto",
-  //   logo: "https://shopgeorgia.ge/assets/images/pay-manual.png",
-  // },
   {
     id: 2,
     title: "Pay with CoinBase",
@@ -32,44 +21,14 @@ const paymentTypes = [
 
 const TopUp = () => {
   const account = useSelector((state) => state.connect.account);
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const rates = useSelector((state) => state.appState.rates);
   const [hostedUrl, setHostedUrl] = useState("");
-  const dispatch = useDispatch();
-
-  const [receivePaymentAddress, setReceivePaymentAddress] = useState("0xouraddress");
-
-  useEffect(() => {
-    QRCode.toDataURL(receivePaymentAddress)
-      .then((url) => {
-        setQrCodeUrl(url);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [receivePaymentAddress]);
 
   useEffect(() => {
     if (hostedUrl) {
       window.location.href = hostedUrl;
     }
   }, [hostedUrl]);
-
-  async function handlePaymentConfirm(userAddress, selectedMethod, amount, date) {
-    axios
-      .post("api/transactions/pending_deposit_transaction", {
-        from: account,
-        amount: amount,
-        amountTransferedFrom: userAddress,
-        receivePaymentAddress: receivePaymentAddress,
-        startDate: date,
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
 
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
@@ -102,12 +61,10 @@ const TopUp = () => {
         height: "calc(100vh)",
       }}>
       <TopUpDashboard
-        receivePaymentAddress={receivePaymentAddress}
         methods={methods}
         paymentTypes={paymentTypes}
-        qrcode={qrCodeUrl}
         handlePurchaseEvent={handlePurchase}
-        exchangeRate={2}
+        exchangeRate={rates?.["atr"]?.usd}
         tranasctionFee={1}
         coinbaseLoading={coinbaseLoading}
       />
