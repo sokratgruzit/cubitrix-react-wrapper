@@ -1,14 +1,17 @@
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 import LandingRegistration from "./LandingRegistration";
-import { useState, useEffect } from "react";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import {useState, useEffect} from "react";
+import {useConnect} from "@cubitrix/cubitrix-react-connect-module";
+import {decryptEnv} from "../utils/decryptEnv";
+
+const tokenAddress = decryptEnv(process.env.REACT_APP_TOKEN_ADDRESS);
 
 import WBNB from "../abi/WBNB.json";
 
-function HomePage({ children }) {
+function HomePage({children}) {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const metaAcc = useSelector((state) => state.appState?.userData?.meta);
-  const { account, library } = useConnect();
+  const {account, library} = useConnect();
   var web3Obj = library;
 
   const [step, setStep] = useState(1);
@@ -47,10 +50,7 @@ function HomePage({ children }) {
   // }
 
   async function getBalance() {
-    var tokenContract = new web3Obj.eth.Contract(
-      WBNB,
-      process.env.REACT_APP_TOKEN_ADDRESS,
-    );
+    var tokenContract = new web3Obj.eth.Contract(WBNB, tokenAddress);
     var decimals = await tokenContract.methods.decimals().call();
     var getBalance = await tokenContract.methods.balanceOf(account).call();
 
@@ -60,7 +60,11 @@ function HomePage({ children }) {
     return balanceInEth;
   }
 
-  return step === 4 ? children : <LandingRegistration step={step} setStep={setStep} />;
+  return step === 4 ? (
+    children
+  ) : (
+    <LandingRegistration step={step} setStep={setStep} />
+  );
 }
 
 export default HomePage;

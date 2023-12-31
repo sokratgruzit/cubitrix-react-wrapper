@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, {useState} from "react";
+import {useSelector, useDispatch} from "react-redux";
 
 import {
   ClaimedReward,
@@ -17,11 +17,12 @@ import {
   STAKE_INIT_STATE,
   useConnect,
 } from "@cubitrix/cubitrix-react-connect-module";
-import { useStake } from "../hooks/use-stake";
+import {useStake} from "../hooks/use-stake";
 
-import { useTableParameters } from "../hooks/useTableParameters";
-import { useMobileWidth } from "../hooks/useMobileWidth";
-import { useOnScreen } from "../hooks/useOnScreen";
+import {useTableParameters} from "../hooks/useTableParameters";
+import {useMobileWidth} from "../hooks/useMobileWidth";
+import {useOnScreen} from "../hooks/useOnScreen";
+import {decryptEnv} from "../utils/decryptEnv";
 
 // UI
 import {
@@ -33,25 +34,27 @@ import {
 
 // api
 import axios from "../api/axios";
-import { useEffect } from "react";
-import { createRef } from "react";
-import { toast } from "react-toastify";
+import {useEffect} from "react";
+import {createRef} from "react";
+import {toast} from "react-toastify";
 
 const Staking = () => {
-  const [createStakingPopUpActive, setCreateStakingPopUpActive] = useState(false);
+  const [createStakingPopUpActive, setCreateStakingPopUpActive] =
+    useState(false);
   const [approveResonse, setApproveResonse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchCount, setFetchCount] = useState(0);
   const appState = useSelector((state) => state.appState);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
-  const { active, account } = useConnect();
+  const {active, account} = useConnect();
   const hasMoreData = useSelector((state) => state.stake.hasMoreData);
   const isActive = appState?.userData?.active;
 
-  const { width } = useMobileWidth();
+  const {width} = useMobileWidth();
 
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  var Router = process.env.REACT_APP_STAKING_CONTRACT_ADDRESS;
+  var Router = decryptEnv(process.env.REACT_APP_STAKING_CONTRACT_ADDRESS);
+  const tokenAddress = decryptEnv(process.env.REACT_APP_TOKEN_ADDRESS);
   const {
     approve,
     stake,
@@ -63,7 +66,7 @@ const Staking = () => {
     handleTimePeriod,
     getStackerInfo,
     checkAllowance,
-  } = useStake({ Router, tokenAddress: process.env.REACT_APP_TOKEN_ADDRESS });
+  } = useStake({Router, tokenAddress});
 
   const dispatch = useDispatch();
 
@@ -164,12 +167,12 @@ const Staking = () => {
     if (sideBarOpen) {
       dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: !sideBarOpen },
+        payload: {sideBarOpen: !sideBarOpen},
       });
     } else {
       dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: !sideBarOpen, sideBar: "connect" },
+        payload: {sideBarOpen: !sideBarOpen, sideBar: "connect"},
       });
     }
   };
@@ -229,7 +232,7 @@ const Staking = () => {
           },
           () => {
             setUnstakeLoading(false);
-          },
+          }
         );
       },
     },
@@ -249,7 +252,7 @@ const Staking = () => {
           },
           () => {
             setHarvestLoading(false);
-          },
+          }
         );
       },
     },
@@ -304,7 +307,7 @@ const Staking = () => {
           },
           () => {
             setUnstakeLoading(false);
-          },
+          }
         );
       },
     },
@@ -324,13 +327,13 @@ const Staking = () => {
           },
           () => {
             setHarvestLoading(false);
-          },
+          }
         );
       },
     },
   ];
 
-  const { durationOptions } = useTableParameters("staking");
+  const {durationOptions} = useTableParameters("staking");
 
   const accountSummaryData = [
     [
@@ -387,7 +390,7 @@ const Staking = () => {
               },
               {
                 timeout: 120000,
-              },
+              }
             )
             .then((res) => {
               if (res.data?.account) {
@@ -411,7 +414,7 @@ const Staking = () => {
           toast.error("Staking failed, please try again.", {
             autoClose: 8000,
           });
-        },
+        }
       );
     }
 
@@ -433,7 +436,7 @@ const Staking = () => {
           toast.error("Approval failed, please try again.", {
             autoClose: 8000,
           });
-        },
+        }
       );
     }
     if (account && !isAllowance) {
@@ -449,7 +452,7 @@ const Staking = () => {
         label={"Create Staking"}
         icon={<AddSquareIcon />}
         onClick={handlePopUpOpen}
-        customStyles={{ height: "44px", flexDirection: "row" }}
+        customStyles={{height: "44px", flexDirection: "row"}}
       />
     ),
   };
@@ -506,16 +509,17 @@ const Staking = () => {
             "A1 tokens successfully withdrawn. Now you can continue staking.",
             {
               autoClose: 8000,
-            },
+            }
           );
           handleCalculatorSubmit(true);
         })
         .catch((e) => {
           toast.error(
-            e?.response?.data?.message ?? "Withdrawal failed, please try again.",
+            e?.response?.data?.message ??
+              "Withdrawal failed, please try again.",
             {
               autoClose: 8000,
-            },
+            }
           );
           setBalanceStakeLoading(false);
         });

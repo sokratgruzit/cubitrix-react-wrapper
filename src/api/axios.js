@@ -1,9 +1,11 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+import {decryptEnv} from "../utils/decryptEnv";
+
+const backUrl = decryptEnv(process.env.REACT_APP_BACKEND_URL);
 
 const instance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: backUrl,
   headers: {
     "Content-Type": "application/json",
     credentials: true,

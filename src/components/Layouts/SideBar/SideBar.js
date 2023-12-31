@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, {useEffect, useState, useMemo} from "react";
+import {useSelector, useDispatch} from "react-redux";
 import QRCode from "qrcode";
 import {
   SideBar,
@@ -15,12 +15,13 @@ import {
   Button,
   StakeCurrency,
 } from "@cubitrix/cubitrix-react-ui-module";
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import {useConnect} from "@cubitrix/cubitrix-react-connect-module";
+import {decryptEnv} from "../../../utils/decryptEnv";
 
 import axios from "../../../api/axios";
 import WBNB from "../../../abi/WBNB.json";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
 const SideBarRight = () => {
   const appState = useSelector((state) => state.appState);
@@ -28,9 +29,13 @@ const SideBarRight = () => {
   const userBalances = useSelector((state) => state.appState?.accountsData);
   const sideBar = useSelector((state) => state.appState.sideBar);
   const sideBarOpen = useSelector((state) => state.appState.sideBarOpen);
-  const accountType = useSelector((state) => state.appState?.dashboardAccountType);
-  const exchangeAccountType = useSelector((state) => state.appState?.exchangeAccountType);
-  const { activeExtensions } = useSelector((state) => state.extensions);
+  const accountType = useSelector(
+    (state) => state.appState?.dashboardAccountType
+  );
+  const exchangeAccountType = useSelector(
+    (state) => state.appState?.exchangeAccountType
+  );
+  const {activeExtensions} = useSelector((state) => state.extensions);
   const rates = useSelector((state) => state.appState?.rates);
 
   const [personalData, setPersonalData] = useState(null);
@@ -80,11 +85,11 @@ const SideBarRight = () => {
   const [stakingLoading, setStakingLoading] = useState(false);
   const [transferSubmitLoading, setTransferSubmitLoading] = useState(false);
 
-  const { account, disconnect, library } = useConnect();
+  const {account, disconnect, library} = useConnect();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS; // Staking Token Address
+  const tokenAddress = decryptEnv(process.env.REACT_APP_TOKEN_ADDRESS);
 
   const updateState = async (callback) => {
     await axios
@@ -119,15 +124,15 @@ const SideBarRight = () => {
   };
 
   const handleClose = () => {
-    dispatch({ type: "SET_SIDE_BAR", payload: { sideBarOpen: false } });
+    dispatch({type: "SET_SIDE_BAR", payload: {sideBarOpen: false}});
   };
 
   const handleUserAccount = () => {
-    dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+    dispatch({type: "SET_SIDE_BAR", payload: {sideBar: "UserAccount"}});
   };
 
   const handleSecurityData = (formData) => {
-    setSecurityDataState((prev) => ({ ...prev, loading: true, error: "" }));
+    setSecurityDataState((prev) => ({...prev, loading: true, error: ""}));
 
     axios
       .post("/api/accounts/update_profile_auth", {
@@ -145,7 +150,7 @@ const SideBarRight = () => {
           payload: res.data,
         });
         setTimeout(() => {
-          setSecurityDataState((prev) => ({ ...prev, saved: false }));
+          setSecurityDataState((prev) => ({...prev, saved: false}));
         }, 3000);
       })
       .catch((e) => {
@@ -158,9 +163,9 @@ const SideBarRight = () => {
   };
 
   const handlePersonalData = (userData) => {
-    let personalData = { ...userData };
+    let personalData = {...userData};
     personalData.avatar = account;
-    setPersonalDataState((prev) => ({ ...prev, loading: true, error: "" }));
+    setPersonalDataState((prev) => ({...prev, loading: true, error: ""}));
     axios
       .post("/api/accounts/update_profile", {
         ...personalData,
@@ -168,7 +173,7 @@ const SideBarRight = () => {
       })
       .then((res) => {
         if (res.data === "email sent") {
-          setPersonalDataState((prev) => ({ ...prev, emailSent: true }));
+          setPersonalDataState((prev) => ({...prev, emailSent: true}));
         }
 
         dispatch({
@@ -181,7 +186,7 @@ const SideBarRight = () => {
           saved: true,
         }));
         setTimeout(() => {
-          setPersonalDataState((prev) => ({ ...prev, saved: false }));
+          setPersonalDataState((prev) => ({...prev, saved: false}));
         }, 3000);
       })
       .catch((e) => {
@@ -224,19 +229,19 @@ const SideBarRight = () => {
   };
 
   const verifyOTP = (code) => {
-    setTwoFactorSetUpState({ loading: false, error: "" });
+    setTwoFactorSetUpState({loading: false, error: ""});
     axios
       .post("/api/accounts/otp/verify", {
         address: account ? account : signInAddress,
         token: code,
       })
       .then((res) => {
-        setTwoFactorSetUpState({ loading: false, error: "" });
+        setTwoFactorSetUpState({loading: false, error: ""});
         setActivated(false);
         updateState();
       })
       .catch((e) => {
-        setTwoFactorSetUpState({ loading: false, error: e.response.data });
+        setTwoFactorSetUpState({loading: false, error: e.response.data});
       });
   };
 
@@ -247,7 +252,7 @@ const SideBarRight = () => {
           address: account ? account : signInAddress,
         })
         .then((res) => {
-          const { base32, otpauth_url } = res.data;
+          const {base32, otpauth_url} = res.data;
           setBase32(base32);
           QRCode.toDataURL(otpauth_url).then((data) => setqrCodeUrl(data));
         });
@@ -257,7 +262,7 @@ const SideBarRight = () => {
   }
 
   const handleSetUpPassword = (opt) => {
-    setresetPasswordStatus({ loading: true, error: "", success: "" });
+    setresetPasswordStatus({loading: true, error: "", success: ""});
     if (opt === "email") {
       axios
         .post("/api/accounts/get-reset-password-email", {
@@ -294,7 +299,7 @@ const SideBarRight = () => {
 
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
     if (!account) {
-      toast.error("Please connect your wallet.", { autoClose: 8000 });
+      toast.error("Please connect your wallet.", {autoClose: 8000});
       await delay;
       setDepositLoading(false);
       return;
@@ -306,11 +311,11 @@ const SideBarRight = () => {
     const tokenContract = new web3.eth.Contract(WBNB, tokenAddress);
 
     const toAddress = userBalances?.find(
-      (item) => item?.account_category === "system",
+      (item) => item?.account_category === "system"
     )?.address;
 
     const amount = web3.utils.toBN(
-      web3.utils.toWei(currentObject.amount.toString(), "ether"),
+      web3.utils.toWei(currentObject.amount.toString(), "ether")
     );
 
     const gasPrice = await web3.eth.getGasPrice();
@@ -344,26 +349,30 @@ const SideBarRight = () => {
                 type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
                 payload: {},
               });
-              toast.success("Amount deposited successfully.", { autoClose: 8000 });
+              toast.success("Amount deposited successfully.", {
+                autoClose: 8000,
+              });
             }
             await delay;
             setDepositLoading(false);
           })
           .catch(async (e) => {
             console.log(e);
-            toast.error("Transaction could not be registered.", { autoClose: 8000 });
+            toast.error("Transaction could not be registered.", {
+              autoClose: 8000,
+            });
             await delay;
             setDepositLoading(false);
           });
       })
       .catch(async (error) => {
         if (error.message.includes("User denied transaction signature")) {
-          toast.error("Transaction rejected.", { autoClose: 8000 });
+          toast.error("Transaction rejected.", {autoClose: 8000});
           await delay;
           setDepositLoading(false);
           return;
         }
-        toast.error("Transaction failed.", { autoClose: 8000 });
+        toast.error("Transaction failed.", {autoClose: 8000});
         await delay;
         setDepositLoading(false);
       });
@@ -373,35 +382,35 @@ const SideBarRight = () => {
     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (!account) {
-      toast.error("Please connect your wallet.", { autoClose: 8000 });
+      toast.error("Please connect your wallet.", {autoClose: 8000});
       await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (!currentObject.address) {
-      toast.error("Please enter address.", { autoClose: 8000 });
+      toast.error("Please enter address.", {autoClose: 8000});
       await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (currentObject?.address?.length < 42) {
-      toast.error("Please enter a valid address.", { autoClose: 8000 });
+      toast.error("Please enter a valid address.", {autoClose: 8000});
       await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (isNaN(currentObject.amount)) {
-      toast.error("Please enter a valid amount.", { autoClose: 8000 });
+      toast.error("Please enter a valid amount.", {autoClose: 8000});
       await delay;
       setWithdrawSubmitLoading(false);
       return;
     }
 
     if (Number(currentObject.amount) <= 0) {
-      toast.error("Incorrect amount", { autoClose: 8000 });
+      toast.error("Incorrect amount", {autoClose: 8000});
       await delay;
       setWithdrawSubmitLoading(false);
       return;
@@ -420,7 +429,9 @@ const SideBarRight = () => {
             : rates?.[exchangeAccountType]?.usd,
       })
       .then(async (res) => {
-        toast.success("Withdrawal request sent successfully.", { autoClose: 8000 });
+        toast.success("Withdrawal request sent successfully.", {
+          autoClose: 8000,
+        });
         if (res.data?.result) {
           updateState();
           dispatch({
@@ -443,7 +454,7 @@ const SideBarRight = () => {
         ) {
           error = "Withdrawal with this amount is not possible at this moment";
         }
-        toast.error(error ?? "Withdrawal failed.", { autoClose: 8000 });
+        toast.error(error ?? "Withdrawal failed.", {autoClose: 8000});
         await delay;
         setWithdrawSubmitLoading(false);
       });
@@ -457,7 +468,7 @@ const SideBarRight = () => {
     let errorMsg = null;
     if (Number(currentObject.amount) <= 0) {
       errorMsg = "Incorrect amount";
-      toast.error(errorMsg, { autoClose: 8000 });
+      toast.error(errorMsg, {autoClose: 8000});
       await delay;
       setTransferSubmitLoading(false);
       return;
@@ -508,7 +519,7 @@ const SideBarRight = () => {
               payload: {},
             });
 
-            toast.success("Transfer was successful.", { autoClose: 8000 });
+            toast.success("Transfer was successful.", {autoClose: 8000});
 
             setTimeout(() => {
               setCurrentObject((prev) => ({
@@ -526,7 +537,7 @@ const SideBarRight = () => {
               payload: {},
             });
             setConfirm(false);
-            toast.success("Transfer was successful.", { autoClose: 8000 });
+            toast.success("Transfer was successful.", {autoClose: 8000});
 
             setTimeout(() => {
               setCurrentObject((prev) => ({
@@ -539,7 +550,10 @@ const SideBarRight = () => {
           }
         }
       } catch (e) {
-        if (e?.response?.data === "we dont have such address registered in our system.") {
+        if (
+          e?.response?.data ===
+          "we dont have such address registered in our system."
+        ) {
           errorMsg = "Incorrect to address";
         } else if (e?.response?.data === "Cannot transfer from this account") {
           errorMsg = "This account is disabled. Please contact support.";
@@ -552,7 +566,7 @@ const SideBarRight = () => {
         }
         setConfirm(false);
 
-        toast.error(errorMsg ?? "Transfer failed.", { autoClose: 8000 });
+        toast.error(errorMsg ?? "Transfer failed.", {autoClose: 8000});
       }
       await delay;
 
@@ -568,10 +582,10 @@ const SideBarRight = () => {
         address: account,
       })
       .then((res) => {
-        toast.success("Email sent successfully.", { autoClose: 8000 });
+        toast.success("Email sent successfully.", {autoClose: 8000});
       })
       .catch((e) => {
-        toast.error("Email could not be sent.", { autoClose: 8000 });
+        toast.error("Email could not be sent.", {autoClose: 8000});
       });
   };
 
@@ -594,7 +608,7 @@ const SideBarRight = () => {
             type: "SET_DASHBOARD_TRANSACTIONS_DATA_RELOAD",
             payload: {},
           });
-          toast.success("Exchange successful.", { autoClose: 8000 });
+          toast.success("Exchange successful.", {autoClose: 8000});
           await delay;
           setExchangeLoading(false);
           setConfirm(false);
@@ -607,7 +621,7 @@ const SideBarRight = () => {
             error = "Insufficient balance.";
           }
 
-          toast.error(error ?? "Exchange failed.", { autoClose: 8000 });
+          toast.error(error ?? "Exchange failed.", {autoClose: 8000});
           await delay;
           setExchangeLoading(false);
           setConfirm(false);
@@ -641,19 +655,19 @@ const SideBarRight = () => {
       setStakingLoading(false);
       setConfirm(false);
       updateState();
-      toast.success("Staking successful.", { autoClose: 8000 });
+      toast.success("Staking successful.", {autoClose: 8000});
     } catch (e) {
-      toast.error("Staking failed.", { autoClose: 8000 });
+      toast.error("Staking failed.", {autoClose: 8000});
       setStakingLoading(false);
       setConfirm(false);
     }
   }
 
   const handleLogout = () => {
-    dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({type: "SET_LOGOUT_WITH_EMAIL"});
     dispatch({
       type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: false },
+      payload: {sideBarOpen: false},
     });
     disconnect();
     dispatch({
@@ -702,7 +716,7 @@ const SideBarRight = () => {
   useEffect(() => {
     if (userBalances.length > 0) {
       const chosenAcc = userBalances?.find(
-        (item) => item?.account_category === accountType,
+        (item) => item?.account_category === accountType
       );
 
       setChosenAccount(chosenAcc);
@@ -728,7 +742,7 @@ const SideBarRight = () => {
     if (sideBarOpen) {
       dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: false },
+        payload: {sideBarOpen: false},
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -745,8 +759,8 @@ const SideBarRight = () => {
             (exchangeAccountType === "ATAR"
               ? rates?.["atr"]?.usd
               : rates[exchangeAccountType].usd)
-          ).toFixed(6),
-        ),
+          ).toFixed(6)
+        )
       );
     }
   }, [
@@ -774,7 +788,10 @@ const SideBarRight = () => {
   }, [exchangeAccountType]);
 
   useEffect(() => {
-    if (currentObject.transferAddress && currentObject.transferAddress.length > 41) {
+    if (
+      currentObject.transferAddress &&
+      currentObject.transferAddress.length > 41
+    ) {
       axios
         .post("/api/accounts/get_recepient_name", {
           address: currentObject.transferAddress,
@@ -805,7 +822,9 @@ const SideBarRight = () => {
       name: "amount",
       type: "default",
       rightText:
-        exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType?.toUpperCase(),
+        exchangeAccountType === "ATAR"
+          ? "A1"
+          : exchangeAccountType?.toUpperCase(),
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -834,13 +853,13 @@ const SideBarRight = () => {
 
     if (accountType === "main") {
       if (activeExtensions.trade === "true") {
-        options.push({ name: "Trade", value: "trade" });
+        options.push({name: "Trade", value: "trade"});
       }
       if (activeExtensions.loan === "true") {
-        options.push({ name: "Loan", value: "loan" });
+        options.push({name: "Loan", value: "loan"});
       }
     } else {
-      options.push({ name: "Main", value: "main" });
+      options.push({name: "Main", value: "main"});
     }
 
     return options;
@@ -865,7 +884,8 @@ const SideBarRight = () => {
                       height="24"
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
@@ -891,7 +911,7 @@ const SideBarRight = () => {
                 (acc) =>
                   acc.account_category !== "main" &&
                   acc.account_category !== "external" &&
-                  acc.account_category !== "system",
+                  acc.account_category !== "system"
               ).length > 0
             ? [
                 {
@@ -903,7 +923,8 @@ const SideBarRight = () => {
                       height="24"
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
@@ -933,7 +954,8 @@ const SideBarRight = () => {
                       height="24"
                       viewBox="0 0 24 24"
                       fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path
                         d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
                         stroke="#C38C5C"
@@ -970,7 +992,8 @@ const SideBarRight = () => {
                       height="24"
                       viewBox="0 0 24 24"
                       fill="#C38C5C"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <g clipPath="url(#clip0_40_6461)">
                         <path
                           d="M5 19.3787C8.38821 22.7669 16.3689 22.7669 19.7571 19.3787L17.3057 18.7658"
@@ -1002,7 +1025,8 @@ const SideBarRight = () => {
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       d="M2 15C2 18.87 5.13 22 9 22L7.95 20.25"
                       stroke="#C38C5C"
@@ -1037,12 +1061,23 @@ const SideBarRight = () => {
         })),
     },
     {
-      title: currentObject.transferType === "external" ? "address" : "Select Account",
-      name: currentObject.transferType === "external" ? "transferAddress" : "account",
-      type: currentObject.transferType === "external" ? "default" : "lable-input-select",
+      title:
+        currentObject.transferType === "external"
+          ? "address"
+          : "Select Account",
+      name:
+        currentObject.transferType === "external"
+          ? "transferAddress"
+          : "account",
+      type:
+        currentObject.transferType === "external"
+          ? "default"
+          : "lable-input-select",
       options: internalTransferOptions,
-      defaultAny: currentObject.transferType === "external" ? undefined : "Select",
-      placeholder: currentObject.transferType === "external" ? "Enter" : undefined,
+      defaultAny:
+        currentObject.transferType === "external" ? undefined : "Select",
+      placeholder:
+        currentObject.transferType === "external" ? "Enter" : undefined,
       onChange: (e) =>
         setCurrentObject((prev) => ({
           ...prev,
@@ -1065,7 +1100,7 @@ const SideBarRight = () => {
 
   const mainAccount = useMemo(
     () => userBalances.find((acc) => acc.account_category === "main"),
-    [userBalances],
+    [userBalances]
   );
 
   const exchangeAccounts = useMemo(() => {
@@ -1077,7 +1112,8 @@ const SideBarRight = () => {
             height="33"
             viewBox="0 0 32 33"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <rect
               x="0.5"
               y="1"
@@ -1102,7 +1138,8 @@ const SideBarRight = () => {
                 y1="2.12319"
                 x2="33.9012"
                 y2="4.39119"
-                gradientUnits="userSpaceOnUse">
+                gradientUnits="userSpaceOnUse"
+              >
                 <stop stopColor="white" stopOpacity="0.1" />
                 <stop offset="1" stopColor="white" stopOpacity="0.02" />
               </linearGradient>
@@ -1112,7 +1149,8 @@ const SideBarRight = () => {
                 y1="0.499999"
                 x2="24.2795"
                 y2="14.2939"
-                gradientUnits="userSpaceOnUse">
+                gradientUnits="userSpaceOnUse"
+              >
                 <stop stopColor="white" stopOpacity="0.5" />
                 <stop offset="1" stopColor="white" stopOpacity="0.05" />
               </linearGradient>
@@ -1129,7 +1167,8 @@ const SideBarRight = () => {
             height="32"
             viewBox="0 0 32 32"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <g opacity="0.1" filter="url(#filter0_b_3211_11395)">
               <rect width="32" height="32" rx="16" fill="white" />
             </g>
@@ -1145,7 +1184,8 @@ const SideBarRight = () => {
                 width="112"
                 height="112"
                 filterUnits="userSpaceOnUse"
-                colorInterpolationFilters="sRGB">
+                colorInterpolationFilters="sRGB"
+              >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
                 <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
                 <feComposite
@@ -1176,7 +1216,8 @@ const SideBarRight = () => {
             height="32"
             viewBox="0 0 32 32"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <g opacity="0.1" filter="url(#filter0_b_3211_11461)">
               <path
                 d="M16 0C7.1639 0 7.62939e-05 7.16382 7.62939e-05 16C7.62939e-05 24.8361 7.16422 31.9999 16 31.9999C24.8359 31.9999 32 24.838 32 16C32 7.1619 24.8371 0 16 0Z"
@@ -1195,7 +1236,8 @@ const SideBarRight = () => {
                 width="112"
                 height="112"
                 filterUnits="userSpaceOnUse"
-                colorInterpolationFilters="sRGB">
+                colorInterpolationFilters="sRGB"
+              >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
                 <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
                 <feComposite
@@ -1226,7 +1268,8 @@ const SideBarRight = () => {
             height="32"
             viewBox="0 0 32 32"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <g opacity="0.1" filter="url(#filter0_b_3211_11422)">
               <rect width="32" height="32" rx="16" fill="white" />
             </g>
@@ -1266,7 +1309,8 @@ const SideBarRight = () => {
                 width="112"
                 height="112"
                 filterUnits="userSpaceOnUse"
-                colorInterpolationFilters="sRGB">
+                colorInterpolationFilters="sRGB"
+              >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
                 <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
                 <feComposite
@@ -1297,7 +1341,8 @@ const SideBarRight = () => {
             height="32"
             viewBox="0 0 32 32"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <g opacity="0.1" filter="url(#filter0_b_3211_11435)">
               <rect width="32" height="32" rx="16" fill="white" />
             </g>
@@ -1313,7 +1358,8 @@ const SideBarRight = () => {
                 width="112"
                 height="112"
                 filterUnits="userSpaceOnUse"
-                colorInterpolationFilters="sRGB">
+                colorInterpolationFilters="sRGB"
+              >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
                 <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
                 <feComposite
@@ -1344,7 +1390,8 @@ const SideBarRight = () => {
             height="32"
             viewBox="0 0 32 32"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <g opacity="0.1" filter="url(#filter0_b_3211_11448)">
               <rect width="32" height="32" rx="16" fill="white" />
             </g>
@@ -1360,7 +1407,8 @@ const SideBarRight = () => {
                 width="112"
                 height="112"
                 filterUnits="userSpaceOnUse"
-                colorInterpolationFilters="sRGB">
+                colorInterpolationFilters="sRGB"
+              >
                 <feFlood floodOpacity="0" result="BackgroundImageFix" />
                 <feGaussianBlur in="BackgroundImageFix" stdDeviation="20" />
                 <feComposite
@@ -1387,7 +1435,7 @@ const SideBarRight = () => {
     ];
 
     const filteredArr = arr.filter(
-      (item) => item.title !== exchangeAccountType.toUpperCase(),
+      (item) => item.title !== exchangeAccountType.toUpperCase()
     );
 
     return filteredArr;
@@ -1401,7 +1449,9 @@ const SideBarRight = () => {
           name: "transfer_amount",
           type: "default",
           rightText:
-            exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType.toUpperCase(),
+            exchangeAccountType === "ATAR"
+              ? "A1"
+              : exchangeAccountType.toUpperCase(),
           onChange: (e) => {
             setCurrentObject((prev) => ({
               ...prev,
@@ -1417,7 +1467,8 @@ const SideBarRight = () => {
             setCurrentObject((prev) => ({
               ...prev,
               receive_amount:
-                Math.round((e.target.value / ratedExchange) * 10 ** 6) / 10 ** 6,
+                Math.round((e.target.value / ratedExchange) * 10 ** 6) /
+                10 ** 6,
             }));
           },
         },
@@ -1533,7 +1584,9 @@ const SideBarRight = () => {
             <div className="confirm-list">
               <div className="confirm-list-item">
                 <span>From Account:</span>
-                <span>{exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType}</span>
+                <span>
+                  {exchangeAccountType === "ATAR" ? "A1" : exchangeAccountType}
+                </span>
               </div>
               <div className="confirm-list-item">
                 <span>From Amount:</span>
@@ -1619,7 +1672,9 @@ const SideBarRight = () => {
               handleLogout();
             }}
             userAccount={handleUserAccount}
-            account={account?.toLowerCase() || appState?.userData?.account_owner}
+            account={
+              account?.toLowerCase() || appState?.userData?.account_owner
+            }
             mainAccount={mainAccount?.address}
           />
         )}
@@ -1629,7 +1684,7 @@ const SideBarRight = () => {
             goBack={() =>
               dispatch({
                 type: "SET_SIDE_BAR",
-                payload: { sideBar: "connect" },
+                payload: {sideBar: "connect"},
               })
             }
             personalData={personalData}
@@ -1654,7 +1709,7 @@ const SideBarRight = () => {
             handleForgetPassword={() =>
               dispatch({
                 type: "SET_SIDE_BAR",
-                payload: { sideBar: "resetPassword" },
+                payload: {sideBar: "resetPassword"},
               })
             }
           />
@@ -1665,7 +1720,7 @@ const SideBarRight = () => {
             goBack={() =>
               dispatch({
                 type: "SET_SIDE_BAR",
-                payload: { sideBar: "UserAccount" },
+                payload: {sideBar: "UserAccount"},
               })
             }
             resetPasswordState={resetPasswordStatus}
@@ -1681,7 +1736,9 @@ const SideBarRight = () => {
             inputs={withdrawInputs}
             currentObject={currentObject}
             cardImg={`/img/dashboard/${
-              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+              exchangeAccountType === "ATAR"
+                ? "atar"
+                : exchangeAccountType?.toLowerCase()
             }.png`}
             handleSubmit={handleWithdrawSubmit}
             buttonLabel={withdrawSubmitLoading ? "Loading..." : "Withdraw"}
@@ -1714,7 +1771,9 @@ const SideBarRight = () => {
             inputs={exchangeInputs}
             currentObject={currentObject}
             cardImg={`/img/dashboard/${
-              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+              exchangeAccountType === "ATAR"
+                ? "atar"
+                : exchangeAccountType?.toLowerCase()
             }.png`}
             accounts={exchangeAccounts}
             handleSubmit={handleExchangeSubmit}
@@ -1766,7 +1825,9 @@ const SideBarRight = () => {
             inputs={transferInputs}
             currentObject={currentObject}
             cardImg={`/img/dashboard/${
-              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+              exchangeAccountType === "ATAR"
+                ? "atar"
+                : exchangeAccountType?.toLowerCase()
             }.png`}
             handleSubmit={handleTransferSubmit}
             buttonLabel={transferSubmitLoading ? "Loading..." : "Transfer"}
@@ -1794,13 +1855,17 @@ const SideBarRight = () => {
             inputs={depositInputs}
             currentObject={currentObject}
             cardImg={`/img/dashboard/${
-              exchangeAccountType === "ATAR" ? "atar" : exchangeAccountType?.toLowerCase()
+              exchangeAccountType === "ATAR"
+                ? "atar"
+                : exchangeAccountType?.toLowerCase()
             }.png`}
             handleSubmit={(duration) => setConfirm(duration)}
             buttonLabel={stakingLoading ? "Loading..." : "Stake"}
             stakeLoading={stakingLoading}
             accountType={exchangeAccountType}
-            accountBalance={mainAccount?.assets?.[exchangeAccountType]?.toFixed(2)}
+            accountBalance={mainAccount?.assets?.[exchangeAccountType]?.toFixed(
+              2
+            )}
             accountBalanceSecond={`$${(
               mainAccount?.assets?.[exchangeAccountType] *
               rates?.[exchangeAccountType]?.usd

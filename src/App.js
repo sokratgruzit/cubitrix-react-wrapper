@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
-import { Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { Buffer } from "buffer";
+import {useEffect, useState} from "react";
+import {
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import {useSelector, useDispatch} from "react-redux";
+import {Buffer} from "buffer";
 import {
   ChangeNetwork,
   DashboardSharedLayout,
@@ -30,13 +36,14 @@ import Landing from "./components/Landing";
 import LandingRegistration from "./components/LandingRegistration";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import {useConnect} from "@cubitrix/cubitrix-react-connect-module";
 import axios from "./api/axios";
-import { Logo } from "./assets/svg";
-import { injected, walletConnect } from "./connector";
+import {Logo} from "./assets/svg";
+import {injected, walletConnect} from "./connector";
 import WBNB from "./abi/WBNB.json";
-import { useStake } from "@cubitrix/cubitrix-react-connect-module";
-import { ToastContainer } from "react-toastify";
+import {useStake} from "@cubitrix/cubitrix-react-connect-module";
+import {ToastContainer} from "react-toastify";
+import {decryptEnv} from "./utils/decryptEnv";
 
 import "./App.css";
 import "@cubitrix/cubitrix-react-ui-module/src/assets/css/main-theme.css";
@@ -45,7 +52,9 @@ import "react-toastify/dist/ReactToastify.css";
 window.Buffer = window.Buffer || Buffer;
 
 function App() {
-  const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS;
+  const tokenAddress = decryptEnv(process.env.REACT_APP_TOKEN_ADDRESS);
+  const Router = decryptEnv(process.env.REACT_APP_STAKING_CONTRACT_ADDRESS);
+
   const links = [
     {
       to: "/dashboard",
@@ -56,7 +65,8 @@ function App() {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M21.45 13.64V14.64C21.45 14.7709 21.3987 14.8966 21.3071 14.9901C21.2155 15.0836 21.0909 15.1374 20.96 15.14H19.5C18.97 15.14 18.49 14.75 18.45 14.23C18.42 13.92 18.54 13.63 18.74 13.43C18.8305 13.3363 18.9394 13.2621 19.0598 13.2122C19.1803 13.1623 19.3097 13.1378 19.44 13.14H20.95C21.24 13.15 21.45 13.37 21.45 13.64Z"
             fill="white"
@@ -81,7 +91,8 @@ function App() {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M6.73 19.7C7.55 18.82 8.8 18.89 9.52 19.85L10.53 21.2C11.34 22.27 12.65 22.27 13.46 21.2L14.47 19.85C15.19 18.89 16.44 18.82 17.26 19.7C19.04 21.6 20.49 20.97 20.49 18.31V7.04C20.5 3.01 19.56 2 15.78 2H8.22C4.44 2 3.5 3.01 3.5 7.04V18.3C3.5 20.97 4.96 21.59 6.73 19.7Z"
             fill="white"
@@ -106,7 +117,8 @@ function App() {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M6.73 19.7C7.55 18.82 8.8 18.89 9.52 19.85L10.53 21.2C11.34 22.27 12.65 22.27 13.46 21.2L14.47 19.85C15.19 18.89 16.44 18.82 17.26 19.7C19.04 21.6 20.49 20.97 20.49 18.31V7.04C20.5 3.01 19.56 2 15.78 2H8.22C4.44 2 3.5 3.01 3.5 7.04V18.3C3.5 20.97 4.96 21.59 6.73 19.7Z"
             fill="white"
@@ -132,9 +144,9 @@ function App() {
   const providerType = useSelector((state) => state.connect.providerType);
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const balance = useSelector((state) => state.appState.userData?.balance);
-  const { activeExtensions } = useSelector((state) => state.extensions);
+  const {activeExtensions} = useSelector((state) => state.extensions);
   const appState = useSelector((state) => state.appState);
-  const { depositAmount } = useSelector((state) => state.stake);
+  const {depositAmount} = useSelector((state) => state.stake);
 
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [resetPasswordState, setResetPasswordState] = useState({
@@ -142,15 +154,18 @@ function App() {
     error: "",
     success: "",
   });
-  const [signInState, setSignInState] = useState({ loading: false, error: false });
+  const [signInState, setSignInState] = useState({
+    loading: false,
+    error: false,
+  });
   const [procceed2fa, setProcceed2fa] = useState(false);
-  const [otpState, setOtpState] = useState({ loading: false, error: false });
+  const [otpState, setOtpState] = useState({loading: false, error: false});
   const [signInAddress, setSignInAddress] = useState("");
   const [initialRegister, setInitialRegister] = useState(false);
   const [step, setStep] = useState(1);
 
-  const { checkAllowance } = useStake({
-    Router: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
+  const {checkAllowance} = useStake({
+    Router,
     tokenAddress,
   });
   const location = useLocation();
@@ -221,12 +236,12 @@ function App() {
     if (sideBarOpen) {
       dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: !sideBarOpen },
+        payload: {sideBarOpen: !sideBarOpen},
       });
     } else {
       dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: !sideBarOpen, sideBar: "connect" },
+        payload: {sideBarOpen: !sideBarOpen, sideBar: "connect"},
       });
     }
   };
@@ -235,13 +250,13 @@ function App() {
     if (sideBarOpen && sideBar !== "notifications") {
       return dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBar: "notifications" },
+        payload: {sideBar: "notifications"},
       });
     }
 
     dispatch({
       type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: !sideBarOpen, sideBar: "notifications" },
+      payload: {sideBarOpen: !sideBarOpen, sideBar: "notifications"},
     });
   };
 
@@ -260,9 +275,9 @@ function App() {
     setShowSignInModal(show);
   };
 
-  const handleSubmitSignIn = async ({ email, password }) => {
+  const handleSubmitSignIn = async ({email, password}) => {
     if (email && password) {
-      setSignInState((prev) => ({ ...prev, loading: true, error: "" }));
+      setSignInState((prev) => ({...prev, loading: true, error: ""}));
 
       await axios
         .post("/api/accounts/recovery/login", {
@@ -270,7 +285,7 @@ function App() {
           password,
         })
         .then((res) => {
-          setSignInState((prev) => ({ ...prev, loading: false }));
+          setSignInState((prev) => ({...prev, loading: false}));
           setSignInAddress(res.data.address);
 
           if (res.data.message === "proceed 2fa") return setProcceed2fa(true);
@@ -292,7 +307,7 @@ function App() {
           });
           dispatch({
             type: "SET_SIDE_BAR",
-            payload: { sideBar: "UserAccount" },
+            payload: {sideBar: "UserAccount"},
           });
           dispatch({
             type: "SET_LOGGED_WITH_EMAIL",
@@ -310,7 +325,7 @@ function App() {
   };
 
   const validate2fa = async (token) => {
-    setOtpState({ loading: true, error: "" });
+    setOtpState({loading: true, error: ""});
 
     await axios
       .post("/api/accounts/otp/validate", {
@@ -318,8 +333,8 @@ function App() {
         address: signInAddress,
       })
       .then((res) => {
-        setOtpState({ loading: false, error: "" });
-        dispatch({ type: "SET_SIDE_BAR", payload: { sideBar: "UserAccount" } });
+        setOtpState({loading: false, error: ""});
+        dispatch({type: "SET_SIDE_BAR", payload: {sideBar: "UserAccount"}});
         dispatch({
           type: "SET_ACCOUNT_SIGNED",
           payload: true,
@@ -341,7 +356,7 @@ function App() {
         setShowSignInModal(false);
       })
       .catch((e) => {
-        setOtpState({ loading: false, error: e.response.data });
+        setOtpState({loading: false, error: e.response.data});
       });
   };
 
@@ -429,7 +444,7 @@ function App() {
       }));
     }
 
-    setResetPasswordState({ loading: true, success: "", error: "" });
+    setResetPasswordState({loading: true, success: "", error: ""});
 
     axios
       .post("/api/accounts/get-reset-password-email", {
@@ -486,7 +501,7 @@ function App() {
         },
         () => {
           disconnect();
-        },
+        }
       );
       WalletConnectEagerly(
         walletConnect,
@@ -503,11 +518,11 @@ function App() {
         },
         () => {
           disconnect();
-        },
+        }
       );
 
       if (!providerType) {
-        dispatch({ type: "SET_TRIED_RECONNECT", payload: true });
+        dispatch({type: "SET_TRIED_RECONNECT", payload: true});
       }
     }
     // eslint-disable-next-line
@@ -526,7 +541,7 @@ function App() {
             payload: false,
           });
           disconnect();
-        },
+        }
       );
     }
     // eslint-disable-next-line
@@ -537,7 +552,7 @@ function App() {
       init();
       dispatch({
         type: "SET_SIDE_BAR",
-        payload: { sideBarOpen: false },
+        payload: {sideBarOpen: false},
       });
     }
     // eslint-disable-next-line
@@ -551,10 +566,10 @@ function App() {
   // }, [account, active, triedReconnect]);
 
   const logout = () => {
-    dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({type: "SET_LOGOUT_WITH_EMAIL"});
     dispatch({
       type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: false },
+      payload: {sideBarOpen: false},
     });
     disconnect();
     dispatch({
@@ -633,7 +648,7 @@ function App() {
         if (typeof library.currentProvider.removeListener === "function") {
           library.currentProvider.removeListener(
             "accountsChanged",
-            accountsChangedCallback,
+            accountsChangedCallback
           );
         }
       };
@@ -662,11 +677,14 @@ function App() {
 
   useEffect(() => {
     if (appState?.connectionType !== "email") {
-      if (mainAcc?.step > 5 && mainAcc?.account_owner === account?.toLowerCase()) {
+      if (
+        mainAcc?.step > 5 &&
+        mainAcc?.account_owner === account?.toLowerCase()
+      ) {
         setStep(6);
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "true" },
+          payload: {dashboard: "true"},
         });
       } else if (
         mainAcc?.step > 2 &&
@@ -676,7 +694,7 @@ function App() {
         setInitialRegister(true);
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "false" },
+          payload: {dashboard: "false"},
         });
         getBalance().then((balance) => {
           if (balance >= 100) {
@@ -691,13 +709,19 @@ function App() {
         setInitialRegister(true);
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "false" },
+          payload: {dashboard: "false"},
         });
         setStep(2);
       }
     }
     // eslint-disable-next-line
-  }, [appState?.connectionType, mainAcc?.step, mainAcc?.account_owner, account, library]);
+  }, [
+    appState?.connectionType,
+    mainAcc?.step,
+    mainAcc?.account_owner,
+    account,
+    library,
+  ]);
 
   useEffect(() => {
     if (!appState?.connectionType) {
@@ -726,7 +750,7 @@ function App() {
   useEffect(() => {
     dispatch({
       type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: false },
+      payload: {sideBarOpen: false},
     });
     // eslint-disable-next-line
   }, [location]);
@@ -738,7 +762,7 @@ function App() {
         {},
         {
           timeout: 120000,
-        },
+        }
       )
       .then((res) => {
         if (res.data?.account) {
@@ -776,7 +800,8 @@ function App() {
               height="18"
               viewBox="0 0 53 18"
               fill="white"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path d="M0.236236 17.5325C1.44104 17.5325 2.31511 16.8078 3.26005 14.7039L9.82741 0H10.04L17.1035 15.6857C17.7177 17.0649 18.45 17.5325 19.4895 17.5325H19.9856V17.7662H19.5131C18.7335 17.7662 17.3161 17.6961 16.3239 17.6961C15.3081 17.6961 13.9615 17.7662 12.9693 17.7662H12.4969V17.5325H12.9693C13.9143 17.5325 14.4104 17.1117 13.9143 15.9662L12.3551 12.3429H5.24444L4.22862 14.7039C3.3073 16.8312 3.49629 17.5325 4.70109 17.5325H5.17356V17.7662H4.70109C3.94514 17.7662 3.14194 17.6494 2.48048 17.6494C1.91351 17.6494 0.92132 17.7662 0.236236 17.7662H0V17.5325H0.236236ZM5.57517 11.5948H12.0244L8.8116 4.13766L5.57517 11.5948Z" />
               <path d="M23.8932 2.45455H24.1295V6.07792H27.9329V6.77922H24.1295V14.8208C24.1295 16.2701 24.7673 16.8779 25.6886 16.8779C26.3501 16.8779 27.0588 16.8312 28.1455 16.1065L28.2872 16.2935C27.0115 17.2519 25.8067 18 24.4129 18C22.712 18 21.2946 17.0649 21.2946 14.961V6.77922H19.3102V6.54545L19.641 6.4052C21.0584 5.7039 22.9247 4.46494 23.8932 2.45455Z" />
               <path d="M36.4949 17.8831L36.3059 17.7662V16.0364C34.9594 17.3922 33.8255 18 32.3608 18C30.7544 18 29.337 17.2286 29.337 15.3351C29.337 12.3662 32.597 12.4364 36.3059 10.9169V10.1922C36.3059 7.80779 35.2665 7.01299 33.6837 7.01299C32.2191 7.01299 30.8016 7.80779 30.0929 9.3039L29.8095 9.16364C30.589 7.43377 32.1954 5.84416 34.6759 5.84416C37.3218 5.84416 39.1408 7.2 39.1408 10.0753V15.639C39.1408 17.0182 39.6132 17.5325 40.6527 17.5325H41.1252V17.7662H40.6527C39.4951 17.7662 37.936 17.813 36.4949 17.8831ZM32.1718 14.7506C32.1718 15.7558 32.7388 16.5039 33.9672 16.5039C34.794 16.5039 35.3846 16.2701 36.3059 15.4519V11.4545C33.2585 12.7403 32.1718 13.3948 32.1718 14.7506Z" />
@@ -832,7 +857,8 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && +appState?.userData?.step === 6
+                    !appState?.userData?.active &&
+                    +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<Dashboard />}
@@ -844,7 +870,8 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && +appState?.userData?.step === 6
+                    !appState?.userData?.active &&
+                    +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<Transactions />}
@@ -856,7 +883,8 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && +appState?.userData?.step === 6
+                    !appState?.userData?.active &&
+                    +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<TopUp />}
@@ -923,7 +951,8 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && +appState?.userData?.step === 6
+                    !appState?.userData?.active &&
+                    +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<CreateAccount />}
@@ -963,7 +992,8 @@ function App() {
               element={
                 <DashboardSharedLayout
                   disabledAccount={
-                    !appState?.userData?.active && +appState?.userData?.step === 6
+                    !appState?.userData?.active &&
+                    +appState?.userData?.step === 6
                   }
                   links={links}
                   children={<Dashboard />}
@@ -1022,7 +1052,10 @@ function App() {
             });
           }}
           label={"Check Your Network"}
-          customStyles={{ zIndex: "1002 !important", backgroundColor: "red !important" }}
+          customStyles={{
+            zIndex: "1002 !important",
+            backgroundColor: "red !important",
+          }}
           popupBGclass={"cover-most-bg"}
         />
       )}

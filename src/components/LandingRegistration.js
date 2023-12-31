@@ -1,40 +1,44 @@
-import { Button, LandingSteps, Popup } from "@cubitrix/cubitrix-react-ui-module";
-import React, { useState, useEffect, useMemo } from "react";
+import {Button, LandingSteps, Popup} from "@cubitrix/cubitrix-react-ui-module";
+import React, {useState, useEffect, useMemo} from "react";
 
-import { useConnect } from "@cubitrix/cubitrix-react-connect-module";
+import {useConnect} from "@cubitrix/cubitrix-react-connect-module";
 
-import { WalletConnectV2Connector } from "../utils/walletconnectV2Connector";
+import {WalletConnectV2Connector} from "../utils/walletconnectV2Connector";
 
-import { useStake } from "../hooks/use-stake";
-import { injected } from "../connector";
+import {useStake} from "../hooks/use-stake";
+import {injected} from "../connector";
 
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import {useSelector, useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
 
-import { useTableParameters } from "../hooks/useTableParameters";
+import {useTableParameters} from "../hooks/useTableParameters";
+import {decryptEnv} from "../utils/decryptEnv";
 
 import axios from "../api/axios";
 import WBNB from "../abi/WBNB.json";
 
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 
-const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
+const LandingRegistration = ({step, setStep, setInitialRegister}) => {
   const triedReconnect = useSelector((state) => state.appState?.triedReconnect);
   const appState = useSelector((state) => state.appState);
   const rates = useSelector((state) => state.appState?.rates);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { account, connect, disconnect, library, active } = useConnect();
+  const {account, connect, disconnect, library, active} = useConnect();
 
-  const tokenAddress = process.env.REACT_APP_TOKEN_ADDRESS;
+  const tokenAddress = decryptEnv(process.env.REACT_APP_TOKEN_ADDRESS);
+  const Router = decryptEnv(process.env.REACT_APP_STAKING_CONTRACT_ADDRESS);
+  const projectId = decryptEnv(process.env.REACT_APP_INFURA_PROJECT_ID_V3);
 
   const [hostedUrl, setHostedUrl] = useState("");
   const [amountError, setAmountError] = useState("");
 
   const mainAccount = useMemo(
-    () => appState?.accountsData?.find((acc) => acc?.account_category === "main"),
-    [appState?.accountsData],
+    () =>
+      appState?.accountsData?.find((acc) => acc?.account_category === "main"),
+    [appState?.accountsData]
   );
 
   const [referralCodeAlreadyUsed, setReferralCodeAlreadyUsed] = useState(false);
@@ -85,7 +89,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   }, [account, triedReconnect, active]);
 
-  async function handleRegistration({ fullName, email, referral }) {
+  async function handleRegistration({fullName, email, referral}) {
     const errors = {};
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -119,7 +123,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         const res = await axios.post("/api/accounts/check-email", {
           email: email,
         });
-        let { status, msg } = res?.data;
+        let {status, msg} = res?.data;
 
         if (!status) {
           setRegistrationState({
@@ -173,7 +177,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               step = 4;
             }
             axios
-              .post("/api/accounts/handle-step", { step, address: account })
+              .post("/api/accounts/handle-step", {step, address: account})
               .then((e) => {
                 setStep(e?.data?.account?.step ?? 3);
                 setRegistrationState({
@@ -186,7 +190,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                   ...registrationState,
                   loading: false,
                 });
-                toast.error("Something went wrong!", { autoClose: 8000 });
+                toast.error("Something went wrong!", {autoClose: 8000});
               });
           });
         })
@@ -196,7 +200,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               ...prev,
               loading: false,
             }));
-            toast.error("Email is already in use.", { autoClose: 8000 });
+            toast.error("Email is already in use.", {autoClose: 8000});
           }
         });
     }
@@ -244,19 +248,19 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [coinbaseLoading, setCoinbaseLoading] = useState(false);
   async function handleCoindbasePayment(amount) {
     if (!rates) {
-      toast.error("Something went wrong!", { autoClose: 8000 });
+      toast.error("Something went wrong!", {autoClose: 8000});
       setStakingLoading(false);
       return;
     }
     const buyAmount = (Number(amount) - 1) / Number(rates?.["atr"]?.usd);
 
     if (buyAmount < 100) {
-      toast.error("Minimum amount is 100", { autoClose: 8000 });
+      toast.error("Minimum amount is 100", {autoClose: 8000});
       setStakingLoading(false);
       return;
     }
     if (buyAmount > 500000) {
-      toast.error("Maximum amount is 500000", { autoClose: 8000 });
+      toast.error("Maximum amount is 500000", {autoClose: 8000});
       setStakingLoading(false);
       return;
     }
@@ -285,7 +289,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Something went wrong!", { autoClose: 8000 });
+        toast.error("Something went wrong!", {autoClose: 8000});
         setCoinbaseLoading(false);
       });
   }
@@ -296,16 +300,21 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     }
   }
 
-  const { durationOptions } = useTableParameters("staking");
+  const {durationOptions} = useTableParameters("staking");
 
-  const { approve, stake, handleTimeperiodDate, handleDepositAmount, handleTimePeriod } =
-    useStake({
-      Router: process.env.REACT_APP_STAKING_CONTRACT_ADDRESS,
-      tokenAddress,
-    });
+  const {
+    approve,
+    stake,
+    handleTimeperiodDate,
+    handleDepositAmount,
+    handleTimePeriod,
+  } = useStake({
+    Router,
+    tokenAddress,
+  });
 
-  const { depositAmount, timeperiod, isAllowance, timeperiodDate } = useSelector(
-    (state) => state.stake,
+  const {depositAmount, timeperiod, isAllowance, timeperiodDate} = useSelector(
+    (state) => state.stake
   );
 
   const inputs = [
@@ -358,9 +367,11 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
           if (balance >= 100 && step === 3) {
             clearInterval(timer);
             axios
-              .post("/api/accounts/handle-step", { step: 4, address: account })
+              .post("/api/accounts/handle-step", {step: 4, address: account})
               .then((e) => {
-                setStep(appState?.userData?.step > 4 ? appState?.userData?.step : 4);
+                setStep(
+                  appState?.userData?.step > 4 ? appState?.userData?.step : 4
+                );
                 setRegistrationState({
                   ...registrationState,
                   loading: false,
@@ -371,7 +382,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                   ...registrationState,
                   loading: false,
                 });
-                toast.error("Something went wrong!", { autoClose: 8000 });
+                toast.error("Something went wrong!", {autoClose: 8000});
               });
           }
         });
@@ -444,7 +455,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         },
         {
           timeout: 120000,
-        },
+        }
       )
       .then((res) => {
         if (res.data?.account) {
@@ -485,19 +496,19 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         },
         () => {
           setStakingLoading(false);
-          toast.error("Approval failed, please try again.", { autoClose: 8000 });
-        },
+          toast.error("Approval failed, please try again.", {autoClose: 8000});
+        }
       );
     }
     if (account && !isAllowance) {
       const buyAmount = Number(depositAmount);
       if (buyAmount < 100) {
-        toast.error("Minimum amount is 100", { autoClose: 8000 });
+        toast.error("Minimum amount is 100", {autoClose: 8000});
         setStakingLoading(false);
         return;
       }
       if (buyAmount > 500000) {
-        toast.error("Maximum amount is 500000", { autoClose: 8000 });
+        toast.error("Maximum amount is 500000", {autoClose: 8000});
         setStakingLoading(false);
         return;
       }
@@ -540,7 +551,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       .then((res) => {
         dispatch({
           type: "UPDATE_ACTIVE_EXTENSIONS",
-          payload: { dashboard: "true" },
+          payload: {dashboard: "true"},
         });
       })
       .catch((err) => {
@@ -549,7 +560,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
     axios
       .post("/api/accounts/manage_extensions", {
         address: account,
-        extensions: { staking: "true", trade: "true" },
+        extensions: {staking: "true", trade: "true"},
         setup: true,
       })
       .then((res) => {
@@ -567,7 +578,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       });
     updateState();
     setStakingLoading(false);
-    toast.success("Staked successfully", { autoClose: 8000 });
+    toast.success("Staked successfully", {autoClose: 8000});
     handleDepositAmount("");
 
     handleTimePeriod(0);
@@ -606,7 +617,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
                 return;
               }
               setStakingLoading(false);
-              toast.error("something went wrong", { autoClose: 8000 });
+              toast.error("something went wrong", {autoClose: 8000});
             });
         } else {
           handleAfterStake();
@@ -615,8 +626,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
       () => {
         setWatchReferral(true);
         setStakingLoading(false);
-        toast.error("Staking failed, please try again.", { autoClose: 8000 });
-      },
+        toast.error("Staking failed, please try again.", {autoClose: 8000});
+      }
     );
   }
 
@@ -662,7 +673,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   const [referralCodeChecked, setReferralCodeChecked] = useState(false);
   const [checkReferralCodeState, setCheckReferralCodeState] = useState({
     loading: false,
-    message: "Referral code is required, please check referral code before staking",
+    message:
+      "Referral code is required, please check referral code before staking",
     status: "warning",
   });
 
@@ -678,10 +690,10 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
   }
 
   async function logout() {
-    dispatch({ type: "SET_LOGOUT_WITH_EMAIL" });
+    dispatch({type: "SET_LOGOUT_WITH_EMAIL"});
     dispatch({
       type: "SET_SIDE_BAR",
-      payload: { sideBarOpen: false },
+      payload: {sideBarOpen: false},
     });
     disconnect();
     dispatch({
@@ -703,7 +715,8 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         ...prev,
         loading: false,
         status: "warning",
-        message: "Referral code is required, please check referral code before staking",
+        message:
+          "Referral code is required, please check referral code before staking",
       }));
       setReferralCodeChecked(false);
       return;
@@ -759,7 +772,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         }}
         handleWalletConnect={async () => {
           const walletConnect = new WalletConnectV2Connector({
-            projectId: process.env.REACT_APP_INFURA_PROJECT_ID_V3,
+            projectId,
             showQrModal: true,
             chains: [97],
             rpcMap: {
@@ -794,7 +807,9 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         handleTimePeriod={handleTimePeriod}
         handleTimeperiodDate={handleTimeperiodDate}
         durationOptions={durationOptions}
-        buttonLabel={stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"}
+        buttonLabel={
+          stakingLoading ? "Loading..." : isAllowance ? "Enable" : "Stake"
+        }
         handleSubmit={() => handleDepositSubmit()}
         inputs={inputs}
         stakingLoading={stakingLoading}
@@ -821,7 +836,7 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
               step: 6,
             })
             .then((res) => {
-              let sendObj = { dashboard: "true" };
+              let sendObj = {dashboard: "true"};
               if (
                 res?.data?.account?.tier?.value !== "Novice Navigator" &&
                 res?.data?.account?.tier?.value
@@ -848,10 +863,12 @@ const LandingRegistration = ({ step, setStep, setInitialRegister }) => {
         <Popup
           popUpElement={
             <div className="confirm-list">
-              <p>Binary spot for the referral code you entered is already taken.</p>
               <p>
-                You can either provide new code with different spot or click "Auto Place"
-                for auto binary positioning.
+                Binary spot for the referral code you entered is already taken.
+              </p>
+              <p>
+                You can either provide new code with different spot or click
+                "Auto Place" for auto binary positioning.
               </p>
               {/* <div className="confirm-list-item">
                 <span>From Account:</span>
