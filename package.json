@@ -1,11 +1,11 @@
 {
   "name": "@cubitrix/cubitrix-react-wrapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.0-placeholder-for-preset-env.1",
     "@cubitrix/cubitrix-react-connect-module": "0.0.88",
-    "@cubitrix/cubitrix-react-ui-module": "^0.7.55",
+    "@cubitrix/cubitrix-react-ui-module": "^0.10.5",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
